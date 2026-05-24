@@ -13,6 +13,8 @@ Adapters connect GUI Shell to external runtimes without leaking authority across
 - Preserve content exposure policy.
 - Emit audit events for sensitive adapter actions.
 - Return diagnostic information without exposing sealed fields.
+- Strip nested authority-like keys from inbound adapter payloads.
+- Treat `metadata` as descriptive and untrusted even when it contains grant-like keys.
 
 ## MUST NOT
 
@@ -20,3 +22,4 @@ Adapters connect GUI Shell to external runtimes without leaking authority across
 - Create authority context not granted by runtime.
 - Display raw payloads beyond allowed visibility.
 - Edit sealed, hidden, sacred, or authority fields.
+- Convert metadata, memory, cache, or previous state into permission.

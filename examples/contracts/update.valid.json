@@ -1,0 +1,7 @@
+{
+  "policy_id": "updates-default",
+  "channel": "stable",
+  "auto_update": false,
+  "signature_required": true,
+  "rollback_enabled": true
+}

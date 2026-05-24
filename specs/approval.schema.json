@@ -74,6 +74,20 @@
         "type": "string"
       }
     },
+    "hidden_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fields that must not be shown or edited by UI."
+    },
+    "sacred_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Domain-critical fields that must not be edited by UI or adapter."
+    },
     "authority_fields": {
       "type": "array",
       "items": {

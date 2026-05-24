@@ -75,6 +75,13 @@ python3 tooling/schema_check/check_schemas.py
 python3 tooling/conformance_tests/run_conformance_skeleton.py
 ```
 
+Expected successful output:
+
+```text
+schema check passed: 11 schemas, 11 examples
+conformance skeleton passed: 14 checks
+```
+
 See [QUICKSTART.md](./QUICKSTART.md).
 
 ## Validation
@@ -148,6 +155,7 @@ before product UI.
 ## Top-level references
 
 - [AGENTS.md](./AGENTS.md): repository agent rules
+- [ROADMAP.md](./ROADMAP.md): phase roadmap and execution order
 - [docs/OPERATING_MODEL.md](./docs/OPERATING_MODEL.md): repository flow, backup model, and validation gates
 - [CLAIM.md](./CLAIM.md): current claim boundary
 - [CONFIG.md](./CONFIG.md): configuration reference

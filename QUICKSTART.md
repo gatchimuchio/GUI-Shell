@@ -28,8 +28,8 @@ python3 tooling/conformance_tests/run_conformance_skeleton.py
 Expected successful output:
 
 ```text
-schema check passed: 11 schemas
-conformance skeleton passed: 4 checks
+schema check passed: 11 schemas, 11 examples
+conformance skeleton passed: 14 checks
 ```
 
 ## Optional Rust helper check

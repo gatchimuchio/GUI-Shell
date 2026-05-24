@@ -1,0 +1,11 @@
+{
+  "policy_id": "default_safe",
+  "default_visibility": "none",
+  "allowed_visibility": [
+    "none",
+    "hash_only",
+    "summary",
+    "redacted"
+  ],
+  "redaction_required": true
+}

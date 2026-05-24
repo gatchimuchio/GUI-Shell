@@ -1,0 +1,13 @@
+{
+  "event_id": "audit-1",
+  "timestamp": "2026-05-25T00:00:00Z",
+  "actor": "shell",
+  "action": "approval.requested",
+  "target": "approval-1",
+  "result": "success",
+  "payload_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "previous_event_hash": null,
+  "metadata": {
+    "content_visibility": "redacted"
+  }
+}

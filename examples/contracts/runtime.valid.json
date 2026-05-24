@@ -1,0 +1,15 @@
+{
+  "runtime_id": "blue_tanuki",
+  "name": "BLUE-TANUKI",
+  "kind": "reference_runtime",
+  "status": "ready",
+  "adapter_id": "blue_tanuki_reference",
+  "version": "1.0.0-rc",
+  "endpoints": {
+    "runtime_snapshot": "/runtime/snapshot"
+  },
+  "capabilities": [
+    "runtime.read"
+  ],
+  "diagnostic_summary": "reference runtime reachable"
+}

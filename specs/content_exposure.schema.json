@@ -16,6 +16,7 @@
     },
     "default_visibility": {
       "type": "string",
+      "const": "none",
       "enum": [
         "none",
         "hash_only",

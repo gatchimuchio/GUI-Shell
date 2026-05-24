@@ -1,0 +1,15 @@
+{
+  "adapter_id": "blue_tanuki_reference",
+  "runtime_id": "blue_tanuki",
+  "contract_version": "v0.1",
+  "transport": "http",
+  "authority_strip": true,
+  "content_exposure_policy_id": "default_safe",
+  "declared_capabilities": [
+    "runtime.read",
+    "approval.review"
+  ],
+  "metadata": {
+    "note": "untrusted metadata"
+  }
+}

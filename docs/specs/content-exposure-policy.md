@@ -21,3 +21,7 @@ full
 ## Default
 
 Default is `none`.
+
+Policies may allow stronger visibility values, but the safe default must remain `none`.
+
+Full payload display is permitted only when the effective approval or content exposure contract says `content_visibility=full`.

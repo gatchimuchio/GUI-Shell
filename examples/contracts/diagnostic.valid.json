@@ -1,0 +1,12 @@
+{
+  "diagnostic_id": "diag-1",
+  "runtime_id": "blue_tanuki",
+  "status": "pass",
+  "checks": [
+    {
+      "check_id": "runtime.snapshot",
+      "status": "pass",
+      "message": "Runtime snapshot endpoint responded."
+    }
+  ]
+}

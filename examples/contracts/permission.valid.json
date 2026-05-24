@@ -1,0 +1,11 @@
+{
+  "permission_id": "permission.fs.write.workspace",
+  "capability_id": "filesystem.write",
+  "scope": "target",
+  "decision": "ask",
+  "source": "policy",
+  "expires_at": null,
+  "constraints": {
+    "root": "workspace"
+  }
+}
