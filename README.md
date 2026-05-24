@@ -1,28 +1,99 @@
-# GUI Shell
+# GUI Shell Phase 0 Lock
 
-GUI Shell is a generic Runtime Operation Shell for AI-agent runtimes and local tools.
+GUI Shell is a generic Runtime Operation Shell for local runtimes, agents, tools, and services.
 
-It is **not** a BLUE-TANUKI-specific GUI. BLUE-TANUKI is treated as the first reference runtime through an adapter boundary.
+It is **not** a BLUE-TANUKI-specific GUI. BLUE-TANUKI is the first reference runtime and must connect through an adapter boundary.
 
-## Phase 0 Lock
+## TL;DR
 
-Primary decision:
+1. **GUI Shell is a control plane.** Flutter renders operator surfaces; it does not own authority.
+2. **Schemas and conformance own the contract.** Runtime, adapter, permission, approval, audit, recovery, and content exposure semantics are JSON Schema-first.
+3. **Safety first, robustness second, product UI third.** Product screens never outrank authority strip, content exposure, approval, audit, and recovery boundaries.
 
-- UI framework: Flutter
-- Native helper: Rust
-- Contracts: JSON Schema / OpenAPI-ready
-- Reference runtime: BLUE-TANUKI via adapter
-- BLUE-TANUKI implementation: frozen
-- Strategy: schema-first / conformance-first
+## Phase 0 locked surface
 
-## Non-negotiable principles
+- Generic Runtime Operation Shell direction
+- BLUE-TANUKI as frozen reference runtime through adapter only
+- Flutter + Rust helper as primary implementation candidate
+- Compose Multiplatform watchlist
+- Tauri desktop-heavy fallback
+- FrameworkRiskProfile for UI framework governance risk
+- Adapter Conformance requirements
+- Content Exposure Boundary
+- Authority Strip Conformance
+- Schema-first / conformance-first work order
 
-- Do not place core assets inside Flutter-specific code.
-- Do not implement BLUE-TANUKI-specific logic in Shell Core.
-- Do not allow external metadata to escalate authority.
-- Do not expose raw content unless Content Exposure Policy permits it.
-- Do not start product UI before schemas and conformance tests exist.
-- Treat Flutter as a replaceable UI layer, not the system core.
+## Explicit boundaries
+
+- Shell Core must not contain BLUE-TANUKI-specific logic.
+- Flutter-specific code must not define core contracts or authority decisions.
+- Adapter metadata is untrusted and must never grant permissions.
+- Memory, local cache, and previous state must never grant authority by themselves.
+- Full content may be displayed only when `content_visibility=full`.
+- Approval payload fields marked authority, sealed, hidden, or sacred are not editable.
+- Sensitive actions must map to capability, permission, approval state, audit event, and recovery action.
+- Network, filesystem, process, credential, and IPC access must not be silently introduced or broadened.
+
+## Architecture
+
+```text
+Runtime / Agent / Tool / Local Service
+  -> Adapter
+      -> authority strip
+      -> content exposure policy
+      -> schema validation
+      -> capability declaration
+  -> Shell Core
+      -> runtime registry
+      -> permission ledger
+      -> approval queue
+      -> audit events
+      -> recovery actions
+  -> UI Layer
+      -> Flutter rendering
+      -> operator input
+      -> navigation and local UI state
+  -> Rust Helper
+      -> bounded native diagnostics and operations
+```
+
+The UI can display and request actions. It cannot create authority, bypass adapter conformance, or reinterpret runtime trust.
+
+## Quickstart
+
+Phase 0/1 validation checks the repository contracts and conformance skeleton. This skeleton does not assume Flutter or Rust is already installed.
+
+```bash
+python tooling/schema_check/check_schemas.py
+python tooling/conformance_tests/run_conformance_skeleton.py
+```
+
+If the host only exposes Python as `python3`, use:
+
+```bash
+python3 tooling/schema_check/check_schemas.py
+python3 tooling/conformance_tests/run_conformance_skeleton.py
+```
+
+See [QUICKSTART.md](./QUICKSTART.md).
+
+## Validation
+
+Required before reporting implementation work:
+
+```bash
+python tooling/schema_check/check_schemas.py
+python tooling/conformance_tests/run_conformance_skeleton.py
+```
+
+Conditional toolchain checks:
+
+```bash
+cd native/rust_helper && cargo test
+cd apps/desktop_flutter && flutter analyze
+```
+
+See [VALIDATION.txt](./VALIDATION.txt) for the last recorded validation output.
 
 ## Repository layout
 
@@ -60,26 +131,6 @@ tooling/
   ui_snapshot_tests/
 ```
 
-## Initial commands
-
-This skeleton does not assume Flutter or Rust is already installed.
-
-```bash
-python tooling/schema_check/check_schemas.py
-python tooling/conformance_tests/run_conformance_skeleton.py
-```
-
-After Flutter/Rust setup:
-
-```bash
-cd apps/desktop_flutter
-flutter pub get
-flutter run
-
-cd ../../native/rust_helper
-cargo test
-```
-
 ## Current status
 
 This repository is a Phase 0 / Phase 1 skeleton.
@@ -93,3 +144,13 @@ It intentionally prioritizes:
 5. helper boundaries
 
 before product UI.
+
+## Top-level references
+
+- [AGENTS.md](./AGENTS.md): repository agent rules
+- [docs/OPERATING_MODEL.md](./docs/OPERATING_MODEL.md): repository flow, backup model, and validation gates
+- [CLAIM.md](./CLAIM.md): current claim boundary
+- [CONFIG.md](./CONFIG.md): configuration reference
+- [AUDIT.md](./AUDIT.md): audit and invariant expectations
+- [SECURITY.md](./SECURITY.md): security posture and reporting
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md): validation and setup failure guide

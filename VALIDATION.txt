@@ -1,35 +1,41 @@
-schema_check:
+schema_check_python:
+command=python tooling/schema_check/check_schemas.py
+exit=127
+stdout:
+
+stderr:
+/bin/bash: line 1: python: command not found
+
+conformance_skeleton_python:
+command=python tooling/conformance_tests/run_conformance_skeleton.py
+exit=127
+stdout:
+
+stderr:
+/bin/bash: line 1: python: command not found
+
+schema_check_python3:
+command=python3 tooling/schema_check/check_schemas.py
 exit=0
 stdout:
 schema check passed: 11 schemas
 
 stderr:
-Spreadsheet runtime warmup failed during python startup
-Traceback (most recent call last):
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/generated/interface/models.py", line 48821, in hydrate_crdt_from_proto
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/rpc/remote.py", line 747, in __call__
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/rpc/client.py", line 150, in call
-artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
 
-
-conformance_skeleton:
+conformance_skeleton_python3:
+command=python3 tooling/conformance_tests/run_conformance_skeleton.py
 exit=0
 stdout:
 conformance skeleton passed: 4 checks
 
 stderr:
-Spreadsheet runtime warmup failed during python startup
-Traceback (most recent call last):
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/generated/interface/models.py", line 48821, in hydrate_crdt_from_proto
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/rpc/remote.py", line 747, in __call__
-  File "/tmp/tmp.9eeVjt35CN/artifact_tool_v2-2.7.5/artifact_tool/rpc/client.py", line 150, in call
-artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
 
+rust_helper_cargo_test:
+command=cd native/rust_helper && cargo test
+status=not run
+reason=cargo not found on PATH
+
+flutter_analyze:
+command=cd apps/desktop_flutter && flutter analyze
+status=not run
+reason=flutter not found on PATH
