@@ -5,6 +5,7 @@ import re
 ROOT = Path(__file__).resolve().parents[2]
 SPECS = ROOT / "specs"
 EXAMPLES = ROOT / "examples" / "contracts"
+INVALID_EXAMPLES = EXAMPLES / "invalid"
 
 REQUIRED = {
     "runtime.schema.json",
@@ -109,47 +110,11 @@ def valid_example_path(schema_name: str) -> Path:
     return EXAMPLES / schema_name.replace(".schema.json", ".valid.json")
 
 
-def invalid_cases() -> list[tuple[str, object]]:
-    return [
-        (
-            "adapter.schema.json",
-            {
-                "adapter_id": "bad",
-                "runtime_id": "runtime",
-                "contract_version": "v0.1",
-                "authority_strip": False,
-            },
-        ),
-        (
-            "approval.schema.json",
-            {
-                "approval_id": "approval-1",
-                "runtime_id": "runtime",
-                "operation": "fs.write",
-                "status": "pending",
-                "content_visibility": "full",
-                "payload_hash": "not-a-tagged-hash",
-                "editable_fields": [],
-            },
-        ),
-        (
-            "content_exposure.schema.json",
-            {
-                "policy_id": "unsafe",
-                "default_visibility": "full",
-                "allowed_visibility": ["full"],
-            },
-        ),
-        (
-            "update.schema.json",
-            {
-                "policy_id": "updates",
-                "channel": "stable",
-                "auto_update": True,
-                "signature_required": False,
-            },
-        ),
-    ]
+def schema_name_from_invalid_fixture(path: Path) -> str:
+    stem = path.name.removesuffix(".invalid.json")
+    if stem.startswith("content_exposure_"):
+        return "content_exposure.schema.json"
+    return f"{stem.split('_', 1)[0]}.schema.json"
 
 
 def main() -> int:
@@ -186,13 +151,21 @@ def main() -> int:
         for failure in validate_instance(example, schema):
             errors.append(f"{example_path}: {failure}")
 
-    for schema_name, instance in invalid_cases():
+    invalid_count = 0
+    for invalid_path in sorted(INVALID_EXAMPLES.glob("*.invalid.json")):
+        invalid_count += 1
+        schema_name = schema_name_from_invalid_fixture(invalid_path)
         schema = schemas.get(schema_name)
         if not schema:
+            errors.append(f"{invalid_path}: cannot resolve schema {schema_name}")
+            continue
+        instance, err = load_json(invalid_path)
+        if err:
+            errors.append(f"{invalid_path}: invalid json: {err}")
             continue
         failures = validate_instance(instance, schema)
         if not failures:
-            errors.append(f"{schema_name}: invalid fixture unexpectedly passed")
+            errors.append(f"{invalid_path}: invalid fixture unexpectedly passed {schema_name}")
 
     if errors:
         print("schema check failed:")
@@ -200,7 +173,7 @@ def main() -> int:
             print(f"  - {err}")
         return 1
 
-    print(f"schema check passed: {len(schemas)} schemas, {len(REQUIRED)} examples")
+    print(f"schema check passed: {len(schemas)} schemas, {len(REQUIRED)} examples, {invalid_count} negative fixtures")
     return 0
 
 

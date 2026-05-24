@@ -22,6 +22,7 @@ The repository must preserve these invariants:
 - GUI input is not authority;
 - memory, cache, and previous state are not authority by themselves;
 - content visibility is respected;
+- `full_payload` storage does not imply UI exposure unless `content_visibility=full`;
 - approval edits are field-scoped;
 - edited payloads are rehashed and revalidated;
 - all sensitive actions create audit events.

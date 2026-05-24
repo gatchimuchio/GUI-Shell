@@ -12,6 +12,7 @@ GUI Shell is a control plane. Security decisions must be made in schema, conform
 - Memory, cache, and previous state are never authority by themselves.
 - Runtime permissions must not be broadened silently.
 - Full content display requires `content_visibility=full`.
+- `full_payload` may exist in storage, but UI projection must not expose it unless `content_visibility=full`.
 
 ## Sensitive surfaces
 

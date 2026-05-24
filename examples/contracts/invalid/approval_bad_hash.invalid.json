@@ -1,0 +1,9 @@
+{
+  "approval_id": "approval-bad-hash",
+  "runtime_id": "runtime",
+  "operation": "filesystem.write",
+  "status": "pending",
+  "content_visibility": "redacted",
+  "payload_hash": "sha256:not-a-valid-digest",
+  "editable_fields": []
+}

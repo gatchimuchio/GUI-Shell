@@ -25,3 +25,5 @@ Default is `none`.
 Policies may allow stronger visibility values, but the safe default must remain `none`.
 
 Full payload display is permitted only when the effective approval or content exposure contract says `content_visibility=full`.
+
+`full_payload` may exist in approval storage. Storage presence is not display permission. UI projection must suppress it unless the effective visibility is `full`.

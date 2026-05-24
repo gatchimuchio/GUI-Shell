@@ -1,0 +1,8 @@
+{
+  "policy_id": "unsafe-content",
+  "default_visibility": "full",
+  "allowed_visibility": [
+    "full"
+  ],
+  "redaction_required": false
+}

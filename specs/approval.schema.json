@@ -59,6 +59,7 @@
     },
     "full_payload": {
       "type": "object",
+      "description": "Storage-only full payload. UI projection must not expose this unless content_visibility=full.",
       "additionalProperties": true
     },
     "editable_fields": {

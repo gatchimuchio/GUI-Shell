@@ -13,7 +13,7 @@ It is **not** a BLUE-TANUKI-specific GUI. BLUE-TANUKI is the first reference run
 ## Phase 0 locked surface
 
 - Generic Runtime Operation Shell direction
-- BLUE-TANUKI as frozen reference runtime through adapter only
+- BLUE-TANUKI is frozen as the Phase 0 reference runtime contract target through adapter only
 - Flutter + Rust helper as primary implementation candidate
 - Compose Multiplatform watchlist
 - Tauri desktop-heavy fallback
@@ -78,8 +78,8 @@ python3 tooling/conformance_tests/run_conformance_skeleton.py
 Expected successful output:
 
 ```text
-schema check passed: 11 schemas, 11 examples
-conformance skeleton passed: 14 checks
+schema check passed: 11 schemas, 11 examples, 4 negative fixtures
+conformance skeleton passed: 16 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).

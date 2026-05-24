@@ -18,7 +18,7 @@ schema_check_python3:
 command=python3 tooling/schema_check/check_schemas.py
 exit=0
 stdout:
-schema check passed: 11 schemas, 11 examples
+schema check passed: 11 schemas, 11 examples, 4 negative fixtures
 
 stderr:
 
@@ -26,7 +26,7 @@ conformance_skeleton_python3:
 command=python3 tooling/conformance_tests/run_conformance_skeleton.py
 exit=0
 stdout:
-conformance skeleton passed: 14 checks
+conformance skeleton passed: 16 checks
 
 stderr:
 

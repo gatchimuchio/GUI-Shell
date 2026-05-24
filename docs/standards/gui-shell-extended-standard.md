@@ -4,7 +4,7 @@ Status: Phase 0 Lock
 Scope: GUI Shell / Cross-device Runtime Operation Shell  
 Primary decision: Flutter + Rust helper  
 Reference runtime: BLUE-TANUKI  
-Important note: BLUE-TANUKI implementation is frozen.
+Important note: BLUE-TANUKI is frozen as the Phase 0 reference runtime contract target.
 
 ## 1. Definition
 

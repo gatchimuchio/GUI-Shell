@@ -6,6 +6,7 @@ import json
 ROOT = Path(__file__).resolve().parents[2]
 SPECS = ROOT / "specs"
 DOC_SPECS = ROOT / "docs" / "specs"
+CONTRACT_EXAMPLES = ROOT / "examples" / "contracts"
 
 VISIBILITY_VALUES = ["none", "hash_only", "summary", "redacted", "full"]
 AUTHORITY_KEYS = {
@@ -33,6 +34,10 @@ NON_AUTHORITY_SOURCES = {"memory", "cache", "previous_state", "local_ui_state"}
 
 def load_schema(name: str) -> dict:
     return json.loads((SPECS / name).read_text(encoding="utf-8"))
+
+
+def load_contract_fixture(name: str) -> dict:
+    return json.loads((CONTRACT_EXAMPLES / name).read_text(encoding="utf-8"))
 
 
 def sha256_tagged(payload: bytes) -> str:
@@ -139,6 +144,35 @@ def test_required_docs_exist() -> list[str]:
     return errors
 
 
+def test_contract_fixtures_are_available() -> list[str]:
+    errors = []
+    expected = {
+        "runtime.valid.json",
+        "adapter.valid.json",
+        "capability.valid.json",
+        "permission.valid.json",
+        "approval.valid.json",
+        "audit.valid.json",
+        "recovery.valid.json",
+        "diagnostic.valid.json",
+        "update.valid.json",
+        "content_exposure.valid.json",
+        "framework_risk_profile.valid.json",
+    }
+    existing = {path.name for path in CONTRACT_EXAMPLES.glob("*.valid.json")}
+    for missing in sorted(expected - existing):
+        errors.append(f"examples/contracts/{missing} missing")
+    for name in sorted(expected & existing):
+        try:
+            fixture = load_contract_fixture(name)
+        except Exception as exc:
+            errors.append(f"examples/contracts/{name} did not parse: {exc}")
+            continue
+        if not isinstance(fixture, dict):
+            errors.append(f"examples/contracts/{name} must be a JSON object")
+    return errors
+
+
 def test_adapter_authority_strip_schema() -> list[str]:
     errors = []
     schema = load_schema("adapter.schema.json")
@@ -174,16 +208,14 @@ def test_inbound_authority_keys_are_stripped() -> list[str]:
 
 
 def test_external_metadata_cannot_escalate_authority() -> list[str]:
-    adapter = {
-        "declared_capabilities": ["runtime.read"],
-        "metadata": {
-            "permissions": ["fs:write"],
-            "grants": ["all"],
-            "trust_level": "root",
-        },
+    adapter = load_contract_fixture("adapter.valid.json")
+    adapter["metadata"] = {
+        "permissions": ["fs:write"],
+        "grants": ["all"],
+        "trust_level": "root",
     }
     effective = metadata_permissions(adapter)
-    if effective != ["runtime.read"]:
+    if effective != adapter["declared_capabilities"]:
         return ["adapter metadata escalated effective permissions"]
     return []
 
@@ -211,10 +243,13 @@ def test_memory_cache_previous_state_cannot_grant_authority() -> list[str]:
 
 def test_content_exposure_contract() -> list[str]:
     schema = load_schema("content_exposure.schema.json")
+    fixture = load_contract_fixture("content_exposure.valid.json")
     errors = []
     default_visibility = schema["properties"]["default_visibility"]
     if default_visibility.get("const") != "none":
         errors.append("content exposure default_visibility must be const none")
+    if fixture.get("default_visibility") != "none":
+        errors.append("content exposure valid fixture default_visibility must be none")
     enum = schema["properties"]["allowed_visibility"]["items"]["enum"]
     if enum != VISIBILITY_VALUES:
         errors.append("content exposure allowed_visibility enum must match locked order")
@@ -222,12 +257,7 @@ def test_content_exposure_contract() -> list[str]:
 
 
 def test_full_content_only_visible_when_full() -> list[str]:
-    base = {
-        "payload_hash": sha256_tagged(b"payload"),
-        "summary": "approved summary",
-        "redacted_payload": {"secret": "[redacted]"},
-        "full_payload": {"secret": "raw"},
-    }
+    base = load_contract_fixture("approval.valid.json")
     errors = []
     for visibility in VISIBILITY_VALUES:
         rendered = render_approval_content({**base, "content_visibility": visibility})
@@ -251,25 +281,20 @@ def test_approval_schema_has_protected_field_sets() -> list[str]:
 
 
 def test_protected_approval_fields_cannot_be_edited() -> list[str]:
-    approval = {
-        "editable_fields": [
-            "allowed_note",
-            "authority_context",
-            "sealed_path",
-            "hidden_token",
-            "sacred_domain",
-            "payload_hash",
-        ],
-        "authority_fields": ["authority_context"],
-        "sealed_fields": ["sealed_path"],
-        "hidden_fields": ["hidden_token"],
-        "sacred_fields": ["sacred_domain"],
-    }
+    approval = load_contract_fixture("approval.valid.json")
+    approval["editable_fields"] = [
+        "path",
+        "authority_context",
+        "runtime_id",
+        "credential",
+        "permission_id",
+        "payload_hash",
+    ]
     errors = []
-    for field in ["authority_context", "sealed_path", "hidden_token", "sacred_domain", "payload_hash"]:
+    for field in ["authority_context", "runtime_id", "credential", "permission_id", "payload_hash"]:
         if can_edit_approval_field(approval, field):
             errors.append(f"protected approval field was editable: {field}")
-    if not can_edit_approval_field(approval, "allowed_note"):
+    if not can_edit_approval_field(approval, "path"):
         errors.append("allowed non-protected approval field was not editable")
     return errors
 
@@ -297,12 +322,16 @@ def test_approval_edits_are_rehashed_and_revalidated() -> list[str]:
 
 
 def test_sensitive_actions_map_to_audit_and_recovery() -> list[str]:
+    capability = load_contract_fixture("capability.valid.json")
+    permission = load_contract_fixture("permission.valid.json")
+    audit_event = load_contract_fixture("audit.valid.json")
+    recovery_action = load_contract_fixture("recovery.valid.json")
     complete = {
-        "capability_id": "filesystem.write",
-        "permission_id": "permission.fs.write.workspace",
+        "capability_id": capability["capability_id"],
+        "permission_id": permission["permission_id"],
         "approval_state": "approved",
-        "audit_event": {"event_id": "audit-1"},
-        "recovery_action": {"recovery_id": "recover-1"},
+        "audit_event": audit_event,
+        "recovery_action": recovery_action,
     }
     incomplete = {
         "capability_id": "filesystem.write",
@@ -338,9 +367,17 @@ def test_framework_risk_profile_exists() -> list[str]:
     return []
 
 
+def test_update_fixture_requires_signature() -> list[str]:
+    update = load_contract_fixture("update.valid.json")
+    if update.get("signature_required") is not True:
+        return ["update valid fixture does not require signatures"]
+    return []
+
+
 def main() -> int:
     tests = [
         test_required_docs_exist,
+        test_contract_fixtures_are_available,
         test_adapter_authority_strip_schema,
         test_inbound_authority_keys_are_stripped,
         test_external_metadata_cannot_escalate_authority,
@@ -354,6 +391,7 @@ def main() -> int:
         test_sensitive_actions_map_to_audit_and_recovery,
         test_hash_patterns_are_tagged_sha256,
         test_framework_risk_profile_exists,
+        test_update_fixture_requires_signature,
     ]
     errors = []
     for test in tests:

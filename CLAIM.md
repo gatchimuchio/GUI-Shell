@@ -9,7 +9,7 @@ It claims:
 - schema-first contracts for runtime operation shell concepts;
 - conformance-first work order;
 - Flutter + Rust helper as the first implementation candidate;
-- BLUE-TANUKI as a frozen reference runtime connected through an adapter;
+- BLUE-TANUKI as the Phase 0 reference runtime contract target connected through an adapter;
 - framework-independent core assets for permissions, approvals, audit, recovery, and content exposure.
 
 ## Not claimed

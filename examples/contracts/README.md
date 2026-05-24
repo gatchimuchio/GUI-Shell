@@ -4,6 +4,8 @@ These files are valid example instances for `specs/*.schema.json`.
 
 `tooling/schema_check/check_schemas.py` validates every `*.valid.json` file against the matching schema using the repository's built-in schema subset checker.
 
+The `invalid/` directory contains negative fixtures that must fail schema validation. These cover adapter authority escalation, unsafe update policy, approval bad hash, and content exposure default full.
+
 The examples are not runtime state and do not grant authority. They exist to keep Phase 1 contracts executable before product UI exists.
 
 Mapping:

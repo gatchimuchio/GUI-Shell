@@ -12,6 +12,11 @@
 - Strengthened conformance checks with failure-case coverage for authority strip, metadata escalation, GUI-created authority context, non-authority state, content exposure, protected approval fields, approval edit rehash/revalidation, and sensitive action audit/recovery mapping.
 - Strengthened schema validation with valid contract examples and invalid fixture rejection.
 - Added Tauri fallback research note.
+- Added MIT license.
+- Replaced ambiguous BLUE-TANUKI freeze wording with Phase 0 reference runtime contract target wording.
+- Added negative contract fixtures for adapter authority escalation, unsafe update policy, approval bad hash, and content exposure default full.
+- Added conformance coverage that drives checks from `examples/contracts/*.valid.json`.
+- Documented that `full_payload` may exist in approval storage but must not be exposed by UI projection unless `content_visibility=full`.
 
 ## 0.1.0-phase0
 
