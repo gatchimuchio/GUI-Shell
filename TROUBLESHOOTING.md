@@ -34,6 +34,12 @@ Check that conformance still covers:
 - content exposure boundary;
 - approval edit restrictions;
 - sensitive action audit/recovery mapping.
+- policy evaluator failure cases;
+- Rust helper boundary structure;
+- BLUE-TANUKI adapter contract mapping;
+- desktop/mobile authority boundaries;
+- installer non-authority status;
+- release claim boundary.
 
 Then rerun:
 
@@ -51,10 +57,19 @@ cd native/rust_helper && cargo test
 
 ## Flutter is not installed
 
-Skip the conditional Flutter command and report it as not run:
+Skip the conditional Flutter commands and report them as not run:
 
 ```bash
 cd apps/desktop_flutter && flutter analyze
+cd apps/mobile_flutter && flutter analyze
+```
+
+## Run all available validation
+
+Use the aggregate reporter to collect passed, failed, and not-run results:
+
+```bash
+python3 tooling/validate_all.py
 ```
 
 ## Product UI work seems blocked

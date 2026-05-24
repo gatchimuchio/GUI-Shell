@@ -1,18 +1,59 @@
-use sha2::{Digest, Sha256};
+pub mod audit_hash;
+pub mod diagnostics;
+pub mod filesystem;
+pub mod ipc;
+pub mod network;
+pub mod process;
+pub mod update_verification;
 
-pub fn sha256_tagged(input: &[u8]) -> String {
-    let digest = Sha256::digest(input);
-    format!("sha256:{}", hex::encode(digest))
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Diagnostic {
+    pub code: String,
+    pub message: String,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HelperError {
+    pub code: String,
+    pub message: String,
+    pub recoverable: bool,
+}
 
-    #[test]
-    fn sha256_tagged_has_expected_prefix_and_length() {
-        let value = sha256_tagged(b"gui-shell");
-        assert!(value.starts_with("sha256:"));
-        assert_eq!(value.len(), 71);
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HelperResponse<T> {
+    pub ok: bool,
+    pub operation: String,
+    pub result: Option<T>,
+    pub diagnostics: Vec<Diagnostic>,
+    pub error: Option<HelperError>,
+}
+
+pub fn helper_ok<T>(operation: &str, result: T, diagnostics: Vec<Diagnostic>) -> HelperResponse<T> {
+    HelperResponse {
+        ok: true,
+        operation: operation.to_string(),
+        result: Some(result),
+        diagnostics,
+        error: None,
+    }
+}
+
+pub fn helper_error<T>(
+    operation: &str,
+    code: &str,
+    message: &str,
+    recoverable: bool,
+    diagnostics: Vec<Diagnostic>,
+) -> HelperResponse<T> {
+    HelperResponse {
+        ok: false,
+        operation: operation.to_string(),
+        result: None,
+        diagnostics,
+        error: Some(HelperError {
+            code: code.to_string(),
+            message: message.to_string(),
+            recoverable,
+        }),
     }
 }

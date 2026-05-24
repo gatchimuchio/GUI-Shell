@@ -1,13 +1,13 @@
 # GUI Shell Quickstart
 
-GUI Shell is currently a Phase 0 / Phase 1 skeleton. The quickstart path validates contracts and conformance scaffolding before product UI.
+GUI Shell is currently a release-hardening skeleton, not a production runtime. The quickstart path validates contracts and conformance scaffolding before product claims.
 
 ## Prerequisites
 
 - A POSIX-like shell
 - Python available as `python` or `python3`
 - Optional: Rust for `native/rust_helper`
-- Optional: Flutter for `apps/desktop_flutter`
+- Optional: Flutter for `apps/desktop_flutter` and `apps/mobile_flutter`
 
 ## Contract validation
 
@@ -29,7 +29,7 @@ Expected successful output:
 
 ```text
 schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 23 checks
+conformance skeleton passed: 53 checks
 ```
 
 ## Optional Rust helper check
@@ -48,6 +48,11 @@ cd apps/desktop_flutter
 flutter analyze
 ```
 
+```bash
+cd apps/mobile_flutter
+flutter analyze
+```
+
 Flutter is the replaceable UI layer. UI widgets may collect operator input and render status, but they must not define authority, permission, approval, audit, or recovery semantics.
 
 ## Next implementation order
@@ -56,4 +61,4 @@ Flutter is the replaceable UI layer. UI widgets may collect operator input and r
 2. Extend JSON Schemas under `specs/`.
 3. Add or update conformance tests.
 4. Generate or update contracts.
-5. Only then expand Flutter product UI.
+5. Keep claim documents aligned with actual validation evidence.

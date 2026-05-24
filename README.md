@@ -1,4 +1,4 @@
-# GUI Shell Phase 0 Lock
+# GUI Shell
 
 GUI Shell is a generic Runtime Operation Shell for local runtimes, agents, tools, and services.
 
@@ -61,7 +61,7 @@ The UI can display and request actions. It cannot create authority, bypass adapt
 
 ## Quickstart
 
-Phase 0/1 validation checks the repository contracts and conformance skeleton. This skeleton does not assume Flutter or Rust is already installed.
+Validation checks the repository contracts and conformance skeleton. This skeleton does not assume Flutter or Rust is already installed.
 
 ```bash
 python tooling/schema_check/check_schemas.py
@@ -79,7 +79,7 @@ Expected successful output:
 
 ```text
 schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 23 checks
+conformance skeleton passed: 53 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).
@@ -98,6 +98,13 @@ Conditional toolchain checks:
 ```bash
 cd native/rust_helper && cargo test
 cd apps/desktop_flutter && flutter analyze
+cd apps/mobile_flutter && flutter analyze
+```
+
+Or run the aggregate reporter:
+
+```bash
+python3 tooling/validate_all.py
 ```
 
 See [VALIDATION.txt](./VALIDATION.txt) for the last recorded validation output.
@@ -140,7 +147,7 @@ tooling/
 
 ## Current status
 
-This repository is a Phase 0 / Phase 1 skeleton.
+This repository is a Phase 9 release-hardening skeleton, not a production runtime.
 
 It intentionally prioritizes:
 

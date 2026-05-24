@@ -1,6 +1,6 @@
 # GUI Shell Roadmap
 
-Status: Phase 0 / Phase 1 execution roadmap  
+Status: Phase 9 release-hardening skeleton roadmap  
 Project: GUI Shell / Runtime Operation Shell  
 Reference runtime: BLUE-TANUKI via adapter only  
 Primary implementation candidate: Flutter + Rust helper
@@ -378,12 +378,12 @@ Exit criteria:
 
 Until later promotion, GUI Shell only claims:
 
-- Phase 0 / Phase 1 generic Runtime Operation Shell skeleton
+- generic Runtime Operation Shell skeleton with Phase 3H through Phase 9 scaffolding
 - schema-first contracts
 - conformance-first work order
 - Flutter + Rust helper as first implementation candidate
 - BLUE-TANUKI as reference runtime through adapter only
-- framework-independent core assets for permission, approval, audit, recovery, and content exposure
+- framework-independent core assets for permission, approval, audit, recovery, policy evaluation, deterministic state snapshots, and content exposure
 
 It does not yet claim:
 
@@ -393,6 +393,7 @@ It does not yet claim:
 - complete BLUE-TANUKI integration
 - complete Rust helper implementation
 - complete Flutter product UI
+- security completeness
 
 ## 7. Required Validation
 
@@ -420,6 +421,13 @@ If Flutter is installed:
 
 ```bash
 cd apps/desktop_flutter && flutter analyze
+cd apps/mobile_flutter && flutter analyze
+```
+
+Aggregate reporter:
+
+```bash
+python3 tooling/validate_all.py
 ```
 
 ## 8. Release Rule

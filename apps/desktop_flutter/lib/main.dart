@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'screens/approval_center.dart';
+import 'screens/audit_viewer.dart';
+import 'screens/dashboard.dart';
+import 'screens/permission_center.dart';
+import 'screens/recovery_center.dart';
+import 'screens/runtime_center.dart';
+import 'screens/settings.dart';
+import 'screens/setup_doctor.dart';
+import 'services/shell_core_client.dart';
+
 void main() {
   runApp(const GuiShellDesktopApp());
 }
@@ -9,46 +19,65 @@ class GuiShellDesktopApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final client = ShellCoreClient.mock();
     return MaterialApp(
       title: 'GUI Shell',
-      theme: ThemeData(useMaterial3: true),
-      home: const ShellHomePage(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xff2f6f5e),
+        useMaterial3: true,
+        visualDensity: VisualDensity.compact,
+      ),
+      home: ShellHomePage(client: client),
     );
   }
 }
 
-class ShellHomePage extends StatelessWidget {
-  const ShellHomePage({super.key});
+class ShellHomePage extends StatefulWidget {
+  const ShellHomePage({super.key, required this.client});
 
-  static const cards = [
-    'Setup Doctor',
-    'Runtime Center',
-    'Permission Center',
-    'Approval Center',
-    'Audit Viewer',
-    'Recovery Center',
-    'Settings',
-    'Framework Risk',
-  ];
+  final ShellCoreClient client;
+
+  @override
+  State<ShellHomePage> createState() => _ShellHomePageState();
+}
+
+class _ShellHomePageState extends State<ShellHomePage> {
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      Dashboard(client: widget.client),
+      SetupDoctor(client: widget.client),
+      RuntimeCenter(client: widget.client),
+      PermissionCenter(client: widget.client),
+      ApprovalCenter(client: widget.client),
+      AuditViewer(client: widget.client),
+      RecoveryCenter(client: widget.client),
+      SettingsScreen(client: widget.client),
+    ];
+
     return Scaffold(
-      appBar: AppBar(title: const Text('GUI Shell')),
-      body: GridView.count(
-        padding: const EdgeInsets.all(16),
-        crossAxisCount: 2,
-        childAspectRatio: 2.6,
+      body: Row(
         children: [
-          for (final card in cards)
-            Card(
-              child: Center(
-                child: Text(
-                  card,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            ),
+          NavigationRail(
+            selectedIndex: selectedIndex,
+            onDestinationSelected: (index) => setState(() => selectedIndex = index),
+            labelType: NavigationRailLabelType.all,
+            destinations: const [
+              NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
+              NavigationRailDestination(icon: Icon(Icons.build_circle_outlined), selectedIcon: Icon(Icons.build_circle), label: Text('Doctor')),
+              NavigationRailDestination(icon: Icon(Icons.hub_outlined), selectedIcon: Icon(Icons.hub), label: Text('Runtime')),
+              NavigationRailDestination(icon: Icon(Icons.key_outlined), selectedIcon: Icon(Icons.key), label: Text('Permission')),
+              NavigationRailDestination(icon: Icon(Icons.fact_check_outlined), selectedIcon: Icon(Icons.fact_check), label: Text('Approval')),
+              NavigationRailDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Audit')),
+              NavigationRailDestination(icon: Icon(Icons.health_and_safety_outlined), selectedIcon: Icon(Icons.health_and_safety), label: Text('Recovery')),
+              NavigationRailDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Settings')),
+            ],
+          ),
+          const VerticalDivider(width: 1),
+          Expanded(child: pages[selectedIndex]),
         ],
       ),
     );

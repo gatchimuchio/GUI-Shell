@@ -1,6 +1,6 @@
 # GUI Shell Operating Model
 
-Status: Phase 0 / Phase 1 operating model  
+Status: Phase 9 release-hardening skeleton operating model  
 Reference style: BLUE-TANUKI direct-main owner workflow  
 Scope: repository flow, safety posture, validation, backup, and reporting
 

@@ -1,41 +1,32 @@
-schema_check_python:
-command=python tooling/schema_check/check_schemas.py
-exit=127
-stdout:
-
-stderr:
-/bin/bash: line 1: python: command not found
-
-conformance_skeleton_python:
-command=python tooling/conformance_tests/run_conformance_skeleton.py
-exit=127
-stdout:
-
-stderr:
-/bin/bash: line 1: python: command not found
-
-schema_check_python3:
+schema_check:
 command=python3 tooling/schema_check/check_schemas.py
+status=passed
 exit=0
 stdout:
 schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-
 stderr:
 
-conformance_skeleton_python3:
+
+conformance_skeleton:
 command=python3 tooling/conformance_tests/run_conformance_skeleton.py
+status=passed
 exit=0
 stdout:
-conformance skeleton passed: 23 checks
-
+conformance skeleton passed: 53 checks
 stderr:
 
+
 rust_helper_cargo_test:
-command=cd native/rust_helper && cargo test
+command=cargo test
 status=not run
 reason=cargo not found on PATH
 
-flutter_analyze:
-command=cd apps/desktop_flutter && flutter analyze
+desktop_flutter_analyze:
+command=flutter analyze
+status=not run
+reason=flutter not found on PATH
+
+mobile_flutter_analyze:
+command=flutter analyze
 status=not run
 reason=flutter not found on PATH

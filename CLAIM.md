@@ -2,15 +2,18 @@
 
 ## Current claim
 
-GUI Shell is a Phase 0 / Phase 1 generic Runtime Operation Shell skeleton.
+GUI Shell is a generic Runtime Operation Shell skeleton with Phase 3H through Phase 9 release-hardening scaffolding.
 
 It claims:
 
 - schema-first contracts for runtime operation shell concepts;
-- conformance-first work order;
-- Flutter + Rust helper as the first implementation candidate;
-- BLUE-TANUKI as the Phase 0 reference runtime contract target connected through an adapter;
-- framework-independent core assets for permissions, approvals, audit, recovery, and content exposure.
+- conformance-first work order with 53 checks in the current skeleton;
+- framework-independent Shell Core hardening for permissions, approvals, audit, recovery, policy evaluation, and deterministic state snapshots;
+- bounded Rust helper boundary skeleton;
+- BLUE-TANUKI as a reference runtime through adapter contract only;
+- desktop and mobile Flutter operator skeletons that do not own authority;
+- Setup Doctor skeleton with explicit non-authority installer status;
+- release-hardening documents with explicit non-production claim boundary.
 
 ## Not claimed
 
@@ -20,9 +23,11 @@ GUI Shell does not yet claim:
 - signed native installer readiness;
 - stable mobile companion readiness;
 - BLUE-TANUKI feature parity;
-- runtime permission enforcement outside the schema/conformance skeleton;
+- live runtime permission enforcement outside the schema/conformance skeleton;
 - complete Rust helper implementation;
-- complete Flutter product UI.
+- complete Flutter product UI;
+- stable live BLUE-TANUKI integration;
+- security completeness.
 
 ## Promotion condition
 
@@ -32,5 +37,6 @@ Any stronger claim must be backed by:
 - conformance validation;
 - Rust helper tests when Rust is installed;
 - Flutter analysis when Flutter is installed;
+- mobile Flutter analysis when Flutter is installed;
 - audit evidence for each sensitive action path;
 - explicit owner decision for release promotion.

@@ -11,12 +11,24 @@ DOC_SPECS = ROOT / "docs" / "specs"
 CONTRACT_EXAMPLES = ROOT / "examples" / "contracts"
 INVALID_CONTRACT_EXAMPLES = CONTRACT_EXAMPLES / "invalid"
 SHELL_CORE = ROOT / "packages" / "shell_core"
+RUST_HELPER = ROOT / "native" / "rust_helper"
+DESKTOP_FLUTTER = ROOT / "apps" / "desktop_flutter"
+MOBILE_FLUTTER = ROOT / "apps" / "mobile_flutter"
+INSTALLER = ROOT / "installer"
 
 from packages.shell_contracts import load_default_catalog
 from packages.shell_core.adapter_loader import load_adapter
 from packages.shell_core.content_exposure import project_approval_content
 from packages.shell_core.permission_ledger import PermissionLedger
+from packages.shell_core.policy_evaluator import PolicyEvaluator
+from packages.shell_core.runtime_state import RuntimeState
 from packages.shell_core.sensitive_action_router import SensitiveActionRouter
+from packages.shell_core.state_snapshot import create_state_snapshot, deterministic_snapshot_json
+from packages.blue_tanuki_adapter.adapter import BlueTanukiAdapter
+from packages.blue_tanuki_adapter.approvals import normalize_approval, projected_approval
+from packages.blue_tanuki_adapter.authority_trace import metadata_attempts_authority
+from packages.blue_tanuki_adapter.recovery import recovery_candidates
+from tooling.schema_check.check_schemas import validate_instance
 
 REQUIRED_SCHEMA_NAMES = {
     "runtime",
@@ -54,6 +66,56 @@ PROTECTED_EDIT_FIELDS = {
     "payload_hash",
 }
 NON_AUTHORITY_SOURCES = {"memory", "cache", "previous_state", "local_ui_state"}
+RUST_HELPER_REQUIRED_SOURCES = {
+    "lib.rs",
+    "process.rs",
+    "filesystem.rs",
+    "network.rs",
+    "diagnostics.rs",
+    "update_verification.rs",
+    "audit_hash.rs",
+    "ipc.rs",
+}
+DESKTOP_FLUTTER_REQUIRED_FILES = {
+    "lib/main.dart",
+    "lib/screens/dashboard.dart",
+    "lib/screens/setup_doctor.dart",
+    "lib/screens/runtime_center.dart",
+    "lib/screens/permission_center.dart",
+    "lib/screens/approval_center.dart",
+    "lib/screens/audit_viewer.dart",
+    "lib/screens/recovery_center.dart",
+    "lib/screens/settings.dart",
+    "lib/services/shell_core_client.dart",
+    "lib/models/generated_contracts.dart",
+}
+MOBILE_FLUTTER_REQUIRED_FILES = {
+    "lib/main.dart",
+    "lib/screens/mobile_dashboard.dart",
+    "lib/screens/approval_review.dart",
+    "lib/screens/notifications.dart",
+    "lib/screens/runtime_status.dart",
+    "lib/screens/emergency_stop.dart",
+    "lib/screens/recovery_instruction.dart",
+}
+RELEASE_HARDENING_FILES = {
+    "RELEASE_CHECKLIST.md",
+    "SECURITY_REVIEW.md",
+    "COMPATIBILITY_MATRIX.md",
+    "CONFORMANCE_REPORT.md",
+    "AUDIT_EVIDENCE.md",
+    "INSTALLER_STATUS.md",
+    "MOBILE_STATUS.md",
+}
+CLAIM_REVIEW_FILES = {
+    "README.md",
+    "CLAIM.md",
+    "QUICKSTART.md",
+    "ROADMAP.md",
+    "VALIDATION.txt",
+    "CONFORMANCE_REPORT.md",
+    "docs/OPERATING_MODEL.md",
+}
 
 
 def load_schema(name: str) -> dict:
@@ -481,7 +543,7 @@ def test_shell_core_content_projection_hides_full_payload_until_full() -> list[s
     return errors
 
 
-def test_shell_core_has_no_flutter_or_blue_tanuki_imports() -> list[str]:
+def test_shell_core_has_no_flutter_imports() -> list[str]:
     errors = []
     for path in sorted(SHELL_CORE.glob("*.py")):
         text = path.read_text(encoding="utf-8")
@@ -489,8 +551,408 @@ def test_shell_core_has_no_flutter_or_blue_tanuki_imports() -> list[str]:
             normalized = line.strip().lower()
             if normalized.startswith("import flutter") or normalized.startswith("from flutter"):
                 errors.append(f"{path}:{line_number} imports Flutter")
+    return errors
+
+
+def test_shell_core_has_no_blue_tanuki_internal_imports() -> list[str]:
+    errors = []
+    for path in sorted(SHELL_CORE.glob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            normalized = line.strip().lower()
             if normalized.startswith("import blue_tanuki") or normalized.startswith("from blue_tanuki"):
                 errors.append(f"{path}:{line_number} imports BLUE-TANUKI internals")
+    return errors
+
+
+def build_policy_state(*, permission_decision: str = "allow", approval_status: str = "approved") -> RuntimeState:
+    state = RuntimeState()
+    state.register_runtime(load_contract_fixture("runtime.valid.json"))
+    state.register_adapter(load_contract_fixture("adapter.valid.json"))
+    state.register_capability(load_contract_fixture("capability.valid.json"))
+    permission = load_contract_fixture("permission.valid.json")
+    permission["decision"] = permission_decision
+    state.record_permission(permission)
+    approval = load_contract_fixture("approval.valid.json")
+    approval["status"] = approval_status
+    state.enqueue_approval(approval)
+    state.append_audit_event(load_contract_fixture("audit.valid.json"))
+    state.register_recovery_action(load_contract_fixture("recovery.valid.json"))
+    state.register_update_policy(load_contract_fixture("update.valid.json"))
+    return state
+
+
+def build_sensitive_action() -> dict:
+    capability = load_contract_fixture("capability.valid.json")
+    permission = load_contract_fixture("permission.valid.json")
+    approval = load_contract_fixture("approval.valid.json")
+    return {
+        "runtime_id": "blue_tanuki",
+        "operation": capability["capability_id"],
+        "capability_id": capability["capability_id"],
+        "permission_id": permission["permission_id"],
+        "approval_id": approval["approval_id"],
+        "approval_state": "approved",
+        "payload": approval["full_payload"],
+        "audit_event": load_contract_fixture("audit.valid.json"),
+        "recovery_action": load_contract_fixture("recovery.valid.json"),
+    }
+
+
+def error_codes(result: dict) -> set[str]:
+    return {error["code"] for error in result["errors"]}
+
+
+def test_policy_evaluator_rejects_unknown_capability() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["capability_id"] = "unknown.capability"
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "unknown_capability" not in error_codes(result):
+        return ["PolicyEvaluator did not reject unknown capability"]
+    return []
+
+
+def test_policy_evaluator_returns_structured_errors() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["capability_id"] = "unknown.capability"
+    result = PolicyEvaluator(state).evaluate(action)
+    errors = []
+    required = {"code", "message", "operation", "recoverable"}
+    if not result["errors"]:
+        return ["PolicyEvaluator returned no error for invalid action"]
+    for error in result["errors"]:
+        missing = sorted(required - set(error))
+        if missing:
+            errors.append(f"PolicyEvaluator error missing fields: {', '.join(missing)}")
+        if error.get("code") == "unknown_capability" and "recovery_hint" not in error:
+            errors.append("PolicyEvaluator recoverable error missing recovery_hint")
+    return errors
+
+
+def test_policy_evaluator_rejects_unknown_permission() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["permission_id"] = "unknown.permission"
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "unknown_permission" not in error_codes(result):
+        return ["PolicyEvaluator did not reject unknown permission"]
+    return []
+
+
+def test_policy_evaluator_rejects_denied_permission() -> list[str]:
+    state = build_policy_state(permission_decision="deny")
+    result = PolicyEvaluator(state).evaluate(build_sensitive_action())
+    if result["allowed"] or "permission_denied" not in error_codes(result):
+        return ["PolicyEvaluator did not reject denied permission"]
+    return []
+
+
+def test_policy_evaluator_rejects_missing_approval() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action.pop("approval_state")
+    action.pop("approval_id")
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "approval_missing" not in error_codes(result):
+        return ["PolicyEvaluator did not reject missing approval"]
+    return []
+
+
+def test_policy_evaluator_rejects_missing_audit_event() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action.pop("audit_event")
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "audit_mapping_missing" not in error_codes(result):
+        return ["PolicyEvaluator did not reject missing audit event"]
+    return []
+
+
+def test_policy_evaluator_rejects_missing_recovery_action() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action.pop("recovery_action")
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "recovery_mapping_missing" not in error_codes(result):
+        return ["PolicyEvaluator did not reject missing recovery action"]
+    return []
+
+
+def test_policy_evaluator_ignores_adapter_metadata_authority() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["adapter_metadata"] = {"permissions": ["filesystem.write"], "trust_level": "root"}
+    result = PolicyEvaluator(state).evaluate(action)
+    if "adapter_metadata_escalation_attempt" not in error_codes(result):
+        return ["PolicyEvaluator did not flag adapter metadata authority claims"]
+    return []
+
+
+def test_policy_evaluator_rejects_non_authority_source() -> list[str]:
+    state = build_policy_state()
+    errors = []
+    for source in sorted(NON_AUTHORITY_SOURCES):
+        action = build_sensitive_action()
+        action["authority_source"] = source
+        result = PolicyEvaluator(state).evaluate(action)
+        if result["allowed"] or "non_authority_source_attempt" not in error_codes(result):
+            errors.append(f"PolicyEvaluator allowed non-authority source: {source}")
+    return errors
+
+
+def test_state_snapshot_is_deterministic() -> list[str]:
+    state = build_policy_state()
+    first = deterministic_snapshot_json(state)
+    second = deterministic_snapshot_json(state.clone())
+    if first != second:
+        return ["state snapshot was not deterministic"]
+    return []
+
+
+def test_state_snapshot_reports_invariant_flags() -> list[str]:
+    snapshot = create_state_snapshot(build_policy_state())
+    flags = snapshot.get("invariant_flags", {})
+    required = {
+        "flutter_imported_by_shell_core",
+        "blue_tanuki_imported_by_shell_core",
+        "adapter_metadata_can_escalate_authority",
+        "memory_cache_previous_state_can_grant_authority",
+        "full_payload_projected_without_full_visibility",
+    }
+    errors = []
+    for flag in sorted(required):
+        if flags.get(flag) is not False:
+            errors.append(f"state snapshot invariant flag missing or not false: {flag}")
+    return errors
+
+
+def test_rust_helper_required_sources_exist() -> list[str]:
+    existing = {path.name for path in (RUST_HELPER / "src").glob("*.rs")}
+    errors = []
+    for missing in sorted(RUST_HELPER_REQUIRED_SOURCES - existing):
+        errors.append(f"native/rust_helper/src/{missing} missing")
+    return errors
+
+
+def test_rust_helper_contract_shape_exists() -> list[str]:
+    lib_rs = (RUST_HELPER / "src" / "lib.rs").read_text(encoding="utf-8")
+    errors = []
+    for token in ["HelperResponse", "HelperError", "ok", "operation", "result", "diagnostics", "error"]:
+        if token not in lib_rs:
+            errors.append(f"Rust helper contract missing token: {token}")
+    return errors
+
+
+def test_rust_helper_does_not_expose_hidden_authority_paths() -> list[str]:
+    forbidden = [
+        "std::process::Command",
+        "std::fs::read_to_string",
+        "std::fs::read(",
+        "std::fs::write",
+        "reqwest::",
+        "ureq::",
+    ]
+    errors = []
+    for path in sorted((RUST_HELPER / "src").glob("*.rs")):
+        text = path.read_text(encoding="utf-8")
+        for pattern in forbidden:
+            if pattern in text:
+                errors.append(f"{path} uses forbidden helper authority pattern: {pattern}")
+    return errors
+
+
+def test_blue_tanuki_adapter_runtime_output_validates_against_generic_schema() -> list[str]:
+    adapter = BlueTanukiAdapter()
+    runtime = adapter.runtime_snapshot()
+    diagnostic = adapter.diagnostics_export()
+    recovery = adapter.recovery_actions()[0]
+    audit = adapter.audit_events()[0]
+    approval = adapter.approvals()[0]
+    schema_pairs = [
+        ("runtime.schema.json", runtime),
+        ("diagnostic.schema.json", diagnostic),
+        ("recovery.schema.json", recovery),
+        ("audit.schema.json", audit),
+        ("approval.schema.json", approval),
+    ]
+    errors = []
+    for schema_name, value in schema_pairs:
+        schema = load_schema(schema_name)
+        for failure in validate_instance(value, schema):
+            errors.append(f"BLUE-TANUKI adapter {schema_name} validation failed: {failure}")
+    return errors
+
+
+def test_blue_tanuki_adapter_metadata_cannot_escalate_authority() -> list[str]:
+    metadata = {"permissions": ["filesystem.write"], "trust_level": "root"}
+    trace = BlueTanukiAdapter().authority_trace()
+    errors = []
+    if not metadata_attempts_authority(metadata):
+        errors.append("BLUE-TANUKI adapter did not detect authority-like metadata")
+    if trace.get("metadata_trusted") is not False:
+        errors.append("BLUE-TANUKI adapter trusted metadata")
+    if trace.get("adapter_can_grant_permission") is not False:
+        errors.append("BLUE-TANUKI adapter can grant permission")
+    return errors
+
+
+def test_blue_tanuki_adapter_cannot_expose_full_payload_unless_visibility_full() -> list[str]:
+    errors = []
+    for visibility in ["none", "hash_only", "summary", "redacted"]:
+        projected = projected_approval({"content_visibility": visibility})
+        if "full_payload" in projected:
+            errors.append(f"BLUE-TANUKI adapter exposed full payload for {visibility}")
+    if "full_payload" not in projected_approval({"content_visibility": "full"}):
+        errors.append("BLUE-TANUKI adapter did not expose full payload when visibility was full")
+    return errors
+
+
+def test_blue_tanuki_adapter_cannot_mark_approvals_approved_by_itself() -> list[str]:
+    approval = normalize_approval({"status": "approved", "approved_by": "adapter", "adapter_approved": True})
+    if approval["status"] == "approved":
+        return ["BLUE-TANUKI adapter self-approved an approval"]
+    return []
+
+
+def test_blue_tanuki_adapter_failures_map_to_recovery_actions() -> list[str]:
+    candidates = recovery_candidates("runtime_down")
+    if not candidates:
+        return ["BLUE-TANUKI adapter failure did not produce RecoveryAction candidates"]
+    schema = load_schema("recovery.schema.json")
+    errors = []
+    for candidate in candidates:
+        errors.extend(validate_instance(candidate, schema))
+    return [f"BLUE-TANUKI adapter recovery validation failed: {error}" for error in errors]
+
+
+def test_desktop_flutter_required_files_exist() -> list[str]:
+    errors = []
+    for relative in sorted(DESKTOP_FLUTTER_REQUIRED_FILES):
+        if not (DESKTOP_FLUTTER / relative).exists():
+            errors.append(f"apps/desktop_flutter/{relative} missing")
+    return errors
+
+
+def test_desktop_flutter_keeps_authority_in_shell_core_client() -> list[str]:
+    errors = []
+    dart_files = sorted((DESKTOP_FLUTTER / "lib").glob("**/*.dart"))
+    forbidden_assignments = [
+        "adapter_can_grant_permission: true",
+        "adapter_can_approve: true",
+        "metadata_trusted: true",
+        "'full_payload'",
+    ]
+    for path in dart_files:
+        text = path.read_text(encoding="utf-8")
+        for pattern in forbidden_assignments:
+            if pattern in text:
+                errors.append(f"{path} contains forbidden UI authority pattern: {pattern}")
+    client = (DESKTOP_FLUTTER / "lib" / "services" / "shell_core_client.dart").read_text(encoding="utf-8")
+    if "full_payload_projected_without_full_visibility': false" not in client:
+        errors.append("desktop Flutter mock client does not expose Shell Core invariant status")
+    return errors
+
+
+def test_installer_setup_doctor_reports_structured_status_without_authority() -> list[str]:
+    from installer.setup_doctor import setup_doctor_report
+
+    report = setup_doctor_report()
+    errors = []
+    for key in ["status", "checks", "installer_grants_authority", "installer_silently_approves_permissions"]:
+        if key not in report:
+            errors.append(f"Setup Doctor report missing {key}")
+    if report.get("installer_grants_authority") is not False:
+        errors.append("installer grants authority")
+    if report.get("installer_silently_approves_permissions") is not False:
+        errors.append("installer silently approves permissions")
+    for check in report.get("checks", []):
+        if check.get("grants_authority") is not False:
+            errors.append(f"Setup Doctor check grants authority: {check.get('check_id')}")
+        if check.get("status") in {"fail", "warning"} and not check.get("recovery_instruction"):
+            errors.append(f"Setup Doctor check lacks recovery instruction: {check.get('check_id')}")
+    return errors
+
+
+def test_installer_boundary_docs_exist() -> list[str]:
+    required = ["FIRST_RUN.md", "SETUP_DOCTOR.md", "INSTALLER_BOUNDARY.md"]
+    errors = []
+    for name in required:
+        if not (ROOT / "docs" / name).exists():
+            errors.append(f"docs/{name} missing")
+    if not (INSTALLER / "setup_doctor.py").exists():
+        errors.append("installer/setup_doctor.py missing")
+    return errors
+
+
+def test_mobile_flutter_required_files_exist() -> list[str]:
+    errors = []
+    for relative in sorted(MOBILE_FLUTTER_REQUIRED_FILES):
+        if not (MOBILE_FLUTTER / relative).exists():
+            errors.append(f"apps/mobile_flutter/{relative} missing")
+    return errors
+
+
+def test_mobile_flutter_cannot_create_hidden_authority() -> list[str]:
+    required_terms = ["device_id", "pairing_id", "operator confirmation", "audit event", "revocation", "recovery path"]
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in sorted((MOBILE_FLUTTER / "lib").glob("**/*.dart")))
+    errors = []
+    for term in required_terms:
+        if term not in combined:
+            errors.append(f"mobile pairing contract term missing: {term}")
+    forbidden = ["independent authority: true", "silently pair", "'full_payload'", "hidden payload available"]
+    for pattern in forbidden:
+        if pattern in combined:
+            errors.append(f"mobile Flutter contains forbidden authority pattern: {pattern}")
+    return errors
+
+
+def test_release_hardening_files_exist() -> list[str]:
+    errors = []
+    for relative in sorted(RELEASE_HARDENING_FILES):
+        if not (ROOT / relative).exists():
+            errors.append(f"{relative} missing")
+    return errors
+
+
+def test_release_hardening_does_not_overclaim_readiness() -> list[str]:
+    errors = []
+    forbidden_claims = [
+        "production ready",
+        "installer ready",
+        "mobile ready",
+        "stable runtime support",
+        "security complete",
+    ]
+    for relative in sorted(RELEASE_HARDENING_FILES):
+        text = (ROOT / relative).read_text(encoding="utf-8").lower()
+        for claim in forbidden_claims:
+            if claim in text and "not " + claim not in text:
+                errors.append(f"{relative} overclaims {claim}")
+    return errors
+
+
+def test_validation_reporter_exists() -> list[str]:
+    path = ROOT / "tooling" / "validate_all.py"
+    if not path.exists():
+        return ["tooling/validate_all.py missing"]
+    text = path.read_text(encoding="utf-8")
+    errors = []
+    for token in ["schema_check", "conformance_skeleton", "rust_helper_cargo_test", "desktop_flutter_analyze", "mobile_flutter_analyze", "status=not run"]:
+        if token not in text:
+            errors.append(f"validate_all.py missing validation token: {token}")
+    return errors
+
+
+def test_claim_documents_do_not_contain_stale_phase_or_check_counts() -> list[str]:
+    stale_patterns = ["23 checks", "49 checks", "Phase 0 / Phase 1"]
+    errors = []
+    for relative in sorted(CLAIM_REVIEW_FILES):
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        for pattern in stale_patterns:
+            if pattern in text:
+                errors.append(f"{relative} contains stale claim text: {pattern}")
     return errors
 
 
@@ -518,7 +980,37 @@ def main() -> int:
         test_shell_core_non_authority_sources_do_not_grant_authority,
         test_shell_core_routes_sensitive_actions_through_required_mapping,
         test_shell_core_content_projection_hides_full_payload_until_full,
-        test_shell_core_has_no_flutter_or_blue_tanuki_imports,
+        test_shell_core_has_no_flutter_imports,
+        test_shell_core_has_no_blue_tanuki_internal_imports,
+        test_policy_evaluator_rejects_unknown_capability,
+        test_policy_evaluator_returns_structured_errors,
+        test_policy_evaluator_rejects_unknown_permission,
+        test_policy_evaluator_rejects_denied_permission,
+        test_policy_evaluator_rejects_missing_approval,
+        test_policy_evaluator_rejects_missing_audit_event,
+        test_policy_evaluator_rejects_missing_recovery_action,
+        test_policy_evaluator_ignores_adapter_metadata_authority,
+        test_policy_evaluator_rejects_non_authority_source,
+        test_state_snapshot_is_deterministic,
+        test_state_snapshot_reports_invariant_flags,
+        test_rust_helper_required_sources_exist,
+        test_rust_helper_contract_shape_exists,
+        test_rust_helper_does_not_expose_hidden_authority_paths,
+        test_blue_tanuki_adapter_runtime_output_validates_against_generic_schema,
+        test_blue_tanuki_adapter_metadata_cannot_escalate_authority,
+        test_blue_tanuki_adapter_cannot_expose_full_payload_unless_visibility_full,
+        test_blue_tanuki_adapter_cannot_mark_approvals_approved_by_itself,
+        test_blue_tanuki_adapter_failures_map_to_recovery_actions,
+        test_desktop_flutter_required_files_exist,
+        test_desktop_flutter_keeps_authority_in_shell_core_client,
+        test_installer_setup_doctor_reports_structured_status_without_authority,
+        test_installer_boundary_docs_exist,
+        test_mobile_flutter_required_files_exist,
+        test_mobile_flutter_cannot_create_hidden_authority,
+        test_release_hardening_files_exist,
+        test_release_hardening_does_not_overclaim_readiness,
+        test_validation_reporter_exists,
+        test_claim_documents_do_not_contain_stale_phase_or_check_counts,
     ]
     errors = []
     for test in tests:
