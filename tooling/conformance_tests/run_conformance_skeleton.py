@@ -702,6 +702,28 @@ def test_policy_evaluator_rejects_non_authority_source() -> list[str]:
     return errors
 
 
+def test_sensitive_action_router_uses_policy_evaluator_when_state_is_provided() -> list[str]:
+    state = build_policy_state()
+    routed = SensitiveActionRouter(state).route(build_sensitive_action())
+    errors = []
+    if routed.get("routed") is not True:
+        errors.append("policy-backed SensitiveActionRouter did not route allowed action")
+    if routed.get("policy_result", {}).get("allowed") is not True:
+        errors.append("policy-backed SensitiveActionRouter missing allowed policy result")
+    return errors
+
+
+def test_sensitive_action_router_blocks_policy_denied_action() -> list[str]:
+    state = build_policy_state(permission_decision="deny")
+    routed = SensitiveActionRouter(state).route(build_sensitive_action())
+    errors = []
+    if routed.get("routed") is not False:
+        errors.append("policy-backed SensitiveActionRouter routed denied action")
+    if "permission_denied" not in error_codes(routed.get("policy_result", {})):
+        errors.append("policy-backed SensitiveActionRouter did not expose permission_denied")
+    return errors
+
+
 def test_state_snapshot_is_deterministic() -> list[str]:
     state = build_policy_state()
     first = deterministic_snapshot_json(state)
@@ -946,7 +968,7 @@ def test_validation_reporter_exists() -> list[str]:
 
 
 def test_claim_documents_do_not_contain_stale_phase_or_check_counts() -> list[str]:
-    stale_patterns = ["23 checks", "49 checks", "Phase 0 / Phase 1"]
+    stale_patterns = ["23 checks", "49 checks", "51 checks", "53 checks", "Phase 0 / Phase 1"]
     errors = []
     for relative in sorted(CLAIM_REVIEW_FILES):
         text = (ROOT / relative).read_text(encoding="utf-8")
@@ -991,6 +1013,8 @@ def main() -> int:
         test_policy_evaluator_rejects_missing_recovery_action,
         test_policy_evaluator_ignores_adapter_metadata_authority,
         test_policy_evaluator_rejects_non_authority_source,
+        test_sensitive_action_router_uses_policy_evaluator_when_state_is_provided,
+        test_sensitive_action_router_blocks_policy_denied_action,
         test_state_snapshot_is_deterministic,
         test_state_snapshot_reports_invariant_flags,
         test_rust_helper_required_sources_exist,

@@ -7,7 +7,7 @@ GUI Shell is a generic Runtime Operation Shell skeleton with Phase 3H through Ph
 It claims:
 
 - schema-first contracts for runtime operation shell concepts;
-- conformance-first work order with 53 checks in the current skeleton;
+- conformance-first work order with 55 checks in the current skeleton;
 - framework-independent Shell Core hardening for permissions, approvals, audit, recovery, policy evaluation, and deterministic state snapshots;
 - bounded Rust helper boundary skeleton;
 - BLUE-TANUKI as a reference runtime through adapter contract only;

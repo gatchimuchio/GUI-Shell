@@ -408,7 +408,7 @@ Current known environment result:
 
 ```text
 schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 53 checks
+conformance skeleton passed: 55 checks
 cargo test: not run, cargo not found on PATH
 desktop flutter analyze: not run, flutter not found on PATH
 mobile flutter analyze: not run, flutter not found on PATH

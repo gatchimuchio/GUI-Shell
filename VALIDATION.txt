@@ -12,7 +12,7 @@ command=python3 tooling/conformance_tests/run_conformance_skeleton.py
 status=passed
 exit=0
 stdout:
-conformance skeleton passed: 53 checks
+conformance skeleton passed: 55 checks
 stderr:
 
 
