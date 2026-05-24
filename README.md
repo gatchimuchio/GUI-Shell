@@ -79,7 +79,7 @@ Expected successful output:
 
 ```text
 schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 17 checks
+conformance skeleton passed: 23 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).

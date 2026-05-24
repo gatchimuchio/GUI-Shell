@@ -2,12 +2,21 @@ from pathlib import Path
 import copy
 import hashlib
 import json
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 SPECS = ROOT / "specs"
 DOC_SPECS = ROOT / "docs" / "specs"
 CONTRACT_EXAMPLES = ROOT / "examples" / "contracts"
 INVALID_CONTRACT_EXAMPLES = CONTRACT_EXAMPLES / "invalid"
+SHELL_CORE = ROOT / "packages" / "shell_core"
+
+from packages.shell_contracts import load_default_catalog
+from packages.shell_core.adapter_loader import load_adapter
+from packages.shell_core.content_exposure import project_approval_content
+from packages.shell_core.permission_ledger import PermissionLedger
+from packages.shell_core.sensitive_action_router import SensitiveActionRouter
 
 REQUIRED_SCHEMA_NAMES = {
     "runtime",
@@ -397,6 +406,94 @@ def test_update_fixture_requires_signature() -> list[str]:
     return []
 
 
+def test_shell_contracts_load_required_schemas() -> list[str]:
+    catalog = load_default_catalog()
+    expected = {f"{name}.schema.json" for name in REQUIRED_SCHEMA_NAMES}
+    loaded = set(catalog.names())
+    missing = sorted(expected - loaded)
+    if missing:
+        return [f"shell_contracts catalog missing schema: {name}" for name in missing]
+    return []
+
+
+def test_shell_core_ignores_adapter_metadata_permissions() -> list[str]:
+    adapter = load_contract_fixture("adapter.valid.json")
+    adapter["metadata"] = {
+        "permissions": ["filesystem.write"],
+        "grants": ["all"],
+        "trust_level": "root",
+    }
+    record = load_adapter(adapter)
+    if record.effective_capabilities() != tuple(adapter["declared_capabilities"]):
+        return ["Shell Core trusted adapter metadata for permissions"]
+    return []
+
+
+def test_shell_core_non_authority_sources_do_not_grant_authority() -> list[str]:
+    ledger = PermissionLedger()
+    errors = []
+    for source in sorted(NON_AUTHORITY_SOURCES):
+        if ledger.can_grant_authority_from_source(source):
+            errors.append(f"Shell Core treated {source} as authority")
+    return errors
+
+
+def test_shell_core_routes_sensitive_actions_through_required_mapping() -> list[str]:
+    router = SensitiveActionRouter()
+    capability = load_contract_fixture("capability.valid.json")
+    permission = load_contract_fixture("permission.valid.json")
+    audit_event = load_contract_fixture("audit.valid.json")
+    recovery_action = load_contract_fixture("recovery.valid.json")
+    routed = router.route(
+        {
+            "capability_id": capability["capability_id"],
+            "permission_id": permission["permission_id"],
+            "approval_state": "approved",
+            "audit_event": audit_event,
+            "recovery_action": recovery_action,
+        }
+    )
+    errors = []
+    if routed.get("routed") is not True:
+        errors.append("Shell Core did not mark sensitive action as routed")
+    try:
+        router.route(
+            {
+                "capability_id": capability["capability_id"],
+                "permission_id": permission["permission_id"],
+                "approval_state": "approved",
+                "audit_event": audit_event,
+            }
+        )
+    except ValueError:
+        return errors
+    errors.append("Shell Core routed sensitive action without RecoveryAction")
+    return errors
+
+
+def test_shell_core_content_projection_hides_full_payload_until_full() -> list[str]:
+    approval = load_contract_fixture("approval.valid.json")
+    errors = []
+    for visibility in VISIBILITY_VALUES:
+        projected = project_approval_content({**approval, "content_visibility": visibility})
+        if visibility != "full" and "full_payload" in projected:
+            errors.append(f"Shell Core projected full_payload for {visibility}")
+    return errors
+
+
+def test_shell_core_has_no_flutter_or_blue_tanuki_imports() -> list[str]:
+    errors = []
+    for path in sorted(SHELL_CORE.glob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            normalized = line.strip().lower()
+            if normalized.startswith("import flutter") or normalized.startswith("from flutter"):
+                errors.append(f"{path}:{line_number} imports Flutter")
+            if normalized.startswith("import blue_tanuki") or normalized.startswith("from blue_tanuki"):
+                errors.append(f"{path}:{line_number} imports BLUE-TANUKI internals")
+    return errors
+
+
 def main() -> int:
     tests = [
         test_required_docs_exist,
@@ -416,6 +513,12 @@ def main() -> int:
         test_hash_patterns_are_tagged_sha256,
         test_framework_risk_profile_exists,
         test_update_fixture_requires_signature,
+        test_shell_contracts_load_required_schemas,
+        test_shell_core_ignores_adapter_metadata_permissions,
+        test_shell_core_non_authority_sources_do_not_grant_authority,
+        test_shell_core_routes_sensitive_actions_through_required_mapping,
+        test_shell_core_content_projection_hides_full_payload_until_full,
+        test_shell_core_has_no_flutter_or_blue_tanuki_imports,
     ]
     errors = []
     for test in tests:

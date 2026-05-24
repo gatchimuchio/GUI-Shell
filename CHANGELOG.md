@@ -18,6 +18,8 @@
 - Added conformance coverage that drives checks from `examples/contracts/*.valid.json`.
 - Documented that `full_payload` may exist in approval storage but must not be exposed by UI projection unless `content_visibility=full`.
 - Expanded invalid contract fixtures to cover every schema and made fixture coverage part of schema and conformance validation.
+- Started Phase 3 Shell Core skeleton with framework-independent contract loading, runtime registry, adapter loader, permission ledger, approval queue, audit store, recovery catalog, update policy store, content exposure projection, and sensitive action routing.
+- Added conformance checks proving Shell Core ignores adapter metadata permissions, rejects memory/cache/previous-state authority, routes sensitive actions through required mappings, hides full payload until full visibility, and avoids Flutter / BLUE-TANUKI internal imports.
 
 ## 0.1.0-phase0
 

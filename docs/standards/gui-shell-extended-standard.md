@@ -76,7 +76,7 @@ Flutter must not own:
 
 - Generic GUI Shell direction: locked
 - BLUE-TANUKI as reference runtime only: locked
-- BLUE-TANUKI implementation freeze: locked
+- BLUE-TANUKI Phase 0 reference runtime contract target: locked
 - Flutter + Rust helper as first candidate: locked
 - Compose MP as watchlist candidate: locked
 - Tauri as desktop-heavy fallback: locked

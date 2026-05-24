@@ -1,0 +1,1 @@
+"""GUI Shell package namespace."""

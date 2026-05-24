@@ -26,7 +26,7 @@ conformance_skeleton_python3:
 command=python3 tooling/conformance_tests/run_conformance_skeleton.py
 exit=0
 stdout:
-conformance skeleton passed: 17 checks
+conformance skeleton passed: 23 checks
 
 stderr:
 

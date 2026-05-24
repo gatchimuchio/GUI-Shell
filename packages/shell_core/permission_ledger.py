@@ -1,0 +1,18 @@
+NON_AUTHORITY_SOURCES = {"memory", "cache", "previous_state", "local_ui_state"}
+
+
+class PermissionLedger:
+    def __init__(self):
+        self._permissions: dict[str, dict] = {}
+
+    def record(self, permission: dict) -> None:
+        self._permissions[permission["permission_id"]] = dict(permission)
+
+    def decision_for(self, permission_id: str) -> str:
+        permission = self._permissions.get(permission_id)
+        if permission is None:
+            return "deny"
+        return permission.get("decision", "deny")
+
+    def can_grant_authority_from_source(self, source: str) -> bool:
+        return source not in NON_AUTHORITY_SOURCES
