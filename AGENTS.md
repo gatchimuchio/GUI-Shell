@@ -234,6 +234,8 @@ After any allowed edit:
 
 This repository uses a direct-main owner workflow.
 
+Every completed work block must be committed and pushed. Do not leave completed repository changes only in the local working tree unless the owner explicitly says not to commit or not to push.
+
 Default workflow:
 
 1. Work on `main`
@@ -243,8 +245,9 @@ Default workflow:
    - Force-update `codex/backup-main` to current pre-commit `main`
 4. Push backup branches when credentials allow
 5. Commit the completed work block directly on `main`
-6. Push `main` when credentials allow
-7. If backup, commit, or push fails, report the exact failed command and reason
+6. Push `main` immediately after the commit
+7. Verify `git status --short --branch` is clean and aligned with `origin/main`
+8. If backup, commit, or push fails, report the exact failed command and reason
 
 Backup branches:
 
@@ -291,6 +294,7 @@ If Flutter is installed and Flutter app is touched:
 
 ```bash
 cd apps/desktop_flutter && flutter analyze
+cd apps/mobile_flutter && flutter analyze
 ```
 
 If validation cannot run, report why.
