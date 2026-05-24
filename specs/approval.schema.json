@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/approval.schema.json",
+  "title": "Approval",
+  "type": "object",
+  "required": [
+    "approval_id",
+    "runtime_id",
+    "operation",
+    "status",
+    "content_visibility",
+    "payload_hash",
+    "editable_fields"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "approval_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "expired",
+        "requires_validation"
+      ]
+    },
+    "content_visibility": {
+      "type": "string",
+      "enum": [
+        "none",
+        "hash_only",
+        "summary",
+        "redacted",
+        "full"
+      ]
+    },
+    "payload_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "redacted_payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "full_payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "editable_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Only these non-authority fields may be edited."
+    },
+    "sealed_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "authority_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

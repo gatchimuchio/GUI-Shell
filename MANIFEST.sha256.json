@@ -1,0 +1,228 @@
+{
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "33ed3d40e12c41d21a6827b2d651558f3bf5a8adbcfe2e9e6fe911c04e6f1016"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "216bbd5d39ca7a7690f4d3925bbc7c6f1d2b5392384ee7ce9de13d6c2870a7fe"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "ddeba9b5e84b6c2fd27675f04e451a4206fe09f0c9148b741a828002c422b3a1"
+    },
+    {
+      "path": "MANIFEST.sha256.json",
+      "sha256": "a38be15d05275bf64bf93e355137b7e0a9e4c3029507506f0026092935a24bf3"
+    },
+    {
+      "path": "README.md",
+      "sha256": "0a539fc4b670b57f934cdbf6559f730630c6b5f57e6eb8cdfd68acbabb06a3e5"
+    },
+    {
+      "path": "VALIDATION.txt",
+      "sha256": "864c1ea250ae92ff6c11b28c29d6436025380f6989ab1ac978827585c58580fe"
+    },
+    {
+      "path": "apps/desktop_flutter/README.md",
+      "sha256": "8faf72d51e9a074d73849df6da5cd3e0f4cc1214f55b9c9ceca51b65eefcc48a"
+    },
+    {
+      "path": "apps/desktop_flutter/lib/main.dart",
+      "sha256": "aedb6d675f3c6dce1baa3ad743c405f9643f8069491da92b04728fb62aa899eb"
+    },
+    {
+      "path": "apps/desktop_flutter/pubspec.yaml",
+      "sha256": "90b0add1a3f7891b345316a7c3b0fa601fdcb3286efc94ff740ab7fbfa377610"
+    },
+    {
+      "path": "apps/mobile_flutter/README.md",
+      "sha256": "4ea97fb7e44114501d9ed869cb7df7a9c7183788b359594d2ec3741839ab0020"
+    },
+    {
+      "path": "apps/mobile_flutter/lib/main.dart",
+      "sha256": "91b032b4ebc7c5bf0d0e5ef6c28adb73e2d00a6912ab2c88d76ba047acf37a2b"
+    },
+    {
+      "path": "apps/mobile_flutter/pubspec.yaml",
+      "sha256": "06f3bfbddfd33e5a220a956dd1ae7c58976261bfc3e9c8aae7239c8f6ff8f61f"
+    },
+    {
+      "path": "docs/research/compose-mp-watchlist.md",
+      "sha256": "166de23e5990b2a49c165d76a7ad71f4d032b89a71d121f04859b9adfd42cd2a"
+    },
+    {
+      "path": "docs/research/cross-platform-framework-evaluation.md",
+      "sha256": "67e6b1a01f7dcbbb82df585b65e7cc7b1d8a6e3635394026aaeca636775bf32f"
+    },
+    {
+      "path": "docs/research/flutter-governance-risk.md",
+      "sha256": "e0ec0ac7b8e12419475ac76cff45b4bb419625beec83691ca23e831f185c04df"
+    },
+    {
+      "path": "docs/source/gui_shell_design_report_v0_3_1_phase0_lock.md",
+      "sha256": "c9ccd3c2fa557592770591ce30e1bcbf6f86c98155e555c1fcd07af391b0f5af"
+    },
+    {
+      "path": "docs/specs/adapter-conformance.md",
+      "sha256": "f7fa5634e372199d4dc497e8cf1e863b3871817c7ee0ea8d791e91170ec1ec85"
+    },
+    {
+      "path": "docs/specs/approval-visibility-boundary.md",
+      "sha256": "9cda368ef50c3cf168430aed878978a8969d5c90f979fb9abbd2bfb529f65d98"
+    },
+    {
+      "path": "docs/specs/content-exposure-policy.md",
+      "sha256": "29c466ca297856c8a6dd012002bdb3cf4ea0bb42ac160fb54ab5f0d27e6bda0b"
+    },
+    {
+      "path": "docs/standards/gui-shell-extended-standard.md",
+      "sha256": "837ca74c77c11f9f56518cc31b53438cc925853566a81981a10e4108cd493323"
+    },
+    {
+      "path": "examples/adapter/blue_tanuki_reference_adapter.json",
+      "sha256": "d774db92702345300ac9383ef4a4db21d9f8780d83f2b3a29673c22cabbe7cc4"
+    },
+    {
+      "path": "examples/framework_risk/flutter_current.json",
+      "sha256": "d38517d047fd41c2e674028fa1c66b66b4892eff6414e3244520cee5d2add9ec"
+    },
+    {
+      "path": "installer/linux/README.md",
+      "sha256": "7e7591efd15fbaf16e9a90bf69e3c10905f6bf81a29080678d35e003afc273da"
+    },
+    {
+      "path": "installer/macos/README.md",
+      "sha256": "4392029d1dfd487e47c40264b3ea49f23813a2934ccfbcb8f3bd4a7408b3450d"
+    },
+    {
+      "path": "installer/windows/README.md",
+      "sha256": "f091b4e07f848539557cf1b786cac939af00ca085db1343149271709bdf0eccf"
+    },
+    {
+      "path": "native/rust_helper/Cargo.toml",
+      "sha256": "510ef22a072a27b091d505454bb8005d26418d65ddc2b0d6ef2035c77154e701"
+    },
+    {
+      "path": "native/rust_helper/README.md",
+      "sha256": "e9e2e6c22bdb05362a793e6f683240ec989b62fa6c951426a132ca72833aeafc"
+    },
+    {
+      "path": "native/rust_helper/audit_hash/README.md",
+      "sha256": "b321643aae236349e7e4c3b096bc5a375a0b97074f0aa45b5142ad10d55221ea"
+    },
+    {
+      "path": "native/rust_helper/diagnostics/README.md",
+      "sha256": "90a75f32da61b80790af6a6d0e32db2a8c25380134e9b882c8a363579b9cf848"
+    },
+    {
+      "path": "native/rust_helper/filesystem/README.md",
+      "sha256": "8d76fa9f919a93daa9090c80c7677d399aedc9b32fdaee143df6a423b522e9c0"
+    },
+    {
+      "path": "native/rust_helper/network/README.md",
+      "sha256": "ac875a50d12a25d776961440a592c5d454e8a1a1fbf9c7c5b1b4ad8a1497fa1a"
+    },
+    {
+      "path": "native/rust_helper/process/README.md",
+      "sha256": "fdc02024c5bd344ada178a24dc22f78f3fe6494e7b2eb9880a45a25290ef6cf4"
+    },
+    {
+      "path": "native/rust_helper/secure_ipc/README.md",
+      "sha256": "63ef8b8f91830c684c65ca78f472cce7224f02a7db830aa66cb2363e20697959"
+    },
+    {
+      "path": "native/rust_helper/src/lib.rs",
+      "sha256": "216a5f62a9232da634678cbe89bd82babbe5290afbb02c19209dc42cbc4f7e80"
+    },
+    {
+      "path": "native/rust_helper/update_verification/README.md",
+      "sha256": "6cbc034eb8f7e19d01061b894b23de5390bb521597b714caa20023ce3eb8471d"
+    },
+    {
+      "path": "packages/blue_tanuki_adapter/README.md",
+      "sha256": "d889335fcefa9689adff2bcddc4f3e5b72e4ef06a695a6f3c1a867b031ec5e2a"
+    },
+    {
+      "path": "packages/blue_tanuki_adapter/adapter_contract.md",
+      "sha256": "bc15c0ec251adf4133c4f39a116dc9b85c2e2d7b339c538e167bbe3a21c5e65b"
+    },
+    {
+      "path": "packages/shell_contracts/README.md",
+      "sha256": "9c1d6e7304c36718afe08d9a593d061a91e04ea748a22264b30014e457c33b97"
+    },
+    {
+      "path": "packages/shell_core/README.md",
+      "sha256": "dbc9bf58e7649b8bc97a9fcfd75dd4d19cf2bfa39af15c59b0962c8a951bb1c4"
+    },
+    {
+      "path": "packages/shell_ui/README.md",
+      "sha256": "3521f358a65aae47e993dd1dc5e0657507047ac913fcce7a03594049bcc39242"
+    },
+    {
+      "path": "specs/adapter.schema.json",
+      "sha256": "37882741099adb12c743439e2deef6bbb2549a33d95df185531b1b89d6caa6e3"
+    },
+    {
+      "path": "specs/approval.schema.json",
+      "sha256": "9fa4e0748b6974ab7bf4891fd4f75a4ac171148afe64d88371a67bc162e0d9ad"
+    },
+    {
+      "path": "specs/audit.schema.json",
+      "sha256": "bb16cd3f5660414b544dd2d31f82e444bd9ffcf0fcb974f52ed4dd94b32e6773"
+    },
+    {
+      "path": "specs/capability.schema.json",
+      "sha256": "4deef4c58fc4a1a164f1d2830a6497f65a73839e0dce8664cacc8049a8075614"
+    },
+    {
+      "path": "specs/content_exposure.schema.json",
+      "sha256": "52156e4873ac7b8fd06a7f2697f274b0c79c973d3384b6366b3559059c339ba7"
+    },
+    {
+      "path": "specs/diagnostic.schema.json",
+      "sha256": "bc233d3d2e9d7474d8705a85a36591a1ab6f88c9d2e6cfdac40bd76971b240d9"
+    },
+    {
+      "path": "specs/framework_risk_profile.schema.json",
+      "sha256": "7d5394679079028bf98d720041a30d557a985287a7be491e03e5b2479373944a"
+    },
+    {
+      "path": "specs/permission.schema.json",
+      "sha256": "ae50cd0d0ea4efeca139588fbe5708ccd66e5223a033200fcd03b7732feab951"
+    },
+    {
+      "path": "specs/recovery.schema.json",
+      "sha256": "e224473a6e682ea384390f2b2ab1eed005dd677cad768225042d44984f1c9d06"
+    },
+    {
+      "path": "specs/runtime.schema.json",
+      "sha256": "275a632a5a15529fb4c40074a2157902207363b32dc079204e700de46d029c63"
+    },
+    {
+      "path": "specs/update.schema.json",
+      "sha256": "12f3d86b927809fb24a5164533e311572f2d237d7852683b4c35b2c39cd75524"
+    },
+    {
+      "path": "tooling/codegen/README.md",
+      "sha256": "8495c5085079b338f441ffd3e2ed2ceccda42eab2598ff914c60c0e58f43000e"
+    },
+    {
+      "path": "tooling/codegen/generate_contracts.py",
+      "sha256": "5e53252d86e52f57e4ce2ae9d6f6c2e6a7da463605e744ed76a3ef6476cb0e92"
+    },
+    {
+      "path": "tooling/conformance_tests/run_conformance_skeleton.py",
+      "sha256": "11a1db594e049abc9ad8293cecccbfc215cf54fc74aa734a6c2473c29b75030b"
+    },
+    {
+      "path": "tooling/schema_check/check_schemas.py",
+      "sha256": "2b67f1eee23a2f7d19df2366edbd8e35ec6372b27d2ac65b7509ad08497d355f"
+    },
+    {
+      "path": "tooling/ui_snapshot_tests/README.md",
+      "sha256": "39443cf8205f06c103275f27981a3aa5d7fcca3ccd90317175a72a5528530256"
+    }
+  ]
+}

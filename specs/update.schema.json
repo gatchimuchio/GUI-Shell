@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/update.schema.json",
+  "title": "UpdatePolicy",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "channel",
+    "auto_update",
+    "signature_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "stable",
+        "beta",
+        "dev",
+        "pinned"
+      ]
+    },
+    "auto_update": {
+      "type": "boolean"
+    },
+    "signature_required": {
+      "type": "boolean",
+      "const": true
+    },
+    "rollback_enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

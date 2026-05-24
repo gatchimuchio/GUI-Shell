@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/permission.schema.json",
+  "title": "Permission",
+  "type": "object",
+  "required": [
+    "permission_id",
+    "capability_id",
+    "scope",
+    "decision",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "permission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "operation",
+        "target",
+        "session",
+        "time_window",
+        "global"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "ask",
+        "allow"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "user",
+        "policy",
+        "runtime",
+        "system_default"
+      ]
+    },
+    "expires_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

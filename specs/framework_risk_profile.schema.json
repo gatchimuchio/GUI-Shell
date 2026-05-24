@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/framework_risk_profile.schema.json",
+  "title": "FrameworkRiskProfile",
+  "type": "object",
+  "required": [
+    "framework",
+    "version",
+    "risk_level",
+    "governance_risk",
+    "api_stability",
+    "production_maturity",
+    "desktop_priority",
+    "mobile_priority",
+    "migration_target",
+    "review_interval_months",
+    "exit_conditions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "framework": {
+      "type": "string",
+      "enum": [
+        "Flutter",
+        "ComposeMP",
+        "Tauri",
+        "Other"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "governance_risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "api_stability": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "production_maturity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "desktop_priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "mobile_priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "migration_target": {
+      "type": "string",
+      "enum": [
+        "ComposeMP",
+        "Tauri",
+        "Other"
+      ]
+    },
+    "review_interval_months": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "exit_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

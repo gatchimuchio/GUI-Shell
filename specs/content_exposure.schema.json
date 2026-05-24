@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/content_exposure.schema.json",
+  "title": "ContentExposurePolicy",
+  "type": "object",
+  "required": [
+    "policy_id",
+    "default_visibility",
+    "allowed_visibility"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "policy_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "default_visibility": {
+      "type": "string",
+      "enum": [
+        "none",
+        "hash_only",
+        "summary",
+        "redacted",
+        "full"
+      ]
+    },
+    "allowed_visibility": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "none",
+          "hash_only",
+          "summary",
+          "redacted",
+          "full"
+        ]
+      },
+      "minItems": 1
+    },
+    "redaction_required": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/diagnostic.schema.json",
+  "title": "DiagnosticReport",
+  "type": "object",
+  "required": [
+    "diagnostic_id",
+    "runtime_id",
+    "status",
+    "checks"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "diagnostic_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "warning",
+        "fail",
+        "unknown"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "check_id",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "warning",
+              "fail",
+              "unknown"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "framework": "Flutter",
+  "version": "current",
+  "risk_level": "medium",
+  "governance_risk": "medium",
+  "api_stability": "high",
+  "production_maturity": "high",
+  "desktop_priority": "medium",
+  "mobile_priority": "high",
+  "migration_target": "ComposeMP",
+  "review_interval_months": 6,
+  "exit_conditions": [
+    "desktop support materially degrades",
+    "critical Flutter-originated bug becomes unavoidable",
+    "official roadmap deprioritizes desktop"
+  ]
+}

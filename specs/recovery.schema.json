@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/recovery.schema.json",
+  "title": "RecoveryAction",
+  "type": "object",
+  "required": [
+    "recovery_id",
+    "class",
+    "severity",
+    "user_visible_message",
+    "safe_to_retry"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "recovery_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "class": {
+      "type": "string",
+      "enum": [
+        "configuration",
+        "dependency",
+        "runtime_down",
+        "permission_denied",
+        "network",
+        "filesystem",
+        "unknown"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "critical"
+      ]
+    },
+    "user_visible_message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "safe_to_retry": {
+      "type": "boolean"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requires_user_action": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

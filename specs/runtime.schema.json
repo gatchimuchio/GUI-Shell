@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/runtime.schema.json",
+  "title": "Runtime",
+  "type": "object",
+  "required": [
+    "runtime_id",
+    "name",
+    "kind",
+    "status",
+    "adapter_id"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runtime_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "tool",
+        "local_service",
+        "remote_service",
+        "reference_runtime"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "offline",
+        "starting",
+        "ready",
+        "degraded",
+        "failed",
+        "stopped"
+      ]
+    },
+    "adapter_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "endpoints": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "diagnostic_summary": {
+      "type": "string"
+    }
+  }
+}

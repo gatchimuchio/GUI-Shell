@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/capability.schema.json",
+  "title": "Capability",
+  "type": "object",
+  "required": [
+    "capability_id",
+    "name",
+    "risk_level",
+    "default_permission"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "default_permission": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "ask",
+        "allow"
+      ]
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
