@@ -1,0 +1,13 @@
+{
+  "framework": "Flutter",
+  "version": "current",
+  "risk_level": "medium",
+  "governance_risk": "medium",
+  "api_stability": "high",
+  "production_maturity": "high",
+  "desktop_priority": "medium",
+  "mobile_priority": "high",
+  "migration_target": "ComposeMP",
+  "review_interval_months": 0,
+  "exit_conditions": []
+}

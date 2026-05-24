@@ -17,6 +17,7 @@
 - Added negative contract fixtures for adapter authority escalation, unsafe update policy, approval bad hash, and content exposure default full.
 - Added conformance coverage that drives checks from `examples/contracts/*.valid.json`.
 - Documented that `full_payload` may exist in approval storage but must not be exposed by UI projection unless `content_visibility=full`.
+- Expanded invalid contract fixtures to cover every schema and made fixture coverage part of schema and conformance validation.
 
 ## 0.1.0-phase0
 

@@ -7,6 +7,21 @@ ROOT = Path(__file__).resolve().parents[2]
 SPECS = ROOT / "specs"
 DOC_SPECS = ROOT / "docs" / "specs"
 CONTRACT_EXAMPLES = ROOT / "examples" / "contracts"
+INVALID_CONTRACT_EXAMPLES = CONTRACT_EXAMPLES / "invalid"
+
+REQUIRED_SCHEMA_NAMES = {
+    "runtime",
+    "adapter",
+    "capability",
+    "permission",
+    "approval",
+    "audit",
+    "recovery",
+    "diagnostic",
+    "update",
+    "content_exposure",
+    "framework_risk_profile",
+}
 
 VISIBILITY_VALUES = ["none", "hash_only", "summary", "redacted", "full"]
 AUTHORITY_KEYS = {
@@ -146,19 +161,7 @@ def test_required_docs_exist() -> list[str]:
 
 def test_contract_fixtures_are_available() -> list[str]:
     errors = []
-    expected = {
-        "runtime.valid.json",
-        "adapter.valid.json",
-        "capability.valid.json",
-        "permission.valid.json",
-        "approval.valid.json",
-        "audit.valid.json",
-        "recovery.valid.json",
-        "diagnostic.valid.json",
-        "update.valid.json",
-        "content_exposure.valid.json",
-        "framework_risk_profile.valid.json",
-    }
+    expected = {f"{name}.valid.json" for name in REQUIRED_SCHEMA_NAMES}
     existing = {path.name for path in CONTRACT_EXAMPLES.glob("*.valid.json")}
     for missing in sorted(expected - existing):
         errors.append(f"examples/contracts/{missing} missing")
@@ -170,6 +173,26 @@ def test_contract_fixtures_are_available() -> list[str]:
             continue
         if not isinstance(fixture, dict):
             errors.append(f"examples/contracts/{name} must be a JSON object")
+    return errors
+
+
+def schema_name_from_invalid_fixture(path: Path) -> str:
+    stem = path.name.removesuffix(".invalid.json")
+    schema_bases = sorted(REQUIRED_SCHEMA_NAMES, key=len, reverse=True)
+    for base in schema_bases:
+        if stem == base or stem.startswith(f"{base}_"):
+            return base
+    return stem.split("_", 1)[0]
+
+
+def test_negative_contract_fixtures_cover_all_schemas() -> list[str]:
+    invalid_paths = sorted(INVALID_CONTRACT_EXAMPLES.glob("*.invalid.json"))
+    covered = {schema_name_from_invalid_fixture(path) for path in invalid_paths}
+    errors = []
+    for missing in sorted(REQUIRED_SCHEMA_NAMES - covered):
+        errors.append(f"examples/contracts/invalid missing negative fixture for {missing}")
+    if len(invalid_paths) < len(REQUIRED_SCHEMA_NAMES):
+        errors.append("negative contract fixtures must cover every schema")
     return errors
 
 
@@ -378,6 +401,7 @@ def main() -> int:
     tests = [
         test_required_docs_exist,
         test_contract_fixtures_are_available,
+        test_negative_contract_fixtures_cover_all_schemas,
         test_adapter_authority_strip_schema,
         test_inbound_authority_keys_are_stripped,
         test_external_metadata_cannot_escalate_authority,

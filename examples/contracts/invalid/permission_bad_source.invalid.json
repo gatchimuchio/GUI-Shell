@@ -1,0 +1,7 @@
+{
+  "permission_id": "permission.bad",
+  "capability_id": "capability.bad",
+  "scope": "target",
+  "decision": "allow",
+  "source": "adapter_metadata"
+}

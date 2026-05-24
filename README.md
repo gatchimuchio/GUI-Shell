@@ -78,8 +78,8 @@ python3 tooling/conformance_tests/run_conformance_skeleton.py
 Expected successful output:
 
 ```text
-schema check passed: 11 schemas, 11 examples, 4 negative fixtures
-conformance skeleton passed: 16 checks
+schema check passed: 11 schemas, 11 examples, 11 negative fixtures
+conformance skeleton passed: 17 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).

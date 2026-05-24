@@ -112,8 +112,14 @@ def valid_example_path(schema_name: str) -> Path:
 
 def schema_name_from_invalid_fixture(path: Path) -> str:
     stem = path.name.removesuffix(".invalid.json")
-    if stem.startswith("content_exposure_"):
-        return "content_exposure.schema.json"
+    schema_bases = sorted(
+        (name.removesuffix(".schema.json") for name in REQUIRED),
+        key=len,
+        reverse=True,
+    )
+    for base in schema_bases:
+        if stem == base or stem.startswith(f"{base}_"):
+            return f"{base}.schema.json"
     return f"{stem.split('_', 1)[0]}.schema.json"
 
 
@@ -152,9 +158,11 @@ def main() -> int:
             errors.append(f"{example_path}: {failure}")
 
     invalid_count = 0
+    invalid_schema_names: set[str] = set()
     for invalid_path in sorted(INVALID_EXAMPLES.glob("*.invalid.json")):
         invalid_count += 1
         schema_name = schema_name_from_invalid_fixture(invalid_path)
+        invalid_schema_names.add(schema_name)
         schema = schemas.get(schema_name)
         if not schema:
             errors.append(f"{invalid_path}: cannot resolve schema {schema_name}")
@@ -166,6 +174,10 @@ def main() -> int:
         failures = validate_instance(instance, schema)
         if not failures:
             errors.append(f"{invalid_path}: invalid fixture unexpectedly passed {schema_name}")
+
+    missing_invalid = sorted(REQUIRED - invalid_schema_names)
+    for schema_name in missing_invalid:
+        errors.append(f"missing negative fixture for {schema_name}")
 
     if errors:
         print("schema check failed:")

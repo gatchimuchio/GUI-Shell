@@ -1,0 +1,7 @@
+{
+  "runtime_id": "bad-runtime",
+  "name": "Bad Runtime",
+  "kind": "reference_runtime",
+  "status": "running",
+  "adapter_id": "adapter"
+}

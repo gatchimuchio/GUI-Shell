@@ -1,0 +1,6 @@
+{
+  "capability_id": "capability.bad",
+  "name": "Bad Capability",
+  "risk_level": "severe",
+  "default_permission": "ask"
+}

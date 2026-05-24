@@ -1,0 +1,6 @@
+{
+  "recovery_id": "recover-bad",
+  "class": "permission_denied",
+  "severity": "warning",
+  "safe_to_retry": true
+}

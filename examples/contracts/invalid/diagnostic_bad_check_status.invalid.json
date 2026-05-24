@@ -1,0 +1,11 @@
+{
+  "diagnostic_id": "diag-bad",
+  "runtime_id": "runtime",
+  "status": "pass",
+  "checks": [
+    {
+      "check_id": "runtime.snapshot",
+      "status": "ok"
+    }
+  ]
+}
