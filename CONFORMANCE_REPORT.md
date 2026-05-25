@@ -15,7 +15,17 @@
 - item: conformance tautology fix
   classification: required_for_v1
   status: resolved
-  evidence: authority stripping and approval edit guard checks now import and exercise production Shell Core implementations.
+  evidence: authority stripping and approval edit guard checks now import and exercise production Shell Core implementations; see `docs/MUTATION_VERIFICATION.md`.
+
+- item: production authority strip mutation coverage
+  classification: required_for_v1
+  status: passed
+  evidence: mutating `adapter_loader.strip_authority_keys` to return input unchanged caused conformance failure; mutation was reverted and final conformance passed.
+
+- item: production approval guard mutation coverage
+  classification: required_for_v1
+  status: passed
+  evidence: mutating `ApprovalQueue.can_edit` to always return `True` and mutating `ApprovalQueue.edit` to bypass protected-field guards both caused conformance failure; mutations were reverted and final conformance passed.
 
 - item: duplicate authority key definitions
   classification: required_for_v1

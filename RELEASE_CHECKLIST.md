@@ -52,8 +52,8 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: conformance tautology fix
   classification: required_for_v1
-  reason: authority stripping, approval edit guard, approval status, and recovery ID conformance checks now call production Shell Core code and pass.
-  required_action: Keep conformance tests importing production implementations; do not reintroduce test-local authority stripping or approval edit guard copies.
+  reason: authority stripping, approval edit guard, approval status, and recovery ID conformance checks now call production Shell Core code and pass; mutation verification confirmed production authority strip and approval guard weakenings fail conformance.
+  required_action: Keep conformance tests importing production implementations; do not reintroduce test-local authority stripping or approval edit guard copies; keep `docs/MUTATION_VERIFICATION.md` updated when this surface changes.
   blocks_release: no
 
 - item: duplicate authority key definitions
