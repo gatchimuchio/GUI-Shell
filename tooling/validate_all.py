@@ -114,15 +114,16 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
             ]
         )
     if include_windows:
+        windows_project_exists = (ROOT / "apps" / "desktop_flutter" / "windows").is_dir()
         checks.extend(
             [
                 EvidenceCheck(
                     "windows_desktop_project_support_exists",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "`apps/desktop_flutter/windows` is not present, so Windows desktop project support is not generated.",
-                    "Generate Windows desktop project support and commit the bounded Flutter desktop project files.",
+                    "passed" if windows_project_exists else "failed",
+                    "none" if windows_project_exists else "release_blocker",
+                    "no" if windows_project_exists else "yes",
+                    "`apps/desktop_flutter/windows` exists." if windows_project_exists else "`apps/desktop_flutter/windows` is not present, so Windows desktop project support is not generated.",
+                    "Keep Windows Flutter desktop project files under version control." if windows_project_exists else "Generate Windows desktop project support and commit the bounded Flutter desktop project files.",
                 ),
                 EvidenceCheck(
                     "windows_flutter_toolchain",

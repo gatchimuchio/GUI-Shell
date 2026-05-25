@@ -8,21 +8,21 @@ GUI-Shell v1.0 is Windows-first. Linux build and launch smoke are useful develop
 
 - item: Flutter Windows desktop SDK
   classification: release_blocker
-  reason: Windows Flutter desktop toolchain has not been verified on a Windows host.
+  reason: Windows-side PATH probe found Git but did not find Flutter; Windows Flutter desktop toolchain has not been verified on a Windows host.
   required_action: Run `flutter doctor -v` on Windows and verify Windows desktop support.
   blocks_release: yes
 
 - item: Visual Studio Build Tools
   classification: release_blocker
-  reason: Windows desktop builds require Visual Studio desktop C++ build tools.
+  reason: Windows desktop builds require Visual Studio desktop C++ build tools, and Windows build smoke has not run on a native Windows host.
   required_action: Install and verify Visual Studio Build Tools for Flutter Windows desktop builds.
   blocks_release: yes
 
 - item: Windows desktop project support
-  classification: release_blocker
-  reason: `apps/desktop_flutter/windows` is not present.
-  required_action: Generate Windows Flutter desktop project support and commit bounded project files.
-  blocks_release: yes
+  classification: required_for_v1
+  reason: `flutter create --platforms=windows .` generated `apps/desktop_flutter/windows` without overwriting existing `lib/` app code.
+  required_action: Keep Windows Flutter desktop project files under version control.
+  blocks_release: no
 
 ## Validation Commands
 
@@ -40,8 +40,8 @@ GUI-Shell v1.0 is Windows-first. Linux build and launch smoke are useful develop
 
 - item: Windows build smoke
   classification: release_blocker
-  reason: Windows build smoke has not passed.
-  required_action: Run `cd apps/desktop_flutter && flutter build windows` on Windows.
+  reason: `flutter build windows` was attempted from WSL/Linux and failed with `"build windows" only supported on Windows hosts.`
+  required_action: Run `cd apps/desktop_flutter && flutter build windows` on a native Windows host.
   blocks_release: yes
 
 ## Launch Smoke Evidence Requirement

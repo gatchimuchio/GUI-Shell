@@ -6,7 +6,7 @@ GUI-Shell v1.0 is Windows-first. Windows is the primary product target, macOS is
 
 | Platform | Priority | Project support | Required toolchain | Validation command | Build smoke | Launch smoke evidence | Installer / first-run status | Release classification |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Windows | Primary product target | not_generated: release_blocker | Flutter Windows desktop toolchain on Windows host, including Visual Studio Build Tools | `cd apps/desktop_flutter && flutter analyze && flutter test && flutter build windows` | not_passed: release_blocker | not_recorded: release_blocker | not_passed: release_blocker | release_blocker |
+| Windows | Primary product target | generated | Flutter Windows desktop toolchain on Windows host, including Visual Studio Build Tools; Windows-side PATH currently lacks Flutter, rustc, and cargo | `cd apps/desktop_flutter && flutter analyze && flutter test && flutter build windows` | not_passed: release_blocker; WSL attempt failed because Windows build requires Windows host | not_recorded: release_blocker | not_passed: release_blocker | release_blocker |
 | macOS | Secondary portability target | not_generated: release_blocker | Flutter macOS desktop toolchain on macOS host, including Xcode | `cd apps/desktop_flutter && flutter analyze && flutter build macos` | not_passed: release_blocker | not_recorded: release_blocker | not_passed: release_blocker; packaging/notarization plan not_documented: release_blocker | release_blocker |
 | Linux | Development/verification slice | generated | Flutter Linux desktop toolchain: clang, cmake, ninja, pkg-config | `cd apps/desktop_flutter && flutter analyze && flutter test && flutter build linux` | passed on 2026-05-25 | passed under WSLg; first window opened; Dashboard, NavigationRail, Runtime Status, and Invariant Status visible | not_primary_release_gate: known_limitation | required_for_v1 development slice; current build and launch smoke blocks_release: no |
 
@@ -26,8 +26,8 @@ GUI-Shell v1.0 is Windows-first. Windows is the primary product target, macOS is
 
 - item: Windows desktop validation
   classification: release_blocker
-  reason: Windows project support, toolchain verification, analyze, test, build smoke, launch smoke, Setup Doctor smoke, installer smoke, and first-run smoke have not passed.
-  required_action: Generate Windows support if missing and validate Windows release path on a Windows host.
+  reason: Windows project support exists, but Windows toolchain verification, analyze, test, build smoke, launch smoke, Setup Doctor smoke, installer smoke, and first-run smoke have not passed on a native Windows host.
+  required_action: Install/verify Windows toolchains and validate Windows release path on a native Windows host.
   blocks_release: yes
 
 - item: macOS desktop validation

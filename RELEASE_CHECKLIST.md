@@ -42,11 +42,11 @@ No completed product release may be claimed if any `release_blocker` remains. GU
   required_action: Keep documented in release-facing docs and reclassify as `release_blocker` if rendering or stability fails.
   blocks_release: no
 
-- item: Windows desktop project support not generated
-  classification: release_blocker
-  reason: `apps/desktop_flutter/windows` is missing.
-  required_action: Generate Windows Flutter desktop project support and commit bounded project files.
-  blocks_release: yes
+- item: Windows desktop project support generated
+  classification: required_for_v1
+  reason: `flutter create --platforms=windows .` generated `apps/desktop_flutter/windows` without overwriting existing `lib/` app code.
+  required_action: Keep Windows Flutter desktop project files under version control.
+  blocks_release: no
 
 - item: Windows Flutter analyze not passed
   classification: release_blocker
@@ -62,14 +62,14 @@ No completed product release may be claimed if any `release_blocker` remains. GU
 
 - item: Windows Flutter toolchain not verified
   classification: release_blocker
-  reason: Windows Flutter desktop toolchain has not been verified on a Windows host.
-  required_action: Run Windows Flutter doctor/analyze/build validation on Windows.
+  reason: Windows-side PATH probe found Git but did not find Flutter, rustc, or cargo.
+  required_action: Install/verify Windows Flutter and Rust toolchains, then run Windows Flutter doctor/analyze/build validation on Windows.
   blocks_release: yes
 
 - item: Windows desktop build smoke not passed
   classification: release_blocker
-  reason: Windows build smoke has not passed.
-  required_action: Pass `flutter build windows` on a Windows release-candidate host.
+  reason: `flutter build windows` was attempted from WSL/Linux and failed with `"build windows" only supported on Windows hosts.`
+  required_action: Pass `flutter build windows` on a native Windows release-candidate host.
   blocks_release: yes
 
 - item: Windows desktop launch smoke not passed

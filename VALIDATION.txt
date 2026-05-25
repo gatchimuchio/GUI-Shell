@@ -10,6 +10,18 @@ toolchain_detection:
   - command: git --version
     exit: 0
     stdout: git version 2.53.0
+  - command: powershell.exe Get-Command flutter/git/rustc/cargo
+    exit: 0
+    stdout_summary:
+      - PowerShell 5.1.26100.8457
+      - flutter=NOT_FOUND
+      - git=C:\Program Files\Git\cmd\git.exe
+      - rustc=NOT_FOUND
+      - cargo=NOT_FOUND
+    classification: release_blocker
+    reason: Windows-side PATH has Git but does not expose Flutter, rustc, or cargo, so native Windows validation cannot run from this host session.
+    required_action: Install or expose Windows Flutter and Rust toolchains on a native Windows host, then rerun Windows validation.
+    blocks_release: yes
   - command: cargo --version
     exit: 0
     stdout: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
@@ -107,6 +119,29 @@ checks:
     required_action: Keep Linux desktop project files and toolchain available for release candidates.
     exit: 0
     stdout: Built build/linux/x64/release/bundle/gui_shell_desktop
+
+  - name: desktop_flutter_windows_project_support
+    command: cd apps/desktop_flutter && flutter create --platforms=windows .
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    required_action: Keep generated Windows desktop project files under version control.
+    exit: 0
+    stdout_summary:
+      - generated apps/desktop_flutter/windows
+      - existing lib/ app code was not overwritten
+      - apps/desktop_flutter/.metadata was adjusted to retain both linux and windows migration entries
+
+  - name: desktop_flutter_build_windows
+    command: cd apps/desktop_flutter && flutter build windows
+    status: failed
+    classification: release_blocker
+    blocks_release: yes
+    reason: Windows build was attempted from WSL/Linux, and Flutter reported `"build windows" only supported on Windows hosts.`
+    required_action: Run `flutter build windows` on a native Windows host with Windows Flutter desktop toolchain installed.
+    exit: 1
+    stdout: '"build windows" only supported on Windows hosts.'
 
   - name: desktop_flutter_launch_smoke
     command: cd apps/desktop_flutter && ./build/linux/x64/release/bundle/gui_shell_desktop
