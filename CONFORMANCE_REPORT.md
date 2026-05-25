@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 85 checks`
+  evidence: `conformance skeleton passed: 87 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -51,6 +51,16 @@
   classification: required_for_v1
   status: implemented
   evidence: conformance verifies Trust Center, Authority Map, Adapter Catalog, Permission Diff, Problems Panel, Evidence Center, Command Palette, Audit Timeline actions, Recovery Playbook vocabulary, and Status Bar are present in the desktop Flutter surface.
+
+- item: Shell snapshot generator
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/shell_snapshot.py` generates structured local snapshot JSON for Flutter local mode, including trust records, authority map, adapter catalog, permission diffs, problems, evidence, settings, Setup Doctor checks, and non-authoritative installer flags.
+
+- item: Evidence bundle export
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/evidence_bundle.py --check` validates a development evidence bundle that preserves Windows installed-path blockers, keeps `release_ready=false`, and records Flutter/installer non-authority boundaries.
 
 - item: integrated Shell Core release smoke
   classification: required_for_v1

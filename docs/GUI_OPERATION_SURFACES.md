@@ -54,6 +54,18 @@ GUI-Shell GUI hardening imports proven operation patterns without moving authori
   evidence: persistent status bar renders runtime status, trust status, pending approvals, audit chain status, network exposure, and release blocker count.
   authority_boundary: status bar is read-only.
 
+- item: Shell snapshot generator
+  classification: required_for_v1
+  status: implemented
+  evidence: `python3 tooling/shell_snapshot.py --output .gui-shell/shell_snapshot.json` creates the local JSON consumed by `ShellCoreClient.local()`.
+  authority_boundary: snapshot generation records Shell Core and Setup Doctor state; it does not grant authority.
+
+- item: Evidence bundle export
+  classification: required_for_v1
+  status: implemented
+  evidence: `python3 tooling/evidence_bundle.py --check` verifies the bundle preserves Windows installed-path blockers and does not claim release readiness.
+  authority_boundary: evidence export is read-only and non-authoritative.
+
 ## Remaining Release Blocker
 
 - item: Windows installed-path evidence

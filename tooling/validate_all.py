@@ -57,6 +57,7 @@ def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[Val
         ),
         ValidationStep("release_gate_check", ["python3", "tooling/release_gate_check.py"], ROOT, "python3"),
         ValidationStep("release_smoke", ["python3", "tooling/release_smoke.py"], ROOT, "python3"),
+        ValidationStep("evidence_bundle", ["python3", "tooling/evidence_bundle.py", "--check"], ROOT, "python3"),
         ValidationStep("rust_helper_cargo_test", ["cargo", "test"], ROOT / "native" / "rust_helper", "cargo"),
         ValidationStep("desktop_flutter_analyze", ["flutter", "analyze"], ROOT / "apps" / "desktop_flutter", "flutter"),
         ValidationStep("desktop_flutter_test", ["flutter", "test"], ROOT / "apps" / "desktop_flutter", "flutter"),

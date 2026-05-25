@@ -39,6 +39,8 @@ from packages.runtime_catalog import RuntimeCatalog
 from packages.shell_core.audit_chain import chain_event, verify_audit_chain
 from tooling.schema_check.check_schemas import validate_instance
 from tooling.release_smoke import run_release_smokes
+from tooling.evidence_bundle import build_evidence_bundle, validate_evidence_bundle
+from tooling.shell_snapshot import build_shell_snapshot
 from tooling.windows_release_evidence import validate_windows_release_evidence
 
 REQUIRED_SCHEMA_NAMES = {
@@ -926,6 +928,41 @@ def test_release_smoke_runs_first_run_and_setup_doctor() -> list[str]:
     return errors
 
 
+def test_shell_snapshot_contains_gui_operation_state() -> list[str]:
+    snapshot = build_shell_snapshot()
+    errors = []
+    for key in [
+        "trust_records",
+        "authority_map",
+        "adapter_catalog",
+        "permission_diffs",
+        "problems",
+        "evidence",
+        "settings",
+    ]:
+        if not snapshot.get(key):
+            errors.append(f"shell snapshot missing GUI operation state: {key}")
+    if snapshot.get("installer_grants_authority") is not False:
+        errors.append("shell snapshot grants installer authority")
+    if snapshot.get("installer_silently_approves_permissions") is not False:
+        errors.append("shell snapshot silently approves installer permissions")
+    return errors
+
+
+def test_evidence_bundle_is_development_classified_and_non_authoritative() -> list[str]:
+    bundle = build_evidence_bundle()
+    errors = validate_evidence_bundle(bundle)
+    if bundle.get("release_ready") is not False:
+        errors.append("evidence bundle claimed release readiness")
+    if bundle.get("classification") != "development_evidence":
+        errors.append("evidence bundle is not classified as development_evidence")
+    if not bundle.get("blockers"):
+        errors.append("evidence bundle did not preserve Windows installed-path blockers")
+    if bundle.get("authority_boundary", {}).get("flutter_owns_authority") is not False:
+        errors.append("evidence bundle made Flutter authoritative")
+    return errors
+
+
 def _valid_windows_installed_evidence() -> dict:
     return {
         "platform": "windows",
@@ -1455,6 +1492,8 @@ def main() -> int:
         test_state_snapshot_reports_invariant_flags,
         test_shell_core_integrated_release_smoke,
         test_release_smoke_runs_first_run_and_setup_doctor,
+        test_shell_snapshot_contains_gui_operation_state,
+        test_evidence_bundle_is_development_classified_and_non_authoritative,
         test_windows_release_evidence_validator_accepts_valid_installed_smoke,
         test_windows_release_evidence_validator_rejects_authority_and_missing_installed_path,
         test_invariant_evaluator_detects_intentional_import_violation,

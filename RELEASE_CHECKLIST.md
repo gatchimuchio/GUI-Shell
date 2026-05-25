@@ -80,6 +80,18 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Keep GUI surfaces read-only or Shell Core-authorized and expand them only with corresponding conformance/evidence coverage.
   blocks_release: no
 
+- item: Shell snapshot generator
+  classification: required_for_v1
+  reason: `tooling/shell_snapshot.py` generates the structured local snapshot consumed by `ShellCoreClient.local()`, including trust, authority, evidence, settings, Setup Doctor, audit, recovery, and non-authoritative installer status.
+  required_action: Keep snapshot generation aligned with Flutter model fields and Shell Core authority boundaries.
+  blocks_release: no
+
+- item: evidence bundle export
+  classification: required_for_v1
+  reason: `tooling/evidence_bundle.py --check` validates a development evidence bundle that preserves Windows installed-path blockers and keeps `release_ready=false`.
+  required_action: Keep evidence bundle export non-authoritative until Windows installed-path evidence and owner GO pass.
+  blocks_release: no
+
 - item: duplicate authority key definitions
   classification: required_for_v1
   reason: `packages/shell_core/authority_keys.py` is the single production source of `AUTHORITY_KEYS`; any remaining duplicate authority key definition is a `release_blocker`.

@@ -54,6 +54,18 @@ Release completion must not be claimed until strict Windows release validation p
   evidence: `docs/GUI_OPERATION_SURFACES.md` records Trust Center, Authority Map, Audit Timeline, Recovery Playbook, Adapter Catalog, Permission Diff, Settings UX, Problems Panel, Evidence Center, Command Palette, and Status Bar surfaces.
   blocks_release: no
 
+- item: Shell snapshot generator
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/shell_snapshot.py` produces the structured local snapshot consumed by Flutter local mode, including trust, authority, catalog, problems, evidence, settings, audit, recovery, and Setup Doctor fields.
+  blocks_release: no
+
+- item: Evidence bundle export
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/evidence_bundle.py --check` validates a development evidence bundle with release blockers preserved and `release_ready=false`.
+  blocks_release: no
+
 - item: conformance coverage
   classification: required_for_v1
   status: implemented

@@ -24,6 +24,10 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   classification: required_for_v1
   status: Trust Center, Authority Map, Audit Timeline, Recovery Playbook, Adapter Catalog, Permission Diff, Problems Panel, Evidence Center, Settings UX, Command Palette, and Status Bar vocabulary are present as Shell Core-bound operator surfaces.
 
+- item: Shell snapshot and evidence bundle
+  classification: required_for_v1
+  status: `tooling/shell_snapshot.py` provides structured local GUI state and `tooling/evidence_bundle.py --check` validates a development evidence bundle while preserving Windows installed-path blockers and `release_ready=false`.
+
 - item: Shell Core hardening skeleton
   classification: required_for_v1
   status: contract-level implementation present

@@ -76,7 +76,7 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 85 checks
+    stdout: conformance skeleton passed: 87 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
@@ -88,6 +88,8 @@ checks:
       - first-run and Setup Doctor implementation smoke passed
       - Flutter local client no longer aliases mock and reads structured local snapshot JSON
       - GUI operation surfaces include Trust Center, Authority Map, Adapter Catalog, Problems Panel, Evidence Center, Command Palette, Audit Timeline, Recovery Playbook, Settings UX, and Status Bar vocabulary
+      - Shell snapshot generator emits GUI operation state for local mode
+      - Evidence bundle check preserves blockers and does not claim release readiness
       - Windows installed-path evidence validator accepts valid evidence and rejects unsafe evidence
 
   - name: release_smoke
@@ -106,6 +108,15 @@ checks:
       - Setup Doctor non-authority smoke passed
       - Runtime Catalog reference smoke passed
       - Agent Runtime reference smoke passed
+
+  - name: evidence_bundle
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/evidence_bundle.py --check
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout: evidence bundle check passed: 2 release blockers preserved, release_ready=False, classification=development_evidence
 
   - name: rust_helper_cargo_test
     command: cd native/rust_helper && cargo test
@@ -218,8 +229,9 @@ checks:
     exit: 0
     stdout_summary:
       - schema_check passed
-      - conformance_skeleton passed with 85 checks
+      - conformance_skeleton passed with 87 checks
       - release_gate_check passed
+      - evidence_bundle passed and preserved Windows installed-path blockers
       - rust_helper_cargo_test passed
       - desktop_flutter_analyze passed
       - mobile_flutter_analyze passed with classification post_v1_scope and blocks_release no
