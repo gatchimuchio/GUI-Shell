@@ -76,12 +76,14 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 74 checks
+    stdout: conformance skeleton passed: 78 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
       - approval_state self-reporting checks use RuntimeState approval status
       - recovery_id checks require RuntimeState recovery catalog entry
+      - invariant flags are measured by production InvariantEvaluator
+      - normalization firewall covers Unicode/case/zero-width/alias/value-only authority attempts
 
   - name: rust_helper_cargo_test
     command: cd native/rust_helper && cargo test

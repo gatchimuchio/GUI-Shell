@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -21,6 +22,8 @@ from packages.shell_core.adapter_loader import load_adapter, strip_authority_key
 from packages.shell_core.approval_queue import ApprovalQueue, canonical_hash
 from packages.shell_core.authority_keys import AUTHORITY_KEYS
 from packages.shell_core.content_exposure import project_approval_content
+from packages.shell_core.invariant_evaluator import InvariantEvaluator
+from packages.shell_core.normalization import normalize_inbound_payload, normalize_key
 from packages.shell_core.permission_ledger import PermissionLedger
 from packages.shell_core.policy_evaluator import PolicyEvaluator
 from packages.shell_core.runtime_state import RuntimeState
@@ -283,6 +286,45 @@ def test_adapter_loader_strips_authority_metadata_from_effective_payload() -> li
         errors.append("adapter metadata strip removed safe metadata or left authority metadata")
     if record.effective_capabilities() != ("filesystem.read",):
         errors.append("adapter metadata changed effective capabilities")
+    return errors
+
+
+def test_normalization_firewall_rejects_authority_aliases() -> list[str]:
+    payload = {
+        "Trust_Level": "root",
+        "ｔｒｕｓｔ＿ｌｅｖｅｌ": "admin",
+        "trust\u200b_level": "elevated",
+        "permissionGrant": "all",
+        "admin_context": "owner",
+        "frame": {"metadata": {"authority": "admin"}},
+        "safe_label": "reference",
+    }
+    normalized = normalize_inbound_payload(payload)
+    errors = []
+    for key in ["Trust_Level", "ｔｒｕｓｔ＿ｌｅｖｅｌ", "trust\u200b_level"]:
+        if normalize_key(key) != "trust_level":
+            errors.append(f"normalization did not canonicalize key: {key}")
+    if normalized["quarantined"] is not True:
+        errors.append("normalization firewall did not quarantine authority-bearing payload")
+    if not normalized["audit_event"].get("raw_payload_preserved"):
+        errors.append("normalization firewall did not preserve raw payload for audit")
+    stripped = json.dumps(normalized["stripped_payload"], sort_keys=True)
+    for forbidden in ["trust_level", "permission_grant", "admin_context", "authority"]:
+        if forbidden in stripped:
+            errors.append(f"authority key survived normalization strip: {forbidden}")
+    return errors
+
+
+def test_normalization_firewall_detects_value_only_escalation() -> list[str]:
+    payload = {"metadata": {"label": "root", "safe_note": "operator visible"}}
+    normalized = normalize_inbound_payload(payload)
+    errors = []
+    if normalized["quarantined"] is not True:
+        errors.append("normalization firewall did not quarantine value-only authority attempt")
+    if not normalized["authority_value_findings"]:
+        errors.append("normalization firewall did not record authority value finding")
+    if normalized["stripped_payload"].get("metadata", {}).get("safe_note") != "operator visible":
+        errors.append("normalization firewall removed safe metadata while detecting value-only escalation")
     return errors
 
 
@@ -801,11 +843,40 @@ def test_state_snapshot_reports_invariant_flags() -> list[str]:
         "adapter_metadata_can_escalate_authority",
         "memory_cache_previous_state_can_grant_authority",
         "full_payload_projected_without_full_visibility",
+        "installer_setup_state_can_grant_authority",
+        "mobile_device_state_can_grant_authority",
     }
     errors = []
     for flag in sorted(required):
         if flags.get(flag) is not False:
             errors.append(f"state snapshot invariant flag missing or not false: {flag}")
+    return errors
+
+
+def test_invariant_evaluator_detects_intentional_import_violation() -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        shell_core = root / "packages" / "shell_core"
+        shell_core.mkdir(parents=True)
+        (shell_core / "bad.py").write_text("import flutter\n", encoding="utf-8")
+        if not InvariantEvaluator(root).shell_core_imports_forbidden("flutter"):
+            return ["InvariantEvaluator did not detect forbidden Flutter import"]
+    return []
+
+
+def test_invariant_evaluator_detects_live_authority_invariants() -> list[str]:
+    flags = InvariantEvaluator().evaluate()
+    errors = []
+    if flags["adapter_metadata_can_escalate_authority"]:
+        errors.append("InvariantEvaluator measured adapter metadata authority escalation")
+    if flags["memory_cache_previous_state_can_grant_authority"]:
+        errors.append("InvariantEvaluator measured non-authority source authority grant")
+    if flags["full_payload_projected_without_full_visibility"]:
+        errors.append("InvariantEvaluator measured full payload projection without full visibility")
+    if flags["installer_setup_state_can_grant_authority"]:
+        errors.append("InvariantEvaluator measured installer/setup authority grant")
+    if flags["mobile_device_state_can_grant_authority"]:
+        errors.append("InvariantEvaluator measured mobile/device authority grant")
     return errors
 
 
@@ -1171,6 +1242,8 @@ def main() -> int:
         test_adapter_authority_strip_schema,
         test_inbound_authority_keys_are_stripped,
         test_adapter_loader_strips_authority_metadata_from_effective_payload,
+        test_normalization_firewall_rejects_authority_aliases,
+        test_normalization_firewall_detects_value_only_escalation,
         test_external_metadata_cannot_escalate_authority,
         test_gui_input_cannot_create_runtime_disallowed_authority_context,
         test_memory_cache_previous_state_cannot_grant_authority,
@@ -1209,6 +1282,8 @@ def main() -> int:
         test_sensitive_action_router_blocks_policy_denied_action,
         test_state_snapshot_is_deterministic,
         test_state_snapshot_reports_invariant_flags,
+        test_invariant_evaluator_detects_intentional_import_violation,
+        test_invariant_evaluator_detects_live_authority_invariants,
         test_rust_helper_required_sources_exist,
         test_rust_helper_contract_shape_exists,
         test_rust_helper_does_not_expose_hidden_authority_paths,

@@ -14,7 +14,7 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: schema and conformance skeleton
   classification: required_for_v1
-  status: passed in development validation; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior
+  status: passed in development validation; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior; ghost invariants are now measured by production InvariantEvaluator; normalization firewall conformance is present
 
 - item: Shell Core hardening skeleton
   classification: required_for_v1

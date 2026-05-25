@@ -6,6 +6,8 @@ from .audit_chain import chain_event, verify_audit_chain
 from .audit_store import AuditStore
 from .content_exposure import project_approval_content
 from .error_taxonomy import ShellCoreError, shell_error
+from .invariant_evaluator import InvariantEvaluator
+from .normalization import normalize_inbound_payload, normalize_key
 from .permission_ledger import PermissionLedger
 from .persistence import JsonPersistence
 from .policy_evaluator import PolicyEvaluator
@@ -21,6 +23,7 @@ __all__ = [
     "ApprovalQueue",
     "AuditStore",
     "JsonPersistence",
+    "InvariantEvaluator",
     "PermissionLedger",
     "PolicyEvaluator",
     "RecoveryCatalog",
@@ -33,6 +36,8 @@ __all__ = [
     "chain_event",
     "deterministic_snapshot_json",
     "load_adapter",
+    "normalize_inbound_payload",
+    "normalize_key",
     "project_approval_content",
     "shell_error",
     "verify_audit_chain",

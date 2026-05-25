@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 74 checks`
+  evidence: `conformance skeleton passed: 78 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -31,6 +31,16 @@
   classification: required_for_v1
   status: resolved
   evidence: `packages/shell_core/authority_keys.py` is the single production source for `AUTHORITY_KEYS`; remaining duplicate definitions are classified as `release_blocker`.
+
+- item: ghost invariant measurement
+  classification: required_for_v1
+  status: resolved
+  evidence: `packages/shell_core/state_snapshot.py` uses `InvariantEvaluator().evaluate()` instead of static invariant flags, and conformance checks intentional invariant violations.
+
+- item: normalization firewall
+  classification: required_for_v1
+  status: implemented
+  evidence: conformance covers `Trust_Level`, fullwidth `ｔｒｕｓｔ＿ｌｅｖｅｌ`, zero-width `trust\u200b_level`, `permissionGrant`, `admin_context`, nested frame metadata authority, and value-only authority attempts.
 
 ## Not Sufficient For Release
 

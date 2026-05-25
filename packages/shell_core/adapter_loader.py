@@ -1,6 +1,4 @@
-import copy
-
-from .authority_keys import AUTHORITY_KEYS
+from .normalization import strip_authority_keys
 
 
 class AdapterRecord:
@@ -16,18 +14,6 @@ class AdapterRecord:
 
     def effective_capabilities(self) -> tuple[str, ...]:
         return self.declared_capabilities
-
-
-def strip_authority_keys(value):
-    if isinstance(value, dict):
-        return {
-            key: strip_authority_keys(item)
-            for key, item in value.items()
-            if key not in AUTHORITY_KEYS
-        }
-    if isinstance(value, list):
-        return [strip_authority_keys(item) for item in value]
-    return value
 
 
 def load_adapter(adapter: dict) -> AdapterRecord:

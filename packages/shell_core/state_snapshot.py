@@ -2,15 +2,7 @@ import copy
 import json
 
 from .runtime_state import RuntimeState
-
-
-INVARIANT_FLAGS = {
-    "flutter_imported_by_shell_core": False,
-    "blue_tanuki_imported_by_shell_core": False,
-    "adapter_metadata_can_escalate_authority": False,
-    "memory_cache_previous_state_can_grant_authority": False,
-    "full_payload_projected_without_full_visibility": False,
-}
+from .invariant_evaluator import InvariantEvaluator
 
 
 def _sorted_values(values: dict[str, dict], key_name: str) -> list[dict]:
@@ -41,7 +33,7 @@ def create_state_snapshot(state: RuntimeState) -> dict:
             "policy_ids": [policy["policy_id"] for policy in update_policies],
             "signature_required": all(policy.get("signature_required") is True for policy in update_policies),
         },
-        "invariant_flags": dict(INVARIANT_FLAGS),
+        "invariant_flags": InvariantEvaluator().evaluate(),
     }
 
 

@@ -56,6 +56,18 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Keep conformance tests importing production implementations; do not reintroduce test-local authority stripping or approval edit guard copies; keep `docs/MUTATION_VERIFICATION.md` updated when this surface changes.
   blocks_release: no
 
+- item: ghost invariant measurement
+  classification: required_for_v1
+  reason: state snapshot invariant flags now come from measured production `InvariantEvaluator` checks instead of static false values.
+  required_action: Keep invariant flags measured and mutation-test intentional violations when invariant surfaces change.
+  blocks_release: no
+
+- item: normalization firewall
+  classification: required_for_v1
+  reason: Shell Core now normalizes inbound authority-bearing payloads before authority strip and conformance covers Unicode, case, zero-width, alias, envelope, and value-only escalation attempts.
+  required_action: Keep raw payload preservation, normalized projection, quarantine decision, and normalization audit metadata in the authority path.
+  blocks_release: no
+
 - item: duplicate authority key definitions
   classification: required_for_v1
   reason: `packages/shell_core/authority_keys.py` is the single production source of `AUTHORITY_KEYS`; any remaining duplicate authority key definition is a `release_blocker`.

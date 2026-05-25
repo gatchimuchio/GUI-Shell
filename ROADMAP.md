@@ -5,6 +5,29 @@ Project: GUI Shell / Runtime Operation Shell
 Reference consumer/runtime: BLUE-TANUKI via adapter only  
 Primary implementation candidate: Flutter + Rust helper
 
+## Completion Audit Priority
+
+- item: Ghost Invariants
+  classification: required_for_v1
+  status: implemented_for_current_scope
+  reason: `packages/shell_core/state_snapshot.py` now reports measured `InvariantEvaluator` results instead of static invariant flags.
+  required_action: Keep intentional violation tests in conformance and extend them as new invariant surfaces are added.
+  blocks_release: no
+
+- item: Normalization Firewall
+  classification: required_for_v1
+  status: implemented_for_current_scope
+  reason: Shell Core now preserves raw inbound payloads, normalizes keys, strips authority aliases, detects authority-like values, quarantines ambiguous payloads, and records normalization audit metadata.
+  required_action: Keep Unicode/case/zero-width/camelCase/envelope/value-only escalation tests passing.
+  blocks_release: no
+
+- item: Windows installer, first-run, and real Setup Doctor
+  classification: release_blocker
+  status: not_passed
+  reason: installed app path Setup Doctor and Windows installer/first-run smoke are still the primary Windows-first product blockers.
+  required_action: Implement installed app path diagnostics, Windows installer/first-run flow, artifact/hash evidence, and strict Windows validation.
+  blocks_release: yes
+
 ## 0. Product Definition
 
 GUI Shell is a PC-first AI Runtime / Agent Operation Shell for local runtimes, agents, tools, and services.

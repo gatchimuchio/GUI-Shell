@@ -12,7 +12,7 @@ This file records mutation verification evidence for the conformance tautology f
   expected_failure: conformance must fail because inbound authority keys and authority metadata survive stripping
   observed_failure: `python3 tooling/conformance_tests/run_conformance_skeleton.py` failed with unstripped `authority`, `permission_grant`, `approval_state`, `role`, and `trust_level` evidence
   revert_confirmation: production `strip_authority_keys` was restored; final conformance passed
-  final_validation_result: `conformance skeleton passed: 74 checks`
+  final_validation_result: prior mutation verification baseline passed; current expanded conformance baseline passes with 78 checks
 
 - item: production approval can_edit mutation
   mutation_target: `packages/shell_core/approval_queue.py::ApprovalQueue.can_edit`
@@ -20,7 +20,7 @@ This file records mutation verification evidence for the conformance tautology f
   expected_failure: conformance must fail because authority, sealed, hidden, sacred, and protected fields become editable
   observed_failure: `python3 tooling/conformance_tests/run_conformance_skeleton.py` failed with protected fields reported editable and writable
   revert_confirmation: production `ApprovalQueue.can_edit` was restored; final conformance passed
-  final_validation_result: `conformance skeleton passed: 74 checks`
+  final_validation_result: prior mutation verification baseline passed; current expanded conformance baseline passes with 78 checks
 
 - item: production approval edit guard mutation
   mutation_target: `packages/shell_core/approval_queue.py::ApprovalQueue.edit`
@@ -28,7 +28,7 @@ This file records mutation verification evidence for the conformance tautology f
   expected_failure: conformance must fail because protected fields can be written and queued approval state changes
   observed_failure: `python3 tooling/conformance_tests/run_conformance_skeleton.py` failed with protected fields written and queued approval mutations detected
   revert_confirmation: production `ApprovalQueue.edit` guard was restored; final conformance passed
-  final_validation_result: `conformance skeleton passed: 74 checks`
+  final_validation_result: prior mutation verification baseline passed; current expanded conformance baseline passes with 78 checks
 
 ## Final Validation
 
@@ -38,7 +38,7 @@ This file records mutation verification evidence for the conformance tautology f
 
 - command: `python3 tooling/conformance_tests/run_conformance_skeleton.py`
   status: passed
-  evidence: `conformance skeleton passed: 74 checks`
+  evidence: `conformance skeleton passed: 78 checks`
 
 - command: `python3 tooling/validate_all.py`
   status: passed
