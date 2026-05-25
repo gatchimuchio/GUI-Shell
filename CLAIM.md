@@ -4,7 +4,9 @@
 
 GUI-Shell is not yet a completed product release.
 
-Current claim: Desktop-first AI Runtime / Agent Operation Shell product-completion skeleton.
+Current claim: PC-first AI Runtime / Agent Operation Shell product-completion skeleton.
+
+GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desktop. Current-host Linux validation can pass independently, but all-desktop release validation remains blocked until Windows and macOS evidence exists.
 
 ## Current Completed Areas
 
@@ -30,7 +32,7 @@ Current claim: Desktop-first AI Runtime / Agent Operation Shell product-completi
 
 - item: Desktop Flutter skeleton
   classification: required_for_v1
-  status: implementation present; `cd apps/desktop_flutter && flutter analyze` passed on 2026-05-25
+  status: implementation present; `cd apps/desktop_flutter && flutter analyze`, `flutter test`, `flutter build linux`, and Linux launch smoke passed on 2026-05-25
 
 - item: Setup Doctor skeleton
   classification: required_for_v1
@@ -42,16 +44,28 @@ Current claim: Desktop-first AI Runtime / Agent Operation Shell product-completi
 
 ## Current Release Blockers
 
-- item: Desktop launch/build toolchain validation not passed
+- item: Linux desktop build and launch smoke
+  classification: required_for_v1
+  reason: Linux desktop build smoke and launch smoke passed on 2026-05-25.
+  required_action: Keep Linux build and launch smoke passing on release candidates.
+  blocks_release: no
+
+- item: Windows desktop release validation not passed
   classification: release_blocker
-  reason: v1.0 is desktop-first, and `flutter doctor` reports missing Linux desktop build dependencies: clang++, CMake, ninja, and pkg-config.
-  required_action: Install Linux desktop build dependencies, then pass desktop launch/build smoke validation.
+  reason: Windows desktop project support is missing, Windows Flutter toolchain is not verified, and Windows build, launch, installer, and first-run smoke have not passed.
+  required_action: Generate Windows support if missing and pass Windows analyze/build/launch plus installer/first-run smoke.
   blocks_release: yes
 
-- item: Desktop app launch smoke not passed
+- item: macOS desktop release validation not passed
   classification: release_blocker
-  reason: v1.0 is a completed desktop product release.
-  required_action: Add and pass desktop launch smoke validation.
+  reason: macOS desktop project support is missing, macOS Flutter toolchain is not verified, and macOS build, launch, installer, and first-run smoke have not passed.
+  required_action: Generate macOS support if missing and pass macOS analyze/build/launch plus installer/first-run smoke.
+  blocks_release: yes
+
+- item: OS-specific Setup Doctor diagnostics not passed
+  classification: release_blocker
+  reason: Setup Doctor real diagnostics have not passed for Linux, Windows, and macOS release targets.
+  required_action: Pass OS-specific Setup Doctor diagnostics smoke for each v1.0 desktop platform.
   blocks_release: yes
 
 - item: Installer first-run smoke not passed
@@ -86,8 +100,8 @@ Current claim: Desktop-first AI Runtime / Agent Operation Shell product-completi
 
 - item: Strict release validation not passed
   classification: release_blocker
-  reason: completed desktop-first product release requires strict release validation.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release`.
+  reason: completed Linux, Windows, and macOS desktop product release requires all-desktop strict validation.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=all`.
   blocks_release: yes
 
 - item: Owner GO missing
@@ -100,7 +114,7 @@ Current claim: Desktop-first AI Runtime / Agent Operation Shell product-completi
 
 - item: Mobile full release
   classification: post_v1_scope
-  reason: v1.0 scope is desktop-first unless owner explicitly includes mobile.
+  reason: v1.0 scope is PC desktop unless owner explicitly includes mobile.
   required_action: Complete after v1.0 or update scope by owner instruction.
   blocks_release: no
 

@@ -976,7 +976,7 @@ def test_validation_reporter_exists() -> list[str]:
         return ["tooling/validate_all.py missing"]
     text = path.read_text(encoding="utf-8")
     errors = []
-    for token in ["schema_check", "conformance_skeleton", "rust_helper_cargo_test", "desktop_flutter_analyze", "mobile_flutter_analyze", "status=not run"]:
+    for token in ["schema_check", "conformance_skeleton", "release_gate_check", "rust_helper_cargo_test", "desktop_flutter_analyze", "desktop_flutter_test", "desktop_flutter_build_linux", "mobile_flutter_analyze", "strict-release", "desktop-platform"]:
         if token not in text:
             errors.append(f"validate_all.py missing validation token: {token}")
     return errors

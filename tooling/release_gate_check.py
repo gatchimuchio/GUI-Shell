@@ -18,6 +18,7 @@ SCAN_FILES = [
     "MOBILE_STATUS.md",
     "COMPATIBILITY_MATRIX.md",
     "VALIDATION.txt",
+    "docs/DESKTOP_PLATFORM_MATRIX.md",
     "docs/PRODUCT_COMPLETION_PLAN.md",
     "docs/RELEASE_VALIDATION.md",
     "docs/STRATEGY.md",

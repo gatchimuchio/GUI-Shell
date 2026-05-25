@@ -1,67 +1,135 @@
 # Product Completion Plan
 
-GUI-Shell v1.0 means completed desktop product release, not alpha, tech preview, or skeleton release.
+GUI-Shell v1.0 means completed PC desktop product release across Linux, Windows, and macOS.
 
-## v1.0 Scope
+- item: skeleton, preview, alpha, beta, and scaffold states
+  classification: release_blocker
+  reason: these states are not completed product release states.
+  blocks_release: yes
 
-- Desktop-first
-- Single-user
-- Local-first
-- Runtime and Agent Operation Shell
-- Installer / first-run flow
-- Setup Doctor
-- Runtime Catalog
-- Agent Runtime Contract
-- Shell Core persistence
-- Permission / Approval / Audit / Recovery
-- Audit chain verification
-- Rust helper validated
-- Desktop Flutter validated
-- Mock/reference runtime
-- Mock/reference agent
+## Required For v1
 
-## Not v1.0
+- item: Desktop app
+  classification: required_for_v1
+  reason: v1.0 desktop release scope includes Linux, Windows, and macOS.
+  blocks_release: yes
 
-- completed mobile companion
-- multi-user
-- cloud service
-- runtime marketplace
-- BLUE-TANUKI product completion
-- all live coding-agent adapters
-- enterprise admin
+- item: Linux desktop build and launch smoke
+  classification: required_for_v1
+  reason: current Linux build smoke and launch smoke passed on 2026-05-25.
+  blocks_release: no
 
-## Completion Order
+- item: Windows desktop analyze, build, launch, installer, and first-run smoke
+  classification: release_blocker
+  reason: Windows desktop project support is missing or unverified, and Windows build, launch, installer, and first-run smoke have not passed.
+  required_action: Generate Windows support if missing and pass Windows target validation.
+  blocks_release: yes
 
-1. Claim and roadmap redefinition
-2. Toolchain validation
-3. Runtime Catalog
-4. Agent Runtime Contract
-5. Shell Core persistence
-6. Audit chain persistence and verification
-7. Setup Doctor hardening
-8. Desktop UI live wiring
-9. Installer first-run flow
-10. Reference Runtime / Reference Agent connection
-11. Release gate
+- item: macOS desktop analyze, build, launch, installer, and first-run smoke
+  classification: release_blocker
+  reason: macOS desktop project support is missing or unverified, and macOS build, launch, installer, and first-run smoke have not passed.
+  required_action: Generate macOS support if missing and pass macOS target validation.
+  blocks_release: yes
 
-## Hard Gate
+- item: OS-specific Setup Doctor diagnostics
+  classification: release_blocker
+  reason: real Setup Doctor diagnostics have not passed for each v1.0 desktop target.
+  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  blocks_release: yes
 
-v1.0 requires:
+- item: Single-user local-first mode
+  classification: required_for_v1
+  blocks_release: yes
 
-- `cargo test` passed
-- `flutter analyze` passed for desktop
-- `python3 tooling/validate_all.py` passed without required checks skipped
-- desktop app launches
-- installer first-run passes
-- Setup Doctor real diagnostics pass
-- Runtime Catalog validation passes
-- Agent Runtime Contract validation passes
-- Shell Core persistence passes
-- audit chain verification passes
-- approval edit, rehash, and revalidation passes
-- content visibility UI enforcement passes
-- workspace boundary enforcement passes
-- mock/reference runtime smoke passes
-- mock/reference agent smoke passes
-- README / CLAIM / RELEASE_CHECKLIST support completed-product claim
-- Owner GO
+- item: Installer first-run flow
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Setup Doctor
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Runtime Catalog
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Agent Runtime Contract
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Shell Core persistence
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Permission / Approval / Audit / Recovery
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Audit chain verification
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Rust helper validation
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Desktop Flutter validation
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Mock/reference runtime
+  classification: required_for_v1
+  blocks_release: yes
+
+- item: Mock/reference agent
+  classification: required_for_v1
+  blocks_release: yes
+
+## Post-v1 Scope
+
+- item: completed mobile companion
+  classification: post_v1_scope
+  reason: v1.0 is PC desktop unless owner changes scope.
+  blocks_release: no
+
+- item: multi-user
+  classification: post_v1_scope
+  reason: v1.0 is single-user.
+  blocks_release: no
+
+- item: cloud service
+  classification: post_v1_scope
+  reason: v1.0 is local-first.
+  blocks_release: no
+
+- item: runtime marketplace
+  classification: post_v1_scope
+  reason: v1.0 excludes marketplace distribution.
+  blocks_release: no
+
+- item: BLUE-TANUKI product completion
+  classification: post_v1_scope
+  reason: BLUE-TANUKI is a consumer/reference runtime.
+  blocks_release: no
+
+- item: all live coding-agent adapters
+  classification: post_v1_scope
+  reason: v1.0 requires generic contract and mock/reference agent.
+  blocks_release: no
+
+- item: enterprise admin
+  classification: post_v1_scope
+  reason: v1.0 is single-user desktop.
+  blocks_release: no
+
+## Known Limitations
+
+- item: local single-user mode
+  classification: known_limitation
+  reason: deliberate v1.0 product scope.
+  blocks_release: no
+
+- item: mock/reference runtime and agent as included references
+  classification: known_limitation
+  reason: live third-party integrations are outside v1.0 unless explicitly included.
+  blocks_release: no

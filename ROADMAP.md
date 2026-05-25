@@ -7,11 +7,51 @@ Primary implementation candidate: Flutter + Rust helper
 
 ## 0. Product Definition
 
-GUI Shell is a desktop-first AI Runtime / Agent Operation Shell for local runtimes, agents, tools, and services.
+GUI Shell is a PC-first AI Runtime / Agent Operation Shell for local runtimes, agents, tools, and services.
 
 It is not a BLUE-TANUKI-specific GUI.
 
-BLUE-TANUKI is a reference consumer/runtime and must connect through an adapter boundary. GUI Shell Core must not contain BLUE-TANUKI-specific logic. BLUE-TANUKI live integration is not a v1.0 release gate.
+BLUE-TANUKI is a reference consumer/runtime and must connect through an adapter boundary. GUI Shell Core must not contain BLUE-TANUKI-specific logic. BLUE-TANUKI live integration is not a GUI-Shell v1.0 release dependency.
+
+## v1.0 Desktop Release Scope
+
+GUI-Shell v1.0 completed product release targets the three primary PC desktop platforms: Linux, Windows, and macOS.
+
+- item: Linux desktop build smoke
+  classification: required_for_v1
+  reason: Linux is in v1.0 desktop release scope; current Linux build smoke passed on 2026-05-25.
+  required_action: Keep `cd apps/desktop_flutter && flutter build linux` passing on release candidates.
+  blocks_release: no
+
+- item: Linux desktop launch smoke
+  classification: required_for_v1
+  reason: Linux launch smoke passed under WSLg on 2026-05-25 with Dashboard, NavigationRail, Runtime Status, and Invariant Status visible.
+  required_action: Keep Linux launch smoke evidence current on release candidates.
+  blocks_release: no
+
+- item: Windows desktop support and smoke
+  classification: release_blocker
+  reason: Windows project support, Flutter toolchain verification, build smoke, launch smoke, and installer/first-run smoke have not passed.
+  required_action: Generate Windows desktop project support if missing, verify Windows Flutter toolchain, pass analyze/build/launch smoke, and pass Windows installer/first-run smoke.
+  blocks_release: yes
+
+- item: macOS desktop support and smoke
+  classification: release_blocker
+  reason: macOS project support, Flutter toolchain verification, build smoke, launch smoke, and installer/first-run smoke have not passed.
+  required_action: Generate macOS desktop project support if missing, verify macOS Flutter toolchain, pass analyze/build/launch smoke, and pass macOS installer/first-run smoke.
+  blocks_release: yes
+
+- item: OS-specific Setup Doctor diagnostics
+  classification: release_blocker
+  reason: Setup Doctor real diagnostics must be verified per desktop OS before completed v1.0 release.
+  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  blocks_release: yes
+
+- item: OS-specific installer and first-run plan
+  classification: release_blocker
+  reason: Installer and first-run behavior must be planned and smoked per desktop OS.
+  required_action: Complete and validate Linux, Windows, and macOS installer/first-run flows.
+  blocks_release: yes
 
 ## 1. Non-Negotiable Priorities
 

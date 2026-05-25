@@ -2,7 +2,7 @@
 
 In this repository, "release" means completed product release. Skeleton, preview, alpha, beta, scaffold, and contract-preview states are not release states.
 
-No completed product release may be claimed if any `release_blocker` remains.
+No completed product release may be claimed if any `release_blocker` remains. GUI-Shell v1.0 desktop release scope is Linux, Windows, and macOS.
 
 ## Release Blockers
 
@@ -42,10 +42,76 @@ No completed product release may be claimed if any `release_blocker` remains.
   required_action: Keep documented in release-facing docs and reclassify as `release_blocker` if rendering or stability fails.
   blocks_release: no
 
+- item: Windows desktop project support not generated
+  classification: release_blocker
+  reason: `apps/desktop_flutter/windows` is missing.
+  required_action: Generate Windows Flutter desktop project support and commit bounded project files.
+  blocks_release: yes
+
+- item: Windows Flutter toolchain not verified
+  classification: release_blocker
+  reason: Windows Flutter desktop toolchain has not been verified on a Windows host.
+  required_action: Run Windows Flutter doctor/analyze/build validation on Windows.
+  blocks_release: yes
+
+- item: Windows desktop build smoke not passed
+  classification: release_blocker
+  reason: Windows build smoke has not passed.
+  required_action: Pass `flutter build windows` on a Windows release-candidate host.
+  blocks_release: yes
+
+- item: Windows desktop launch smoke not passed
+  classification: release_blocker
+  reason: Windows launch smoke evidence has not been recorded.
+  required_action: Launch the Windows desktop artifact and record first-window evidence.
+  blocks_release: yes
+
+- item: Windows installer first-run smoke not passed
+  classification: release_blocker
+  reason: Windows installer and first-run smoke have not passed.
+  required_action: Pass Windows installer/first-run smoke validation.
+  blocks_release: yes
+
+- item: macOS desktop project support not generated
+  classification: release_blocker
+  reason: `apps/desktop_flutter/macos` is missing.
+  required_action: Generate macOS Flutter desktop project support and commit bounded project files.
+  blocks_release: yes
+
+- item: macOS Flutter toolchain not verified
+  classification: release_blocker
+  reason: macOS Flutter desktop toolchain has not been verified on a macOS host.
+  required_action: Run macOS Flutter doctor/analyze/build validation on macOS.
+  blocks_release: yes
+
+- item: macOS desktop build smoke not passed
+  classification: release_blocker
+  reason: macOS build smoke has not passed.
+  required_action: Pass `flutter build macos` on a macOS release-candidate host.
+  blocks_release: yes
+
+- item: macOS desktop launch smoke not passed
+  classification: release_blocker
+  reason: macOS launch smoke evidence has not been recorded.
+  required_action: Launch the macOS desktop artifact and record first-window evidence.
+  blocks_release: yes
+
+- item: macOS installer first-run smoke not passed
+  classification: release_blocker
+  reason: macOS installer and first-run smoke have not passed.
+  required_action: Pass macOS installer/first-run smoke validation.
+  blocks_release: yes
+
+- item: OS-specific Setup Doctor diagnostics not passed
+  classification: release_blocker
+  reason: Setup Doctor real diagnostics have not passed for every v1.0 desktop target.
+  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  blocks_release: yes
+
 - item: validate_all.py strict release mode not passed
   classification: release_blocker
-  reason: Aggregate validation passes in development mode, but strict release mode must not report release blockers before completed product release.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release` for strict release mode and pass the normal aggregate validation used by this repository.
+  reason: Current-host Linux validation may pass, but all-desktop strict release mode must not report release blockers before completed product release.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=all` and the normal aggregate validation used by this repository.
   blocks_release: yes
 
 - item: installer first-run smoke not passed

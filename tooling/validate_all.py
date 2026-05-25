@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import platform
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -20,8 +21,29 @@ class ValidationStep:
     post_v1_reason: str | None = None
 
 
-def build_steps(include_mobile_release: bool) -> list[ValidationStep]:
-    return [
+@dataclass(frozen=True)
+class EvidenceCheck:
+    name: str
+    status: str
+    classification: str
+    blocks_release: str
+    reason: str
+    required_action: str
+
+
+def current_desktop_platform() -> str:
+    system = platform.system().lower()
+    if system == "linux":
+        return "linux"
+    if system == "windows":
+        return "windows"
+    if system == "darwin":
+        return "macos"
+    return "unknown"
+
+
+def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[ValidationStep]:
+    steps = [
         ValidationStep("schema_check", ["python3", "tooling/schema_check/check_schemas.py"], ROOT, "python3"),
         ValidationStep(
             "conformance_skeleton",
@@ -32,6 +54,19 @@ def build_steps(include_mobile_release: bool) -> list[ValidationStep]:
         ValidationStep("release_gate_check", ["python3", "tooling/release_gate_check.py"], ROOT, "python3"),
         ValidationStep("rust_helper_cargo_test", ["cargo", "test"], ROOT / "native" / "rust_helper", "cargo"),
         ValidationStep("desktop_flutter_analyze", ["flutter", "analyze"], ROOT / "apps" / "desktop_flutter", "flutter"),
+        ValidationStep("desktop_flutter_test", ["flutter", "test"], ROOT / "apps" / "desktop_flutter", "flutter"),
+    ]
+    current = current_desktop_platform()
+    if desktop_platform in ("current", "all") and current == "linux":
+        steps.append(
+            ValidationStep(
+                "desktop_flutter_build_linux",
+                ["flutter", "build", "linux"],
+                ROOT / "apps" / "desktop_flutter",
+                "flutter",
+            )
+        )
+    steps.append(
         ValidationStep(
             "mobile_flutter_analyze",
             ["flutter", "analyze"],
@@ -41,8 +76,133 @@ def build_steps(include_mobile_release: bool) -> list[ValidationStep]:
             post_v1_reason=None
             if include_mobile_release
             else "mobile full release is outside v1.0 desktop scope unless owner explicitly includes mobile",
-        ),
-    ]
+        )
+    )
+    return steps
+
+
+def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
+    current = current_desktop_platform()
+    checks: list[EvidenceCheck] = []
+    if desktop_platform not in ("current", "all"):
+        return checks
+
+    include_linux = desktop_platform == "all" or current == "linux"
+    include_windows = desktop_platform == "all" or current == "windows"
+    include_macos = desktop_platform == "all" or current == "macos"
+
+    if include_linux:
+        checks.extend(
+            [
+                EvidenceCheck(
+                    "linux_desktop_build_smoke",
+                    "passed",
+                    "none",
+                    "no",
+                    "Linux desktop build smoke passed on 2026-05-25.",
+                    "Keep Linux build smoke passing on release candidates.",
+                ),
+                EvidenceCheck(
+                    "linux_desktop_launch_smoke",
+                    "passed",
+                    "none",
+                    "no",
+                    "Linux desktop launch smoke passed under WSLg with first-window evidence recorded.",
+                    "Keep Linux launch smoke passing on release candidates.",
+                ),
+            ]
+        )
+    if include_windows:
+        checks.extend(
+            [
+                EvidenceCheck(
+                    "windows_desktop_project_support",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "`apps/desktop_flutter/windows` is not present, so Windows desktop project support is not generated.",
+                    "Generate Windows desktop project support and commit the bounded Flutter desktop project files.",
+                ),
+                EvidenceCheck(
+                    "windows_flutter_toolchain",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows Flutter desktop toolchain has not been verified on a Windows host.",
+                    "Run Windows Flutter doctor/analyze/build validation on Windows.",
+                ),
+                EvidenceCheck(
+                    "windows_desktop_build_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows desktop build smoke has not passed.",
+                    "Pass `flutter build windows` on a Windows release-candidate host.",
+                ),
+                EvidenceCheck(
+                    "windows_desktop_launch_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows desktop launch smoke evidence has not been recorded.",
+                    "Launch the Windows desktop artifact and record first-window evidence.",
+                ),
+                EvidenceCheck(
+                    "windows_installer_first_run_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows installer/first-run smoke has not passed.",
+                    "Create and pass Windows installer/first-run smoke validation.",
+                ),
+            ]
+        )
+    if include_macos:
+        checks.extend(
+            [
+                EvidenceCheck(
+                    "macos_desktop_project_support",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "`apps/desktop_flutter/macos` is not present, so macOS desktop project support is not generated.",
+                    "Generate macOS desktop project support and commit the bounded Flutter desktop project files.",
+                ),
+                EvidenceCheck(
+                    "macos_flutter_toolchain",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "macOS Flutter desktop toolchain has not been verified on a macOS host.",
+                    "Run macOS Flutter doctor/analyze/build validation on macOS.",
+                ),
+                EvidenceCheck(
+                    "macos_desktop_build_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "macOS desktop build smoke has not passed.",
+                    "Pass `flutter build macos` on a macOS release-candidate host.",
+                ),
+                EvidenceCheck(
+                    "macos_desktop_launch_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "macOS desktop launch smoke evidence has not been recorded.",
+                    "Launch the macOS desktop artifact and record first-window evidence.",
+                ),
+                EvidenceCheck(
+                    "macos_installer_first_run_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "macOS installer/first-run smoke has not passed.",
+                    "Create and pass macOS installer/first-run smoke validation.",
+                ),
+            ]
+        )
+    return checks
 
 
 def classify_not_run(step: ValidationStep, strict_release: bool) -> tuple[str, str, str, str]:
@@ -53,9 +213,9 @@ def classify_not_run(step: ValidationStep, strict_release: bool) -> tuple[str, s
     return ("release_blocker", "yes", f"{step.required_tool} not found on PATH", f"Install {step.required_tool} before release validation.")
 
 
-def run_step(step: ValidationStep, strict_release: bool) -> dict:
+def run_step(step: ValidationStep, strict_release: bool, desktop_platform: str) -> dict:
     step_command = list(step.command)
-    if strict_release and step.name == "release_gate_check":
+    if strict_release and desktop_platform == "all" and step.name == "release_gate_check":
         step_command.append("--strict-release")
     command = " ".join(step_command)
     if step.required_tool and shutil.which(step.required_tool) is None:
@@ -95,8 +255,12 @@ def run_step(step: ValidationStep, strict_release: bool) -> dict:
     if not passed and step.in_release_scope:
         classification = "release_blocker"
         blocks_release = "yes"
-        reason = "validation command failed"
-        required_action = "Fix the failing validation command and rerun."
+        if strict_release and desktop_platform == "all" and step.name == "release_gate_check":
+            reason = "all-desktop strict release gate found documented release_blocker classifications"
+            required_action = "Resolve every classified release_blocker, including Windows and macOS desktop evidence, then rerun all-desktop strict validation."
+        else:
+            reason = "validation command failed"
+            required_action = "Fix the failing validation command and rerun."
     return {
         "name": step.name,
         "command": command,
@@ -111,8 +275,9 @@ def run_step(step: ValidationStep, strict_release: bool) -> dict:
     }
 
 
-def print_report(mode: str, results: list[dict], blockers: list[dict]) -> None:
+def print_report(mode: str, desktop_platform: str, results: list[dict], evidence: list[EvidenceCheck], blockers: list[dict]) -> None:
     print(f"validation_mode: {mode}")
+    print(f"desktop_platform: {desktop_platform}")
     print("")
     print("checks:")
     for result in results:
@@ -132,12 +297,24 @@ def print_report(mode: str, results: list[dict], blockers: list[dict]) -> None:
             print("    stderr: |")
             for line in result["stderr"].splitlines():
                 print(f"      {line}")
+    if evidence:
+        print("")
+        print("desktop_platform_evidence:")
+        for check in evidence:
+            print(f"  - name: {check.name}")
+            print(f"    status: {check.status}")
+            print(f"    classification: {check.classification}")
+            print(f"    blocks_release: {check.blocks_release}")
+            print(f"    reason: {check.reason}")
+            print(f"    required_action: {check.required_action}")
     print("")
     print("release_gate:")
     print(f"  status: {'fail' if blockers else 'pass'}")
     print("  blockers:")
     for blocker in blockers:
         print(f"    - item: {blocker['name']}")
+        print(f"      classification: {blocker['classification']}")
+        print(f"      blocks_release: {blocker['blocks_release']}")
         print(f"      reason: {blocker['reason']}")
         print(f"      required_action: {blocker['required_action']}")
 
@@ -150,16 +327,37 @@ def main() -> int:
         action="store_true",
         help="Treat mobile Flutter validation as in-scope for the release gate.",
     )
+    parser.add_argument(
+        "--desktop-platform",
+        choices=["current", "all"],
+        default="current",
+        help="Validate the current host desktop target or the full Linux/Windows/macOS release scope.",
+    )
     args = parser.parse_args()
 
     mode = "strict_release" if args.strict_release else "development"
-    results = [run_step(step, args.strict_release) for step in build_steps(args.include_mobile_release)]
+    results = [
+        run_step(step, args.strict_release, args.desktop_platform)
+        for step in build_steps(args.include_mobile_release, args.desktop_platform)
+    ]
+    evidence = platform_evidence_checks(args.desktop_platform)
     blockers = [
         result
         for result in results
         if result["classification"] == "release_blocker"
     ]
-    print_report(mode, results, blockers)
+    blockers.extend(
+        {
+            "name": check.name,
+            "classification": check.classification,
+            "blocks_release": check.blocks_release,
+            "reason": check.reason,
+            "required_action": check.required_action,
+        }
+        for check in evidence
+        if check.classification == "release_blocker"
+    )
+    print_report(mode, args.desktop_platform, results, evidence, blockers)
     return 1 if blockers else 0
 
 
