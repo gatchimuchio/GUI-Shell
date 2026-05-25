@@ -2,7 +2,7 @@
 
 In this repository, "release" means completed product release. Skeleton, preview, alpha, beta, scaffold, and contract-preview states are not release states.
 
-No completed product release may be claimed if any `release_blocker` remains. GUI-Shell v1.0 desktop release scope is Linux, Windows, and macOS.
+No completed product release may be claimed if any `release_blocker` remains. GUI-Shell v1.0 is Windows-first: Windows is primary, macOS is secondary portability, and Linux is the validated development/verification slice.
 
 ## Release Blockers
 
@@ -20,20 +20,20 @@ No completed product release may be claimed if any `release_blocker` remains. GU
 
 - item: Linux desktop build dependencies gate
   classification: required_for_v1
-  reason: Rust/Cargo, Flutter, `unzip`, and Linux desktop build dependencies are resolved. `flutter doctor -v` reports clang 21.1.8, cmake 4.2.3, ninja 1.13.2, and pkg-config 2.5.1.
-  required_action: Keep `$HOME/.cargo/bin` and `$HOME/dev/flutter/bin` on PATH and keep Linux desktop build dependencies installed for release candidates.
+  reason: Rust/Cargo, Flutter, `unzip`, and Linux desktop build dependencies are resolved for the development/verification slice. `flutter doctor -v` reports clang 21.1.8, cmake 4.2.3, ninja 1.13.2, and pkg-config 2.5.1.
+  required_action: Keep Linux desktop build dependencies installed for development validation; do not treat Linux as final Windows-first product proof.
   blocks_release: no
 
 - item: Linux desktop project configuration gate
   classification: required_for_v1
   reason: Linux desktop project support is configured and `cd apps/desktop_flutter && flutter build linux` passed on 2026-05-25, producing `build/linux/x64/release/bundle/gui_shell_desktop`.
-  required_action: Keep Linux desktop project files and pass `flutter build linux` on the release candidate.
+  required_action: Keep Linux build smoke passing as a development/verification slice.
   blocks_release: no
 
 - item: Linux desktop launch smoke gate
   classification: required_for_v1
   reason: `./build/linux/x64/release/bundle/gui_shell_desktop` launched successfully under WSLg on 2026-05-25; the first window opened with Dashboard, NavigationRail, Runtime Status, and Invariant Status visible.
-  required_action: Keep Linux desktop launch smoke passing on release candidates.
+  required_action: Keep Linux desktop launch smoke passing, but complete Windows launch smoke before product release.
   blocks_release: no
 
 - item: WSLg libEGL/MESA graphics warnings
@@ -46,6 +46,18 @@ No completed product release may be claimed if any `release_blocker` remains. GU
   classification: release_blocker
   reason: `apps/desktop_flutter/windows` is missing.
   required_action: Generate Windows Flutter desktop project support and commit bounded project files.
+  blocks_release: yes
+
+- item: Windows Flutter analyze not passed
+  classification: release_blocker
+  reason: Windows Flutter analyze has not passed on a Windows host.
+  required_action: Pass `cd apps/desktop_flutter && flutter analyze` on Windows.
+  blocks_release: yes
+
+- item: Windows Flutter test not passed
+  classification: release_blocker
+  reason: Windows Flutter test has not passed on a Windows host.
+  required_action: Pass `cd apps/desktop_flutter && flutter test` on Windows.
   blocks_release: yes
 
 - item: Windows Flutter toolchain not verified
@@ -70,6 +82,12 @@ No completed product release may be claimed if any `release_blocker` remains. GU
   classification: release_blocker
   reason: Windows installer and first-run smoke have not passed.
   required_action: Pass Windows installer/first-run smoke validation.
+  blocks_release: yes
+
+- item: Windows Setup Doctor smoke not passed
+  classification: release_blocker
+  reason: Windows Setup Doctor smoke has not passed from the Windows app path.
+  required_action: Pass Windows-specific Setup Doctor diagnostics smoke.
   blocks_release: yes
 
 - item: macOS desktop project support not generated
@@ -102,16 +120,22 @@ No completed product release may be claimed if any `release_blocker` remains. GU
   required_action: Pass macOS installer/first-run smoke validation.
   blocks_release: yes
 
-- item: OS-specific Setup Doctor diagnostics not passed
+- item: macOS packaging notarization plan not documented
   classification: release_blocker
-  reason: Setup Doctor real diagnostics have not passed for every v1.0 desktop target.
-  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  reason: macOS packaging/notarization plan is not documented as release-ready.
+  required_action: Document and validate macOS packaging/notarization plan.
+  blocks_release: yes
+
+- item: cross-platform Setup Doctor diagnostics not passed
+  classification: release_blocker
+  reason: Setup Doctor real diagnostics have not passed for Windows-first release and portability targets.
+  required_action: Pass Windows Setup Doctor smoke first, then macOS/Linux diagnostics as target support expands.
   blocks_release: yes
 
 - item: validate_all.py strict release mode not passed
   classification: release_blocker
-  reason: Current-host Linux validation may pass, but all-desktop strict release mode must not report release blockers before completed product release.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=all` and the normal aggregate validation used by this repository.
+  reason: Current-host Linux validation may pass, but Windows-first strict release mode must not report release blockers before completed product release.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; pass `--desktop-platform=all` before claiming all-desktop support.
   blocks_release: yes
 
 - item: installer first-run smoke not passed
@@ -178,7 +202,7 @@ No completed product release may be claimed if any `release_blocker` remains. GU
 
 - item: mobile full release
   classification: post_v1_scope
-  reason: v1.0 is desktop-first unless owner explicitly includes mobile in release scope.
+  reason: v1.0 is Windows-first PC desktop unless owner explicitly includes mobile in release scope.
   blocks_release: no
 
 - item: multi-user mode

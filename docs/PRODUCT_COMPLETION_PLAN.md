@@ -1,6 +1,6 @@
 # Product Completion Plan
 
-GUI-Shell v1.0 means completed PC desktop product release across Linux, Windows, and macOS.
+GUI-Shell v1.0 means completed Windows-first PC desktop product release.
 
 - item: skeleton, preview, alpha, beta, and scaffold states
   classification: release_blocker
@@ -9,32 +9,38 @@ GUI-Shell v1.0 means completed PC desktop product release across Linux, Windows,
 
 ## Required For v1
 
+Platform priority:
+
+- Primary: Windows
+- Secondary: macOS
+- Development/verification slice: Linux
+
 - item: Desktop app
   classification: required_for_v1
-  reason: v1.0 desktop release scope includes Linux, Windows, and macOS.
+  reason: v1.0 desktop release is Windows-first, with macOS portability and Linux development verification.
   blocks_release: yes
 
 - item: Linux desktop build and launch smoke
   classification: required_for_v1
-  reason: current Linux build smoke and launch smoke passed on 2026-05-25.
+  reason: current Linux build smoke and launch smoke passed on 2026-05-25 as development/verification proof, not final product proof by itself.
   blocks_release: no
 
-- item: Windows desktop analyze, build, launch, installer, and first-run smoke
+- item: Windows desktop project support, analyze, test, build, launch, Setup Doctor, installer, and first-run smoke
   classification: release_blocker
-  reason: Windows desktop project support is missing or unverified, and Windows build, launch, installer, and first-run smoke have not passed.
-  required_action: Generate Windows support if missing and pass Windows target validation.
+  reason: Windows is the primary product target, and Windows project support, Flutter toolchain, analyze, test, build, launch, Setup Doctor, installer, and first-run smoke have not passed.
+  required_action: Generate Windows support if missing and pass all Windows target validation.
   blocks_release: yes
 
-- item: macOS desktop analyze, build, launch, installer, and first-run smoke
+- item: macOS desktop project support, build, launch, packaging/notarization, installer, and first-run smoke
   classification: release_blocker
-  reason: macOS desktop project support is missing or unverified, and macOS build, launch, installer, and first-run smoke have not passed.
+  reason: macOS is the secondary portability target, and macOS project support, toolchain, build, launch, packaging/notarization plan, installer, and first-run smoke have not passed.
   required_action: Generate macOS support if missing and pass macOS target validation.
   blocks_release: yes
 
-- item: OS-specific Setup Doctor diagnostics
+- item: Windows Setup Doctor diagnostics
   classification: release_blocker
-  reason: real Setup Doctor diagnostics have not passed for each v1.0 desktop target.
-  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  reason: real Setup Doctor diagnostics have not passed on the primary Windows target.
+  required_action: Pass Windows Setup Doctor diagnostics smoke.
   blocks_release: yes
 
 - item: Single-user local-first mode
@@ -89,7 +95,7 @@ GUI-Shell v1.0 means completed PC desktop product release across Linux, Windows,
 
 - item: completed mobile companion
   classification: post_v1_scope
-  reason: v1.0 is PC desktop unless owner changes scope.
+  reason: v1.0 is Windows-first PC desktop unless owner changes scope.
   blocks_release: no
 
 - item: multi-user

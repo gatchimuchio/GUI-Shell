@@ -57,7 +57,10 @@ def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[Val
         ValidationStep("desktop_flutter_test", ["flutter", "test"], ROOT / "apps" / "desktop_flutter", "flutter"),
     ]
     current = current_desktop_platform()
-    if desktop_platform in ("current", "all") and current == "linux":
+    target_linux = desktop_platform == "linux" or desktop_platform == "all" or (
+        desktop_platform == "current" and current == "linux"
+    )
+    if target_linux and current == "linux":
         steps.append(
             ValidationStep(
                 "desktop_flutter_build_linux",
@@ -84,12 +87,10 @@ def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[Val
 def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
     current = current_desktop_platform()
     checks: list[EvidenceCheck] = []
-    if desktop_platform not in ("current", "all"):
-        return checks
 
-    include_linux = desktop_platform == "all" or current == "linux"
-    include_windows = desktop_platform == "all" or current == "windows"
-    include_macos = desktop_platform == "all" or current == "macos"
+    include_linux = desktop_platform in ("linux", "all") or (desktop_platform == "current" and current == "linux")
+    include_windows = desktop_platform in ("windows", "all") or (desktop_platform == "current" and current == "windows")
+    include_macos = desktop_platform in ("macos", "all") or (desktop_platform == "current" and current == "macos")
 
     if include_linux:
         checks.extend(
@@ -100,15 +101,15 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
                     "none",
                     "no",
                     "Linux desktop build smoke passed on 2026-05-25.",
-                    "Keep Linux build smoke passing on release candidates.",
+                    "Keep Linux build smoke passing as the development/verification slice.",
                 ),
                 EvidenceCheck(
                     "linux_desktop_launch_smoke",
                     "passed",
                     "none",
                     "no",
-                    "Linux desktop launch smoke passed under WSLg with first-window evidence recorded.",
-                    "Keep Linux launch smoke passing on release candidates.",
+                    "Linux desktop launch smoke passed under WSLg with first-window evidence recorded; this is useful proof but not final Windows-first product proof by itself.",
+                    "Keep Linux launch smoke passing while completing Windows-first release evidence.",
                 ),
             ]
         )
@@ -116,7 +117,7 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
         checks.extend(
             [
                 EvidenceCheck(
-                    "windows_desktop_project_support",
+                    "windows_desktop_project_support_exists",
                     "failed",
                     "release_blocker",
                     "yes",
@@ -130,6 +131,22 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
                     "yes",
                     "Windows Flutter desktop toolchain has not been verified on a Windows host.",
                     "Run Windows Flutter doctor/analyze/build validation on Windows.",
+                ),
+                EvidenceCheck(
+                    "windows_flutter_analyze",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows Flutter analyze has not passed on a Windows host.",
+                    "Pass `flutter analyze` for the desktop Flutter app on Windows.",
+                ),
+                EvidenceCheck(
+                    "windows_flutter_test",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows Flutter test has not passed on a Windows host.",
+                    "Pass `flutter test` for the desktop Flutter app on Windows.",
                 ),
                 EvidenceCheck(
                     "windows_desktop_build_smoke",
@@ -155,13 +172,21 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
                     "Windows installer/first-run smoke has not passed.",
                     "Create and pass Windows installer/first-run smoke validation.",
                 ),
+                EvidenceCheck(
+                    "windows_setup_doctor_smoke",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "Windows Setup Doctor smoke has not passed.",
+                    "Pass Windows-specific Setup Doctor diagnostics smoke from the app path.",
+                ),
             ]
         )
     if include_macos:
         checks.extend(
             [
                 EvidenceCheck(
-                    "macos_desktop_project_support",
+                    "macos_desktop_project_support_exists",
                     "failed",
                     "release_blocker",
                     "yes",
@@ -191,6 +216,14 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
                     "yes",
                     "macOS desktop launch smoke evidence has not been recorded.",
                     "Launch the macOS desktop artifact and record first-window evidence.",
+                ),
+                EvidenceCheck(
+                    "macos_packaging_notarization_plan",
+                    "failed",
+                    "release_blocker",
+                    "yes",
+                    "macOS packaging/notarization plan is not yet documented as passed for release.",
+                    "Document and validate the macOS packaging/notarization plan.",
                 ),
                 EvidenceCheck(
                     "macos_installer_first_run_smoke",
@@ -257,7 +290,7 @@ def run_step(step: ValidationStep, strict_release: bool, desktop_platform: str) 
         blocks_release = "yes"
         if strict_release and desktop_platform == "all" and step.name == "release_gate_check":
             reason = "all-desktop strict release gate found documented release_blocker classifications"
-            required_action = "Resolve every classified release_blocker, including Windows and macOS desktop evidence, then rerun all-desktop strict validation."
+            required_action = "Resolve every classified release_blocker, including Windows-first and macOS portability evidence, then rerun all-desktop strict validation."
         else:
             reason = "validation command failed"
             required_action = "Fix the failing validation command and rerun."
@@ -329,9 +362,9 @@ def main() -> int:
     )
     parser.add_argument(
         "--desktop-platform",
-        choices=["current", "all"],
+        choices=["current", "windows", "linux", "macos", "all"],
         default="current",
-        help="Validate the current host desktop target or the full Linux/Windows/macOS release scope.",
+        help="Validate current host, a named desktop target, or the full Windows/macOS/Linux desktop scope.",
     )
     args = parser.parse_args()
 

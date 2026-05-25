@@ -6,7 +6,7 @@ GUI-Shell is not yet a completed product release.
 
 Current claim: PC-first AI Runtime / Agent Operation Shell product-completion skeleton.
 
-GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desktop. Current-host Linux validation can pass independently, but all-desktop release validation remains blocked until Windows and macOS evidence exists.
+GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a development/verification slice, but it is not final product proof by itself. macOS is a secondary portability target, and BLUE-TANUKI remains a consumer/reference runtime rather than a GUI-Shell release dependency.
 
 ## Current Completed Areas
 
@@ -46,26 +46,26 @@ GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desk
 
 - item: Linux desktop build and launch smoke
   classification: required_for_v1
-  reason: Linux desktop build smoke and launch smoke passed on 2026-05-25.
-  required_action: Keep Linux build and launch smoke passing on release candidates.
+  reason: Linux desktop build smoke and launch smoke passed on 2026-05-25 as development/verification proof.
+  required_action: Keep Linux build and launch smoke passing, but do not treat them as Windows-first product proof.
   blocks_release: no
 
 - item: Windows desktop release validation not passed
   classification: release_blocker
-  reason: Windows desktop project support is missing, Windows Flutter toolchain is not verified, and Windows build, launch, installer, and first-run smoke have not passed.
-  required_action: Generate Windows support if missing and pass Windows analyze/build/launch plus installer/first-run smoke.
+  reason: Windows is the primary product target; Windows project support, Flutter toolchain verification, analyze, test, build, launch, Setup Doctor, installer, and first-run smoke have not passed.
+  required_action: Pass Windows project support, toolchain, `flutter analyze`, `flutter test`, `flutter build windows`, launch smoke, Setup Doctor smoke, and installer/first-run smoke.
   blocks_release: yes
 
 - item: macOS desktop release validation not passed
   classification: release_blocker
-  reason: macOS desktop project support is missing, macOS Flutter toolchain is not verified, and macOS build, launch, installer, and first-run smoke have not passed.
-  required_action: Generate macOS support if missing and pass macOS analyze/build/launch plus installer/first-run smoke.
+  reason: macOS is the secondary portability target; macOS project support, toolchain verification, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke have not passed.
+  required_action: Pass macOS project support, toolchain, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke.
   blocks_release: yes
 
-- item: OS-specific Setup Doctor diagnostics not passed
+- item: Windows Setup Doctor diagnostics not passed
   classification: release_blocker
-  reason: Setup Doctor real diagnostics have not passed for Linux, Windows, and macOS release targets.
-  required_action: Pass OS-specific Setup Doctor diagnostics smoke for each v1.0 desktop platform.
+  reason: Windows Setup Doctor smoke has not passed for the primary product target.
+  required_action: Pass Windows Setup Doctor diagnostics smoke.
   blocks_release: yes
 
 - item: Installer first-run smoke not passed
@@ -100,8 +100,8 @@ GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desk
 
 - item: Strict release validation not passed
   classification: release_blocker
-  reason: completed Linux, Windows, and macOS desktop product release requires all-desktop strict validation.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=all`.
+  reason: completed Windows-first product release requires Windows strict validation; all-desktop validation remains blocked until Windows, macOS, and Linux evidence is complete.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; pass `--desktop-platform=all` before claiming all-desktop support.
   blocks_release: yes
 
 - item: Owner GO missing
@@ -114,7 +114,7 @@ GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desk
 
 - item: Mobile full release
   classification: post_v1_scope
-  reason: v1.0 scope is PC desktop unless owner explicitly includes mobile.
+  reason: v1.0 scope is Windows-first PC desktop unless owner explicitly includes mobile.
   required_action: Complete after v1.0 or update scope by owner instruction.
   blocks_release: no
 
@@ -158,6 +158,6 @@ GUI-Shell v1.0 completed product release scope is Linux, Windows, and macOS desk
 
 - item: local single-user only
   classification: known_limitation
-  reason: v1.0 product scope is desktop-first, single-user, local-first.
+  reason: v1.0 product scope is Windows-first PC desktop, single-user, local-first.
   required_action: Keep README, CLAIM, and RELEASE_CHECKLIST aligned.
   blocks_release: no

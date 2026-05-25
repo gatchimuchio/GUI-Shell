@@ -15,42 +15,50 @@ BLUE-TANUKI is a reference consumer/runtime and must connect through an adapter 
 
 ## v1.0 Desktop Release Scope
 
-GUI-Shell v1.0 completed product release targets the three primary PC desktop platforms: Linux, Windows, and macOS.
+GUI-Shell v1.0 is Windows-first.
+
+Platform priority:
+
+- Primary: Windows
+- Secondary: macOS
+- Development/verification slice: Linux
+
+Linux build and launch smoke are passed and useful, but Linux is not final product proof by itself. Windows is the main product gate.
 
 - item: Linux desktop build smoke
   classification: required_for_v1
-  reason: Linux is in v1.0 desktop release scope; current Linux build smoke passed on 2026-05-25.
-  required_action: Keep `cd apps/desktop_flutter && flutter build linux` passing on release candidates.
+  reason: Linux development/verification build smoke passed on 2026-05-25.
+  required_action: Keep `cd apps/desktop_flutter && flutter build linux` passing as a development verification slice.
   blocks_release: no
 
 - item: Linux desktop launch smoke
   classification: required_for_v1
-  reason: Linux launch smoke passed under WSLg on 2026-05-25 with Dashboard, NavigationRail, Runtime Status, and Invariant Status visible.
-  required_action: Keep Linux launch smoke evidence current on release candidates.
+  reason: Linux launch smoke passed under WSLg on 2026-05-25 with Dashboard, NavigationRail, Runtime Status, and Invariant Status visible; this does not replace Windows-first release evidence.
+  required_action: Keep Linux launch smoke evidence current while completing Windows product gates.
   blocks_release: no
 
-- item: Windows desktop support and smoke
+- item: Windows desktop release gates
   classification: release_blocker
-  reason: Windows project support, Flutter toolchain verification, build smoke, launch smoke, and installer/first-run smoke have not passed.
-  required_action: Generate Windows desktop project support if missing, verify Windows Flutter toolchain, pass analyze/build/launch smoke, and pass Windows installer/first-run smoke.
+  reason: Windows is the primary product target, and Windows project support, Flutter toolchain verification, analyze, test, build, launch, Setup Doctor, installer, and first-run smoke have not passed.
+  required_action: Pass Windows project support, toolchain, `flutter analyze`, `flutter test`, `flutter build windows`, launch smoke, Setup Doctor smoke, and installer/first-run smoke.
   blocks_release: yes
 
-- item: macOS desktop support and smoke
+- item: macOS portability gates
   classification: release_blocker
-  reason: macOS project support, Flutter toolchain verification, build smoke, launch smoke, and installer/first-run smoke have not passed.
-  required_action: Generate macOS desktop project support if missing, verify macOS Flutter toolchain, pass analyze/build/launch smoke, and pass macOS installer/first-run smoke.
+  reason: macOS is the secondary portability target, and macOS project support, Flutter toolchain verification, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke have not passed.
+  required_action: Pass macOS project support, toolchain, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke.
   blocks_release: yes
 
-- item: OS-specific Setup Doctor diagnostics
+- item: Windows Setup Doctor diagnostics
   classification: release_blocker
-  reason: Setup Doctor real diagnostics must be verified per desktop OS before completed v1.0 release.
-  required_action: Pass Linux, Windows, and macOS Setup Doctor diagnostics smoke.
+  reason: Windows-specific Setup Doctor diagnostics are part of the primary product gate.
+  required_action: Pass Windows Setup Doctor diagnostics smoke from the app path.
   blocks_release: yes
 
-- item: OS-specific installer and first-run plan
+- item: Windows installer and first-run plan
   classification: release_blocker
-  reason: Installer and first-run behavior must be planned and smoked per desktop OS.
-  required_action: Complete and validate Linux, Windows, and macOS installer/first-run flows.
+  reason: Windows installer and first-run behavior are part of the primary product gate.
+  required_action: Complete and validate Windows installer/first-run flow.
   blocks_release: yes
 
 ## 1. Non-Negotiable Priorities
