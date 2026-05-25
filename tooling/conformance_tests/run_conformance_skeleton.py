@@ -39,6 +39,7 @@ from packages.runtime_catalog import RuntimeCatalog
 from packages.shell_core.audit_chain import chain_event, verify_audit_chain
 from tooling.schema_check.check_schemas import validate_instance
 from tooling.release_smoke import run_release_smokes
+from tooling.windows_release_evidence import validate_windows_release_evidence
 
 REQUIRED_SCHEMA_NAMES = {
     "runtime",
@@ -891,6 +892,75 @@ def test_release_smoke_runs_first_run_and_setup_doctor() -> list[str]:
     return errors
 
 
+def _valid_windows_installed_evidence() -> dict:
+    return {
+        "platform": "windows",
+        "artifact": {
+            "installed_exe_path": r"C:\Program Files\GUI-Shell\gui_shell_desktop.exe",
+            "installed_exe_exists": True,
+            "sha256": "sha256:" + "1" * 64,
+        },
+        "first_run": {
+            "status": "passed",
+            "command": r".\gui_shell_desktop.exe",
+            "launched_from_installed_path": True,
+            "first_window_visible": True,
+            "visible_surfaces": ["Dashboard", "NavigationRail", "Runtime Status", "Invariant Status"],
+            "config_created": True,
+            "audit_dir_writable": True,
+            "installer_grants_authority": False,
+            "installer_silently_approves_permissions": False,
+        },
+        "setup_doctor": {
+            "status": "warning",
+            "ran_from_installed_app_path": True,
+            "operator_readable": True,
+            "installer_grants_authority": False,
+            "installer_silently_approves_permissions": False,
+            "checks": [
+                {
+                    "check_id": "windows.installed_app_path",
+                    "status": "pass",
+                    "message": "installed path resolved",
+                    "grants_authority": False,
+                }
+            ],
+        },
+    }
+
+
+def test_windows_release_evidence_validator_accepts_valid_installed_smoke() -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "windows_installed_smoke.json"
+        path.write_text(json.dumps(_valid_windows_installed_evidence()), encoding="utf-8")
+        results = validate_windows_release_evidence(path)
+    errors = []
+    for result in results:
+        if result.status != "passed":
+            errors.append(f"{result.name} rejected valid Windows evidence: {result.reason}")
+        if result.classification == "release_blocker":
+            errors.append(f"{result.name} classified valid Windows evidence as release_blocker")
+    return errors
+
+
+def test_windows_release_evidence_validator_rejects_authority_and_missing_installed_path() -> list[str]:
+    bad = _valid_windows_installed_evidence()
+    bad["artifact"]["installed_exe_exists"] = False
+    bad["first_run"]["installer_grants_authority"] = True
+    bad["setup_doctor"]["checks"][0]["grants_authority"] = True
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "windows_installed_smoke.json"
+        path.write_text(json.dumps(bad), encoding="utf-8")
+        results = validate_windows_release_evidence(path)
+    result_by_name = {result.name: result for result in results}
+    errors = []
+    if result_by_name["windows_installer_first_run_smoke"].classification != "release_blocker":
+        errors.append("Windows first-run evidence validator accepted missing installed path or installer authority")
+    if result_by_name["windows_setup_doctor_smoke"].classification != "release_blocker":
+        errors.append("Windows Setup Doctor evidence validator accepted authority-granting check")
+    return errors
+
+
 def test_invariant_evaluator_detects_intentional_import_violation() -> list[str]:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -1322,6 +1392,8 @@ def main() -> int:
         test_state_snapshot_reports_invariant_flags,
         test_shell_core_integrated_release_smoke,
         test_release_smoke_runs_first_run_and_setup_doctor,
+        test_windows_release_evidence_validator_accepts_valid_installed_smoke,
+        test_windows_release_evidence_validator_rejects_authority_and_missing_installed_path,
         test_invariant_evaluator_detects_intentional_import_violation,
         test_invariant_evaluator_detects_live_authority_invariants,
         test_rust_helper_required_sources_exist,

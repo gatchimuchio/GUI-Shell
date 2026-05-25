@@ -76,7 +76,7 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 80 checks
+    stdout: conformance skeleton passed: 82 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
@@ -86,6 +86,7 @@ checks:
       - normalization firewall covers Unicode/case/zero-width/alias/value-only authority attempts
       - integrated Shell Core release smoke passed
       - first-run and Setup Doctor implementation smoke passed
+      - Windows installed-path evidence validator accepts valid evidence and rejects unsafe evidence
 
   - name: release_smoke
     command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/release_smoke.py
@@ -213,7 +214,7 @@ checks:
     exit: 0
     stdout_summary:
       - schema_check passed
-      - conformance_skeleton passed
+      - conformance_skeleton passed with 82 checks
       - release_gate_check passed
       - rust_helper_cargo_test passed
       - desktop_flutter_analyze passed
@@ -243,8 +244,8 @@ checks:
       - windows_flutter_test passed
       - windows_desktop_build_smoke passed
       - windows_desktop_launch_smoke passed
-      - windows_installer_first_run_smoke failed as release_blocker
-      - windows_setup_doctor_smoke failed as release_blocker
+      - windows_installer_first_run_smoke failed as release_blocker because `release_evidence/windows_installed_smoke.json` is missing
+      - windows_setup_doctor_smoke failed as release_blocker because `release_evidence/windows_installed_smoke.json` is missing
 
 release_gate:
   status: fail_for_completed_product_release

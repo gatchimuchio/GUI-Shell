@@ -1,6 +1,6 @@
 # Completion Audit Roadmap
 
-Status date: 2026-05-25
+Status date: 2026-05-26
 
 ## Audit Conclusion
 
@@ -60,18 +60,24 @@ Release completion must not be claimed until strict Windows release validation p
   evidence: `tooling/release_smoke.py` registers reference manifests through RuntimeCatalog and validates Agent Runtime workspace, secret path, permission mapping, and auditable diff behavior.
   blocks_release: no
 
+- item: Windows installed-path evidence validator
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/windows_release_evidence.py` validates `release_evidence/windows_installed_smoke.json` for installed executable hash, installed-path first run, visible first-window surfaces, config/audit initialization, and Setup Doctor non-authority diagnostics.
+  blocks_release: no
+
 ## Remaining Release Blockers
 
 - item: Windows installer and first-run smoke
   classification: release_blocker
-  reason: installed app path first-run evidence has not passed.
-  required_action: implement and pass Windows installer/first-run validation.
+  reason: installed app path first-run evidence is missing from `release_evidence/windows_installed_smoke.json`.
+  required_action: run native Windows installed smoke collection and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: Windows Setup Doctor real diagnostics smoke
   classification: release_blocker
-  reason: Setup Doctor has not passed from the installed Windows app path.
-  required_action: connect desktop UI and installed app path smoke to real Setup Doctor diagnostics.
+  reason: Setup Doctor has not passed from the installed Windows app path because evidence is missing.
+  required_action: record installed-path Setup Doctor diagnostics and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: Owner GO

@@ -31,10 +31,11 @@ Release validation:
 - any `release_blocker` fails validation
 - `validate_all.py --strict-release` must pass
 - `python3 tooling/release_smoke.py` must pass
+- `python3 tooling/windows_release_evidence.py` must pass for Windows completed product release
 - `cargo test` must pass if Rust helper is in release scope
 - desktop `flutter analyze` must pass if desktop app is in release scope
 - mobile `flutter analyze` is required only if mobile is in release scope
-- installer smoke must pass if installer is in release scope
+- installer smoke must pass with machine-readable installed-path evidence if installer is in release scope
 
 `not_run` is a `release_blocker` in release validation for in-scope components.
 

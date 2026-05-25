@@ -54,8 +54,8 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: Windows installer, first-run, and Setup Doctor release validation not passed
   classification: release_blocker
-  reason: Windows project support, Flutter toolchain verification, analyze, test, build, and native launch smoke have passed, but Windows Setup Doctor, installer, and first-run smoke have not passed.
-  required_action: Pass Windows Setup Doctor smoke and installer/first-run smoke.
+  reason: Windows project support, Flutter toolchain verification, analyze, test, build, and native launch smoke have passed, but installed-path Windows Setup Doctor, installer, and first-run evidence is missing from `release_evidence/windows_installed_smoke.json`.
+  required_action: Run native Windows installed smoke collection and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: macOS planned portability target unverified
@@ -66,8 +66,8 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: Windows Setup Doctor diagnostics not passed
   classification: release_blocker
-  reason: Windows Setup Doctor smoke has not passed for the primary product target.
-  required_action: Pass Windows Setup Doctor diagnostics smoke.
+  reason: Windows Setup Doctor installed-path diagnostics evidence is missing for the primary product target.
+  required_action: Pass Windows Setup Doctor diagnostics smoke through `release_evidence/windows_installed_smoke.json`.
   blocks_release: yes
 
 - item: implementation first-run smoke

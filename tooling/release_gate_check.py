@@ -22,6 +22,7 @@ SCAN_FILES = [
     "docs/WINDOWS_RELEASE_PLAN.md",
     "docs/PRODUCT_COMPLETION_PLAN.md",
     "docs/RELEASE_VALIDATION.md",
+    "docs/WINDOWS_RELEASE_EVIDENCE.md",
     "docs/STRATEGY.md",
 ]
 

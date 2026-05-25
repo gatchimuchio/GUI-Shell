@@ -4,11 +4,15 @@ import argparse
 import platform
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from tooling.windows_release_evidence import validate_windows_release_evidence
 
 
 @dataclass(frozen=True)
@@ -166,23 +170,18 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
                     r"`.\build\windows\x64\runner\Release\gui_shell_desktop.exe` launched successfully on native Windows; Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible.",
                     "Keep Windows desktop launch smoke passing on release candidates.",
                 ),
-                EvidenceCheck(
-                    "windows_installer_first_run_smoke",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "Windows installer/first-run smoke has not passed.",
-                    "Create and pass Windows installer/first-run smoke validation.",
-                ),
-                EvidenceCheck(
-                    "windows_setup_doctor_smoke",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "Windows Setup Doctor smoke has not passed.",
-                    "Pass Windows-specific Setup Doctor diagnostics smoke from the app path.",
-                ),
             ]
+        )
+        checks.extend(
+            EvidenceCheck(
+                result.name,
+                result.status,
+                result.classification,
+                result.blocks_release,
+                result.reason,
+                result.required_action,
+            )
+            for result in validate_windows_release_evidence()
         )
     if include_macos:
         checks.extend(

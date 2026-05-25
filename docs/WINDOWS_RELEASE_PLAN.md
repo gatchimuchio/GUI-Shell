@@ -1,6 +1,6 @@
 # Windows Release Plan
 
-Status date: 2026-05-25
+Status date: 2026-05-26
 
 GUI-Shell v1.0 is Windows-first. Linux build and launch smoke are useful development verification, but they are not final product proof by themselves. BLUE-TANUKI remains a consumer/reference runtime and is not a GUI-Shell release dependency.
 
@@ -66,15 +66,21 @@ Mobile remains `post_v1_scope` unless the owner explicitly changes v1.0 scope.
 
 - item: Windows installer and first-run smoke
   classification: release_blocker
-  reason: native Windows installed-path installer and first-run smoke have not passed.
-  required_action: Install through the Windows release path, launch from the installed app path, and record first-run evidence.
+  reason: native Windows installed-path installer and first-run evidence is missing from `release_evidence/windows_installed_smoke.json`.
+  required_action: Install through the Windows release path, launch from the installed app path, run `installer\windows\collect_installed_smoke.ps1`, and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: Windows Setup Doctor smoke
   classification: release_blocker
-  reason: native Windows Setup Doctor smoke has not passed from the installed Windows app path.
-  required_action: Run Setup Doctor from the installed Windows app path and record diagnostics evidence.
+  reason: native Windows Setup Doctor smoke has not passed from the installed Windows app path because machine-readable evidence is missing.
+  required_action: Run Setup Doctor from the installed Windows app path, record diagnostics in `release_evidence/windows_installed_smoke.json`, and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
+
+- item: Windows installed evidence validator
+  classification: required_for_v1
+  reason: `tooling/windows_release_evidence.py` gates Windows installer/first-run and Setup Doctor release evidence on installed-path launch, artifact hash, visible first-window surfaces, config/audit initialization, and non-authoritative diagnostics.
+  required_action: Keep the validator passing before owner GO.
+  blocks_release: no
 
 ## Windows-Specific Failure Modes
 

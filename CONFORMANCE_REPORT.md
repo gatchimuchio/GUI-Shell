@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 80 checks`
+  evidence: `conformance skeleton passed: 82 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -51,6 +51,11 @@
   classification: required_for_v1
   status: passed
   evidence: `tooling/release_smoke.py` creates first-run config/audit paths, verifies audit writability, runs Setup Doctor, and confirms installer/setup state grants no authority and silently approves no permissions.
+
+- item: Windows installed-path evidence validator
+  classification: required_for_v1
+  status: implemented
+  evidence: conformance accepts valid `release_evidence/windows_installed_smoke.json` shape and rejects missing installed executable confirmation, installer authority grants, and authority-granting Setup Doctor checks.
 
 ## Not Sufficient For Release
 
