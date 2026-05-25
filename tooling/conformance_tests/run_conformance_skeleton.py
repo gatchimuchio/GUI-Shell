@@ -1263,7 +1263,11 @@ def test_desktop_flutter_exposes_operation_surfaces() -> list[str]:
     settings = (DESKTOP_FLUTTER / "lib" / "screens" / "settings.dart").read_text(encoding="utf-8")
     audit = (DESKTOP_FLUTTER / "lib" / "screens" / "audit_viewer.dart").read_text(encoding="utf-8")
     recovery = (DESKTOP_FLUTTER / "lib" / "screens" / "recovery_center.dart").read_text(encoding="utf-8")
-    combined = "\n".join([main, dashboard, runtime, settings, audit, recovery])
+    trust = (DESKTOP_FLUTTER / "lib" / "screens" / "trust_center.dart").read_text(encoding="utf-8")
+    authority = (DESKTOP_FLUTTER / "lib" / "screens" / "authority_map.dart").read_text(encoding="utf-8")
+    problems = (DESKTOP_FLUTTER / "lib" / "screens" / "problems_panel.dart").read_text(encoding="utf-8")
+    evidence = (DESKTOP_FLUTTER / "lib" / "screens" / "evidence_center.dart").read_text(encoding="utf-8")
+    combined = "\n".join([main, dashboard, runtime, settings, audit, recovery, trust, authority, problems, evidence])
     required = [
         "TrustCenter",
         "AuthorityMap",

@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'screens/approval_center.dart';
 import 'screens/audit_viewer.dart';
-import 'screens/authority_map.dart';
 import 'screens/dashboard.dart';
+import 'screens/evidence_center.dart';
 import 'screens/agent_center.dart';
-import 'screens/permission_center.dart';
+import 'screens/problems_panel.dart';
 import 'screens/recovery_center.dart';
 import 'screens/runtime_center.dart';
 import 'screens/settings.dart';
 import 'screens/shared.dart';
 import 'screens/setup_doctor.dart';
-import 'screens/trust_center.dart';
 import 'services/shell_core_client.dart';
 
 void main() {
@@ -53,15 +52,14 @@ class _ShellHomePageState extends State<ShellHomePage> {
   Widget build(BuildContext context) {
     final pages = [
       Dashboard(client: widget.client),
-      TrustCenter(client: widget.client),
-      AuthorityMap(client: widget.client),
       SetupDoctor(client: widget.client),
       RuntimeCenter(client: widget.client),
       AgentCenter(client: widget.client),
-      PermissionCenter(client: widget.client),
       ApprovalCenter(client: widget.client),
       AuditViewer(client: widget.client),
       RecoveryCenter(client: widget.client),
+      ProblemsPanel(client: widget.client),
+      EvidenceCenter(client: widget.client),
       SettingsScreen(client: widget.client),
     ];
 
@@ -82,14 +80,6 @@ class _ShellHomePageState extends State<ShellHomePage> {
                         selectedIcon: Icon(Icons.dashboard),
                         label: Text('Dashboard')),
                     NavigationRailDestination(
-                        icon: Icon(Icons.verified_user_outlined),
-                        selectedIcon: Icon(Icons.verified_user),
-                        label: Text('Trust')),
-                    NavigationRailDestination(
-                        icon: Icon(Icons.account_tree_outlined),
-                        selectedIcon: Icon(Icons.account_tree),
-                        label: Text('Authority')),
-                    NavigationRailDestination(
                         icon: Icon(Icons.build_circle_outlined),
                         selectedIcon: Icon(Icons.build_circle),
                         label: Text('Doctor')),
@@ -102,10 +92,6 @@ class _ShellHomePageState extends State<ShellHomePage> {
                         selectedIcon: Icon(Icons.smart_toy),
                         label: Text('Agent')),
                     NavigationRailDestination(
-                        icon: Icon(Icons.key_outlined),
-                        selectedIcon: Icon(Icons.key),
-                        label: Text('Permission')),
-                    NavigationRailDestination(
                         icon: Icon(Icons.fact_check_outlined),
                         selectedIcon: Icon(Icons.fact_check),
                         label: Text('Approval')),
@@ -117,6 +103,14 @@ class _ShellHomePageState extends State<ShellHomePage> {
                         icon: Icon(Icons.health_and_safety_outlined),
                         selectedIcon: Icon(Icons.health_and_safety),
                         label: Text('Recovery')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.report_problem_outlined),
+                        selectedIcon: Icon(Icons.report_problem),
+                        label: Text('Problems')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.inventory_2_outlined),
+                        selectedIcon: Icon(Icons.inventory_2),
+                        label: Text('Evidence')),
                     NavigationRailDestination(
                         icon: Icon(Icons.settings_outlined),
                         selectedIcon: Icon(Icons.settings),

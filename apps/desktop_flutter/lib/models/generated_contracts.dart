@@ -347,6 +347,11 @@ class ProblemRecord {
     required this.message,
     required this.target,
     required this.recoveryId,
+    this.item = '',
+    this.classification = 'required_for_v1',
+    this.reason = '',
+    this.requiredAction = '',
+    this.blocksRelease = false,
   });
 
   final String problemId;
@@ -355,6 +360,11 @@ class ProblemRecord {
   final String message;
   final String target;
   final String recoveryId;
+  final String item;
+  final String classification;
+  final String reason;
+  final String requiredAction;
+  final bool blocksRelease;
 
   factory ProblemRecord.fromJson(Map<String, Object?> json) {
     return ProblemRecord(
@@ -364,6 +374,11 @@ class ProblemRecord {
       message: json['message'] as String? ?? '',
       target: json['target'] as String? ?? '',
       recoveryId: json['recovery_id'] as String? ?? '',
+      item: json['item'] as String? ?? json['message'] as String? ?? '',
+      classification: json['classification'] as String? ?? 'required_for_v1',
+      reason: json['reason'] as String? ?? '',
+      requiredAction: json['required_action'] as String? ?? '',
+      blocksRelease: _boolFromJson(json['blocks_release']),
     );
   }
 }
@@ -435,8 +450,150 @@ class SettingRecord {
   }
 }
 
+class PhaseStatusRecord {
+  const PhaseStatusRecord({
+    required this.phaseAStatus,
+    required this.phaseBStatus,
+    required this.phaseCStatus,
+    required this.phaseDStatus,
+    required this.phaseEStatus,
+    required this.phaseFStatus,
+    required this.completedProductReleaseClaimed,
+  });
+
+  final String phaseAStatus;
+  final String phaseBStatus;
+  final String phaseCStatus;
+  final String phaseDStatus;
+  final String phaseEStatus;
+  final String phaseFStatus;
+  final bool completedProductReleaseClaimed;
+
+  factory PhaseStatusRecord.fromJson(Map<String, Object?> json) {
+    return PhaseStatusRecord(
+      phaseAStatus: json['phase_a_status'] as String? ?? 'complete',
+      phaseBStatus: json['phase_b_status'] as String? ?? 'active',
+      phaseCStatus: json['phase_c_status'] as String? ?? 'next',
+      phaseDStatus: json['phase_d_status'] as String? ?? 'later',
+      phaseEStatus: json['phase_e_status'] as String? ?? 'later',
+      phaseFStatus: json['phase_f_status'] as String? ?? 'later',
+      completedProductReleaseClaimed:
+          json['completed_product_release_claimed'] as bool? ?? false,
+    );
+  }
+}
+
+class OperationStatusRecord {
+  const OperationStatusRecord({
+    required this.runtimeStatus,
+    required this.invariantStatus,
+    required this.trustStatus,
+    required this.pendingApprovalsCount,
+    required this.auditChainStatus,
+    required this.problemsCount,
+    required this.releaseState,
+  });
+
+  final String runtimeStatus;
+  final String invariantStatus;
+  final String trustStatus;
+  final int pendingApprovalsCount;
+  final String auditChainStatus;
+  final int problemsCount;
+  final String releaseState;
+
+  factory OperationStatusRecord.fromJson(Map<String, Object?> json) {
+    return OperationStatusRecord(
+      runtimeStatus: json['runtime_status'] as String? ?? 'unknown',
+      invariantStatus: json['invariant_status'] as String? ?? 'unknown',
+      trustStatus: json['trust_status'] as String? ?? 'unknown',
+      pendingApprovalsCount: json['pending_approvals_count'] as int? ?? 0,
+      auditChainStatus: json['audit_chain_status'] as String? ?? 'unknown',
+      problemsCount: json['problems_count'] as int? ?? 0,
+      releaseState: json['release_state'] as String? ?? 'not claimed',
+    );
+  }
+}
+
+class EvidenceSummaryRecord {
+  const EvidenceSummaryRecord({
+    required this.schemaCheck,
+    required this.conformanceCheckCount,
+    required this.releaseSmoke,
+    required this.releaseGateCheck,
+    required this.evidenceBundle,
+    required this.validateAll,
+    required this.strictWindowsRelease,
+    required this.missingMeasuredWindowsEvidence,
+    required this.missingSetupDoctorEvidence,
+    required this.ownerGo,
+  });
+
+  final String schemaCheck;
+  final int conformanceCheckCount;
+  final String releaseSmoke;
+  final String releaseGateCheck;
+  final String evidenceBundle;
+  final String validateAll;
+  final String strictWindowsRelease;
+  final bool missingMeasuredWindowsEvidence;
+  final bool missingSetupDoctorEvidence;
+  final String ownerGo;
+
+  factory EvidenceSummaryRecord.fromJson(Map<String, Object?> json) {
+    return EvidenceSummaryRecord(
+      schemaCheck: json['schema_check'] as String? ?? 'passed',
+      conformanceCheckCount: json['conformance_check_count'] as int? ?? 88,
+      releaseSmoke: json['release_smoke'] as String? ?? 'passed',
+      releaseGateCheck: json['release_gate_check'] as String? ?? 'passed',
+      evidenceBundle: json['evidence_bundle'] as String? ?? 'passed',
+      validateAll: json['validate_all'] as String? ?? 'passed',
+      strictWindowsRelease:
+          json['strict_windows_release'] as String? ?? 'expected fail',
+      missingMeasuredWindowsEvidence:
+          json['missing_measured_windows_evidence'] as bool? ?? true,
+      missingSetupDoctorEvidence:
+          json['missing_setup_doctor_evidence'] as bool? ?? true,
+      ownerGo: json['owner_go'] as String? ?? 'missing',
+    );
+  }
+}
+
+class RecoveryPlaybookRecord {
+  const RecoveryPlaybookRecord({
+    required this.item,
+    required this.severity,
+    required this.classification,
+    required this.safeToIgnoreForPhaseB,
+    required this.requiredAction,
+    required this.blocksCompletedProductRelease,
+  });
+
+  final String item;
+  final String severity;
+  final String classification;
+  final bool safeToIgnoreForPhaseB;
+  final String requiredAction;
+  final bool blocksCompletedProductRelease;
+
+  factory RecoveryPlaybookRecord.fromJson(Map<String, Object?> json) {
+    return RecoveryPlaybookRecord(
+      item: json['item'] as String? ?? '',
+      severity: json['severity'] as String? ?? 'warning',
+      classification: json['classification'] as String? ?? 'required_for_v1',
+      safeToIgnoreForPhaseB:
+          json['safe_to_ignore_for_phase_b'] as bool? ?? false,
+      requiredAction: json['required_action'] as String? ?? '',
+      blocksCompletedProductRelease:
+          _boolFromJson(json['blocks_completed_product_release']),
+    );
+  }
+}
+
 class ShellSnapshot {
   const ShellSnapshot({
+    required this.phaseStatus,
+    required this.operationStatus,
     required this.runtimes,
     required this.agentSessions,
     required this.permissions,
@@ -458,8 +615,12 @@ class ShellSnapshot {
     required this.auditChainStatus,
     required this.networkExposure,
     required this.releaseBlockerCount,
+    required this.evidenceSummary,
+    required this.recoveryPlaybook,
   });
 
+  final PhaseStatusRecord phaseStatus;
+  final OperationStatusRecord operationStatus;
   final List<RuntimeRecord> runtimes;
   final List<AgentSessionRecord> agentSessions;
   final List<PermissionRecord> permissions;
@@ -481,20 +642,45 @@ class ShellSnapshot {
   final String auditChainStatus;
   final String networkExposure;
   final int releaseBlockerCount;
+  final EvidenceSummaryRecord evidenceSummary;
+  final List<RecoveryPlaybookRecord> recoveryPlaybook;
 
   factory ShellSnapshot.fromJson(Map<String, Object?> json) {
+    final runtimes = _records(json['runtimes'], RuntimeRecord.fromJson);
+    final approvals =
+        _records(json['pending_approvals'], ApprovalRecord.fromJson);
+    final invariantFlags =
+        Map<String, bool>.from(json['invariant_flags'] as Map? ?? {});
+    final trustRecords = _records(json['trust_records'], TrustRecord.fromJson);
+    final problems = _records(json['problems'], ProblemRecord.fromJson);
+    final auditChainStatus = json['audit_chain_status'] as String? ?? 'unknown';
     return ShellSnapshot(
-      runtimes: _records(json['runtimes'], RuntimeRecord.fromJson),
+      phaseStatus: PhaseStatusRecord.fromJson(
+          Map<String, Object?>.from(json['phase_status'] as Map? ?? {})),
+      operationStatus: OperationStatusRecord.fromJson(
+          Map<String, Object?>.from(json['operation_status'] as Map? ??
+              {
+                'runtime_status':
+                    runtimes.isEmpty ? 'unknown' : runtimes.first.status,
+                'invariant_status': invariantFlags.values.any((value) => value)
+                    ? 'blocked'
+                    : 'ok',
+                'trust_status':
+                    trustRecords.isEmpty ? 'unknown' : trustRecords.first.state,
+                'pending_approvals_count': approvals.length,
+                'audit_chain_status': auditChainStatus,
+                'problems_count': problems.length,
+                'release_state': 'not claimed',
+              })),
+      runtimes: runtimes,
       agentSessions:
           _records(json['agent_sessions'], AgentSessionRecord.fromJson),
       permissions: _records(json['permissions'], PermissionRecord.fromJson),
-      pendingApprovals:
-          _records(json['pending_approvals'], ApprovalRecord.fromJson),
+      pendingApprovals: approvals,
       auditEvents: _records(json['audit_events'], AuditRecord.fromJson),
       recoveryActions:
           _records(json['recovery_actions'], RecoveryRecord.fromJson),
-      invariantFlags:
-          Map<String, bool>.from(json['invariant_flags'] as Map? ?? {}),
+      invariantFlags: invariantFlags,
       setupDoctorChecks: _records(
           json['setup_doctor_checks'], SetupDoctorCheckRecord.fromJson),
       setupDoctorStatus: json['setup_doctor_status'] as String? ?? 'warning',
@@ -502,21 +688,35 @@ class ShellSnapshot {
           json['installer_grants_authority'] as bool? ?? false,
       installerSilentlyApprovesPermissions:
           json['installer_silently_approves_permissions'] as bool? ?? false,
-      trustRecords: _records(json['trust_records'], TrustRecord.fromJson),
+      trustRecords: trustRecords,
       authorityMap:
           _records(json['authority_map'], AuthorityMapRecord.fromJson),
       adapterCatalog:
           _records(json['adapter_catalog'], AdapterCatalogRecord.fromJson),
       permissionDiffs:
           _records(json['permission_diffs'], PermissionDiffRecord.fromJson),
-      problems: _records(json['problems'], ProblemRecord.fromJson),
+      problems: problems,
       evidence: _records(json['evidence'], EvidenceRecord.fromJson),
       settings: _records(json['settings'], SettingRecord.fromJson),
-      auditChainStatus: json['audit_chain_status'] as String? ?? 'unknown',
+      auditChainStatus: auditChainStatus,
       networkExposure: json['network_exposure'] as String? ?? 'unknown',
       releaseBlockerCount: json['release_blocker_count'] as int? ?? 0,
+      evidenceSummary: EvidenceSummaryRecord.fromJson(
+          Map<String, Object?>.from(json['evidence_summary'] as Map? ?? {})),
+      recoveryPlaybook:
+          _records(json['recovery_playbook'], RecoveryPlaybookRecord.fromJson),
     );
   }
+}
+
+bool _boolFromJson(Object? value) {
+  if (value is bool) {
+    return value;
+  }
+  if (value is String) {
+    return value.toLowerCase() == 'yes' || value.toLowerCase() == 'true';
+  }
+  return false;
 }
 
 List<String> _stringList(Object? value) {

@@ -103,34 +103,37 @@ class ShellStatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final runtimeStatus =
-        snapshot.runtimes.isEmpty ? 'none' : snapshot.runtimes.first.status;
-    final trustStatus = snapshot.trustRecords.isEmpty
-        ? 'unknown'
-        : snapshot.trustRecords.first.state;
+    final operation = snapshot.operationStatus;
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: SizedBox(
-        height: 40,
-        child: ListView(
+        height: 44,
+        child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          children: [
-            StatusPill(label: 'Runtime', value: runtimeStatus),
-            const SizedBox(width: 8),
-            StatusPill(label: 'Trust', value: trustStatus),
-            const SizedBox(width: 8),
-            StatusPill(
-                label: 'Approvals',
-                value: '${snapshot.pendingApprovals.length} pending'),
-            const SizedBox(width: 8),
-            StatusPill(label: 'Audit', value: snapshot.auditChainStatus),
-            const SizedBox(width: 8),
-            StatusPill(label: 'Network', value: snapshot.networkExposure),
-            const SizedBox(width: 8),
-            StatusPill(
-                label: 'Blockers', value: '${snapshot.releaseBlockerCount}'),
-          ],
+          child: Row(
+            children: [
+              const StatusPill(label: 'Phase', value: 'B owner-use'),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Runtime', value: operation.runtimeStatus),
+              const SizedBox(width: 8),
+              StatusPill(
+                  label: 'Trust/Invariants',
+                  value:
+                      '${operation.trustStatus}/${operation.invariantStatus}'),
+              const SizedBox(width: 8),
+              StatusPill(
+                  label: 'Approvals',
+                  value: '${operation.pendingApprovalsCount} pending'),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Audit', value: operation.auditChainStatus),
+              const SizedBox(width: 8),
+              StatusPill(
+                  label: 'Problems', value: '${operation.problemsCount}'),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Release', value: operation.releaseState),
+            ],
+          ),
         ),
       ),
     );

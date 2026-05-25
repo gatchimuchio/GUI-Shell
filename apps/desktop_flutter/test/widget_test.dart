@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gui_shell_desktop/main.dart';
 import 'package:gui_shell_desktop/screens/approval_center.dart';
+import 'package:gui_shell_desktop/screens/dashboard.dart';
+import 'package:gui_shell_desktop/screens/evidence_center.dart';
+import 'package:gui_shell_desktop/screens/problems_panel.dart';
+import 'package:gui_shell_desktop/screens/recovery_center.dart';
 import 'package:gui_shell_desktop/screens/setup_doctor.dart';
+import 'package:gui_shell_desktop/screens/shared.dart';
 import 'package:gui_shell_desktop/services/shell_core_client.dart';
 
 void main() {
@@ -15,6 +20,82 @@ void main() {
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.text('Dashboard'), findsWidgets);
+  });
+
+  testWidgets('Dashboard shows Phase A complete and Phase B active',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: Dashboard(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.textContaining('Phase A: complete'), findsOneWidget);
+    expect(find.textContaining('Phase B: active'), findsOneWidget);
+    expect(find.textContaining('Completed product release: not claimed'),
+        findsOneWidget);
+  });
+
+  testWidgets('Status bar shows Phase B owner-use and release not claimed',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ShellStatusBar(snapshot: ShellCoreClient.mock().getSnapshot()),
+        ),
+      ),
+    );
+
+    expect(find.textContaining('Phase: B owner-use'), findsOneWidget);
+    expect(find.textContaining('Release: not claimed'), findsOneWidget);
+  });
+
+  testWidgets('Problems panel shows release blockers without Phase B failure',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: ProblemsPanel(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Problems Panel'), findsOneWidget);
+    expect(find.textContaining('measured Windows installed-path first-run'),
+        findsOneWidget);
+    expect(find.textContaining('release_blocker'), findsWidgets);
+    expect(find.textContaining('without making Phase B owner-use fail'),
+        findsOneWidget);
+  });
+
+  testWidgets('Evidence center shows strict Windows expected failure',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: EvidenceCenter(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Evidence Center'), findsOneWidget);
+    expect(find.textContaining('strict_windows_release: expected fail'),
+        findsOneWidget);
+    expect(
+        find.textContaining(
+            'missing measured Windows evidence: release_blocker'),
+        findsOneWidget);
+  });
+
+  testWidgets('Recovery playbook marks Windows evidence safe for Phase B',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: RecoveryCenter(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Recovery Playbook'), findsOneWidget);
+    expect(
+        find.textContaining('measured Windows installed-path evidence missing'),
+        findsOneWidget);
+    expect(find.textContaining('true'), findsWidgets);
   });
 
   test('Setup Doctor client surface is structured and non-authoritative', () {

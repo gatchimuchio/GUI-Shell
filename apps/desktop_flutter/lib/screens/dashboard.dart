@@ -11,17 +11,47 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final snapshot = client.getSnapshot();
+    final phase = snapshot.phaseStatus;
+    final operation = snapshot.operationStatus;
+    final evidence = snapshot.evidenceSummary;
     return ShellPage(
       title: 'Dashboard',
       children: [
+        SectionList(
+          title: 'Phase Status',
+          rows: [
+            'Phase A: ${phase.phaseAStatus}',
+            'Phase B: ${phase.phaseBStatus}',
+            'Phase C: ${phase.phaseCStatus}',
+            'Phase D: ${phase.phaseDStatus}',
+            'Phase E: ${phase.phaseEStatus}',
+            'Phase F: ${phase.phaseFStatus}',
+            'Owner-use operation: active',
+            'Completed product release: ${phase.completedProductReleaseClaimed ? 'claimed' : 'not claimed'}',
+            'Strict Windows installed-path evidence: pending',
+          ],
+        ),
         MetricRow(items: [
-          MetricItem(label: 'Runtimes', value: '${snapshot.runtimes.length}'),
+          MetricItem(label: 'Runtime Status', value: operation.runtimeStatus),
           MetricItem(
-              label: 'Pending', value: '${snapshot.pendingApprovals.length}'),
-          MetricItem(label: 'Audit', value: '${snapshot.auditEvents.length}'),
+              label: 'Invariant Status', value: operation.invariantStatus),
           MetricItem(
-              label: 'Blockers', value: '${snapshot.releaseBlockerCount}'),
+              label: 'Pending Approvals',
+              value: '${operation.pendingApprovalsCount}'),
+          MetricItem(label: 'Problems', value: '${operation.problemsCount}'),
+          MetricItem(label: 'Evidence', value: evidence.evidenceBundle),
+          MetricItem(
+              label: 'Recovery',
+              value: '${snapshot.recoveryPlaybook.length} items'),
         ]),
+        const SectionList(
+          title: 'Owner Operation Boundary',
+          rows: [
+            'Phase B owner-use operation is active.',
+            'Completed product release is not claimed.',
+            'Missing release evidence blocks completed product release, not Phase B owner-use operation.',
+          ],
+        ),
         SectionList(
           title: 'Trust Status',
           rows: [
@@ -30,24 +60,22 @@ class Dashboard extends StatelessWidget {
           ],
         ),
         SectionList(
-          title: 'Release Blockers',
+          title: 'Problems / Blockers',
           rows: [
             for (final problem in snapshot.problems)
-              '${problem.severity}: ${problem.message}'
+              '${problem.item}: ${problem.classification}; blocks_release: ${problem.blocksRelease ? 'yes' : 'no'}'
           ],
         ),
         SectionList(
-          title: 'Problems Panel',
+          title: 'Evidence Summary',
           rows: [
-            for (final problem in snapshot.problems)
-              '${problem.category}: ${problem.message} -> ${problem.recoveryId}'
-          ],
-        ),
-        SectionList(
-          title: 'Evidence Center',
-          rows: [
-            for (final evidence in snapshot.evidence)
-              '${evidence.evidenceId}: ${evidence.status} ${evidence.path}'
+            'schema_check: ${evidence.schemaCheck}',
+            'conformance_skeleton: passed, ${evidence.conformanceCheckCount} checks',
+            'release_smoke: ${evidence.releaseSmoke}',
+            'release_gate_check: ${evidence.releaseGateCheck}',
+            'evidence_bundle: ${evidence.evidenceBundle}',
+            'validate_all: ${evidence.validateAll}',
+            'strict_windows_release: ${evidence.strictWindowsRelease}',
           ],
         ),
         SectionList(

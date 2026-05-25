@@ -10,10 +10,36 @@ class RecoveryCenter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recoveries = client.getSnapshot().recoveryActions;
+    final snapshot = client.getSnapshot();
+    final recoveries = snapshot.recoveryActions;
     return ShellPage(
-      title: 'Recovery Center',
+      title: 'Recovery Playbook',
       children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('Item')),
+              DataColumn(label: Text('Severity')),
+              DataColumn(label: Text('Classification')),
+              DataColumn(label: Text('Safe for Phase B')),
+              DataColumn(label: Text('Blocks Product Release')),
+              DataColumn(label: Text('Required Action')),
+            ],
+            rows: [
+              for (final item in snapshot.recoveryPlaybook)
+                DataRow(cells: [
+                  DataCell(Text(item.item)),
+                  DataCell(Text(item.severity)),
+                  DataCell(Text(item.classification)),
+                  DataCell(Text(item.safeToIgnoreForPhaseB ? 'true' : 'false')),
+                  DataCell(
+                      Text(item.blocksCompletedProductRelease ? 'yes' : 'no')),
+                  DataCell(Text(item.requiredAction)),
+                ]),
+            ],
+          ),
+        ),
         for (final recovery in recoveries)
           BorderedPanel(
             child: Column(

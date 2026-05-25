@@ -78,6 +78,8 @@ def build_shell_snapshot() -> dict:
         for recovery_id, recovery in sorted(state.recovery_actions.items())
     ]
     return {
+        "phase_status": _phase_status(),
+        "operation_status": _operation_status(runtimes, approvals, invariant_flags),
         "runtimes": runtimes,
         "agent_sessions": [
             {
@@ -112,7 +114,33 @@ def build_shell_snapshot() -> dict:
         "settings": _settings_records(),
         "audit_chain_status": "verified",
         "network_exposure": "localhost only",
-        "release_blocker_count": 1,
+        "release_blocker_count": 3,
+        "evidence_summary": _evidence_summary(),
+        "recovery_playbook": _recovery_playbook(),
+    }
+
+
+def _phase_status() -> dict:
+    return {
+        "phase_a_status": "complete",
+        "phase_b_status": "active",
+        "phase_c_status": "next",
+        "phase_d_status": "later",
+        "phase_e_status": "later",
+        "phase_f_status": "later",
+        "completed_product_release_claimed": False,
+    }
+
+
+def _operation_status(runtimes: list[dict], approvals: list[dict], invariant_flags: dict) -> dict:
+    return {
+        "runtime_status": runtimes[0]["status"] if runtimes else "unknown",
+        "invariant_status": "blocked" if any(invariant_flags.values()) else "ok",
+        "trust_status": "restricted",
+        "pending_approvals_count": len(approvals),
+        "audit_chain_status": "verified",
+        "problems_count": 6,
+        "release_state": "not claimed",
     }
 
 
@@ -230,6 +258,76 @@ def _problems() -> list[dict]:
             "message": "Windows installed-path evidence is missing.",
             "target": "release_evidence/windows_installed_smoke.json",
             "recovery_id": "recover-windows-evidence",
+            "item": "measured Windows installed-path first-run evidence missing",
+            "classification": "release_blocker",
+            "reason": "Measured installed-path first-run evidence is not recorded.",
+            "required_action": "Run hardened Windows installed smoke collection on native Windows.",
+            "blocks_release": True,
+        },
+        {
+            "problem_id": "setup-doctor-installed-evidence-missing",
+            "severity": "blocked",
+            "category": "missing_evidence",
+            "message": "Non-synthetic installed-path Setup Doctor evidence is missing.",
+            "target": "release_evidence/windows_installed_smoke.json",
+            "recovery_id": "recover-setup-doctor-evidence",
+            "item": "non-synthetic installed-path Setup Doctor evidence missing",
+            "classification": "release_blocker",
+            "reason": "Setup Doctor has not been proven from the installed app path.",
+            "required_action": "Run Setup Doctor from the installed Windows app path and record required checks.",
+            "blocks_release": True,
+        },
+        {
+            "problem_id": "owner-go-missing",
+            "severity": "blocked",
+            "category": "release_gate",
+            "message": "Owner GO missing.",
+            "target": "release checklist",
+            "recovery_id": "recover-owner-go",
+            "item": "owner GO missing",
+            "classification": "release_blocker",
+            "reason": "Completed product release requires explicit owner approval.",
+            "required_action": "Record owner GO after release blockers are cleared.",
+            "blocks_release": True,
+        },
+        {
+            "problem_id": "macos-unverified",
+            "severity": "info",
+            "category": "scope",
+            "message": "macOS remains unverified.",
+            "target": "desktop platform matrix",
+            "recovery_id": "recover-macos-validation",
+            "item": "macOS unverified",
+            "classification": "known_limitation",
+            "reason": "No macOS validation environment is available.",
+            "required_action": "Validate on macOS before claiming macOS support.",
+            "blocks_release": False,
+        },
+        {
+            "problem_id": "mobile-post-v1",
+            "severity": "info",
+            "category": "scope",
+            "message": "Mobile full release is post-v1 scope.",
+            "target": "mobile status",
+            "recovery_id": "recover-mobile-scope",
+            "item": "mobile post-v1 scope",
+            "classification": "post_v1_scope",
+            "reason": "v1.0 is Windows-first desktop unless owner changes scope.",
+            "required_action": "Defer mobile release work.",
+            "blocks_release": False,
+        },
+        {
+            "problem_id": "paid-qc-later",
+            "severity": "info",
+            "category": "scope",
+            "message": "Paid/product QC is a later phase.",
+            "target": "phase strategy",
+            "recovery_id": "recover-paid-qc",
+            "item": "paid/product QC later",
+            "classification": "post_v1_scope",
+            "reason": "Phase B is owner-use hardening, not paid/product QC.",
+            "required_action": "Defer paid/product QC until Phase F.",
+            "blocks_release": False,
         }
     ]
 
@@ -278,6 +376,74 @@ def _settings_records() -> list[dict]:
             "modified": False,
             "dangerous": True,
             "authority_related": True,
+        },
+    ]
+
+
+def _evidence_summary() -> dict:
+    return {
+        "schema_check": "passed",
+        "conformance_check_count": 88,
+        "release_smoke": "passed",
+        "release_gate_check": "passed",
+        "evidence_bundle": "passed",
+        "validate_all": "passed",
+        "strict_windows_release": "expected fail",
+        "missing_measured_windows_evidence": True,
+        "missing_setup_doctor_evidence": True,
+        "owner_go": "missing",
+    }
+
+
+def _recovery_playbook() -> list[dict]:
+    return [
+        {
+            "item": "measured Windows installed-path evidence missing",
+            "severity": "release",
+            "classification": "release_blocker",
+            "safe_to_ignore_for_phase_b": True,
+            "required_action": "Run hardened Windows installed smoke on native Windows.",
+            "blocks_completed_product_release": True,
+        },
+        {
+            "item": "non-synthetic installed-path Setup Doctor evidence missing",
+            "severity": "release",
+            "classification": "release_blocker",
+            "safe_to_ignore_for_phase_b": True,
+            "required_action": "Run installed-path Setup Doctor and record non-synthetic checks.",
+            "blocks_completed_product_release": True,
+        },
+        {
+            "item": "owner GO missing",
+            "severity": "release",
+            "classification": "release_blocker",
+            "safe_to_ignore_for_phase_b": True,
+            "required_action": "Record owner GO after release blockers pass.",
+            "blocks_completed_product_release": True,
+        },
+        {
+            "item": "macOS unverified",
+            "severity": "scope",
+            "classification": "known_limitation",
+            "safe_to_ignore_for_phase_b": True,
+            "required_action": "Validate on macOS before claiming macOS support.",
+            "blocks_completed_product_release": False,
+        },
+        {
+            "item": "mobile full release",
+            "severity": "scope",
+            "classification": "post_v1_scope",
+            "safe_to_ignore_for_phase_b": True,
+            "required_action": "Defer mobile full release until post-v1.",
+            "blocks_completed_product_release": False,
+        },
+        {
+            "item": "Phase B owner-use usability issue",
+            "severity": "owner-use",
+            "classification": "required_for_v1",
+            "safe_to_ignore_for_phase_b": False,
+            "required_action": "Keep dashboard, status, problems, evidence, and recovery surfaces usable.",
+            "blocks_completed_product_release": False,
         },
     ]
 

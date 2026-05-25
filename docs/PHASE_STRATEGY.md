@@ -13,6 +13,7 @@ GUI-Shell uses phase-based readiness language so owner-use progress is not confu
   name: owner-use operational hardening
   status: active
   goal: make GUI-Shell useful for daily personal operation while preserving authority, audit, approval, recovery, and evidence boundaries.
+  current_surfaces: Dashboard phase status, persistent status bar, Problems Panel, Evidence Center, and Recovery Playbook are available as display-only owner-operation surfaces.
 
 ## Later Phases
 
