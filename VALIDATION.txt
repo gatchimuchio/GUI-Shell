@@ -39,13 +39,13 @@ toolchain_detection:
       - Flutter passed: Channel stable, 3.44.0, Ubuntu 26.04 LTS on WSL2
       - Android toolchain failed: Android SDK cannot be located
       - Chrome failed: Chrome executable google-chrome cannot be found
-      - Linux toolchain failed: clang++, CMake, ninja, and pkg-config are required
+      - Linux toolchain passed: clang 21.1.8, cmake 4.2.3, ninja 1.13.2, pkg-config 2.5.1
       - Connected device passed: 1 available
       - Network resources passed
-    classification: release_blocker
-    reason: Desktop-first v1.0 still requires installed-app launch/build smoke and Setup Doctor validation; Flutter doctor reports missing Linux desktop build dependencies.
-    required_action: Install Linux desktop build dependencies and pass desktop launch/build validation before release.
-    blocks_release: yes
+    classification: none
+    reason: Linux desktop build dependencies are resolved. Android and Chrome findings remain outside desktop-first v1.0 unless owner changes release scope.
+    required_action: Keep Linux desktop build dependencies installed for release candidates.
+    blocks_release: no
 
 checks:
   - name: schema_check
@@ -85,7 +85,17 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: No issues found! (ran in 11.8s)
+    stdout: No issues found! (ran in 1.1s)
+
+  - name: desktop_flutter_build_linux
+    command: cd apps/desktop_flutter && flutter build linux
+    status: failed
+    classification: release_blocker
+    blocks_release: yes
+    reason: Linux desktop project is not configured for `apps/desktop_flutter`.
+    required_action: Add Linux desktop project support for `apps/desktop_flutter`, preserve Shell Core / UI / Adapter authority boundaries, then rerun `flutter build linux`.
+    exit: 1
+    stderr: No Linux desktop project configured. See https://flutter.dev/to/add-desktop-support to learn about adding Linux support to a project.
 
   - name: validate_all
     command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py
@@ -103,24 +113,34 @@ checks:
       - mobile_flutter_analyze passed with classification post_v1_scope and blocks_release no
       - release_gate status: pass
 
-  - name: validate_all_include_mobile_release_scope
-    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --include-mobile-release
-    status: passed
-    classification: none
-    blocks_release: no
-    reason:
-    exit: 0
+  - name: validate_all_strict_release
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --strict-release
+    status: failed
+    classification: release_blocker
+    blocks_release: yes
+    reason: Strict release mode fails while release blockers remain documented.
+    required_action: Resolve all `release_blocker` items, then rerun strict release validation.
+    exit: 1
     stdout_summary:
-      - mobile_flutter_analyze passed with classification none when explicitly included in release scope
-      - release_gate status: pass
+      - schema_check passed
+      - conformance_skeleton passed
+      - release_gate_check --strict-release failed
+      - rust_helper_cargo_test passed
+      - desktop_flutter_analyze passed
+      - mobile_flutter_analyze passed with classification post_v1_scope and blocks_release no
 
 release_gate:
   status: fail_for_completed_product_release
   blockers:
-    - item: flutter doctor Linux desktop toolchain dependencies
+    - item: desktop Flutter Linux build
       classification: release_blocker
-      reason: clang++, CMake, ninja, and pkg-config are missing, so desktop launch/build smoke remains blocked.
-      required_action: Install Linux desktop build dependencies and pass desktop launch/build smoke.
+      reason: `flutter build linux` fails because no Linux desktop project is configured.
+      required_action: Add Linux desktop project support for `apps/desktop_flutter`, then pass `flutter build linux`.
+      blocks_release: yes
+    - item: desktop Flutter launch smoke
+      classification: release_blocker
+      reason: no launchable Linux desktop artifact exists until build smoke passes.
+      required_action: Pass Linux desktop build smoke, then launch the built artifact and record first-window startup evidence.
       blocks_release: yes
     - item: mobile full release
       classification: post_v1_scope

@@ -18,10 +18,16 @@ No completed product release may be claimed if any `release_blocker` remains.
   required_action: Pass `cd apps/desktop_flutter && flutter analyze` on the release candidate.
   blocks_release: no
 
-- item: missing required desktop launch/build toolchain dependency
+- item: Linux desktop build dependencies gate
+  classification: required_for_v1
+  reason: Rust/Cargo, Flutter, `unzip`, and Linux desktop build dependencies are resolved. `flutter doctor -v` reports clang 21.1.8, cmake 4.2.3, ninja 1.13.2, and pkg-config 2.5.1.
+  required_action: Keep `$HOME/.cargo/bin` and `$HOME/dev/flutter/bin` on PATH and keep Linux desktop build dependencies installed for release candidates.
+  blocks_release: no
+
+- item: Linux desktop project configuration gate
   classification: release_blocker
-  reason: Rust/Cargo, Flutter, and `unzip` are resolved, but `flutter doctor` reports missing Linux desktop build dependencies: clang++, CMake, ninja, and pkg-config.
-  required_action: Keep `$HOME/.cargo/bin` and `$HOME/dev/flutter/bin` on PATH; install Linux desktop build dependencies, then pass desktop launch/build validation.
+  reason: `cd apps/desktop_flutter && flutter build linux` fails with `No Linux desktop project configured.`
+  required_action: Add Linux desktop project support for `apps/desktop_flutter` through the approved Flutter desktop support path, then pass `flutter build linux`.
   blocks_release: yes
 
 - item: validate_all.py strict release mode not passed
@@ -37,6 +43,7 @@ No completed product release may be claimed if any `release_blocker` remains.
 
 - item: desktop app launch smoke not passed
   classification: release_blocker
+  reason: Linux desktop launch smoke requires a built desktop artifact, but `flutter build linux` currently fails because no Linux desktop project is configured.
   required_action: Add and pass desktop launch smoke validation.
   blocks_release: yes
 
