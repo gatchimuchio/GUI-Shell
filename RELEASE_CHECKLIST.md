@@ -131,13 +131,13 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 - item: Windows installer first-run smoke not passed
   classification: release_blocker
   reason: Windows installed-path first-run evidence has not been recorded in `release_evidence/windows_installed_smoke.json`.
-  required_action: Run `installer\windows\collect_installed_smoke.ps1` on native Windows and pass `python tooling\windows_release_evidence.py`.
+  required_action: Run `installer\windows\collect_installed_smoke.ps1` on native Windows with real Setup Doctor JSON, visible-surface evidence, config path, and audit dir probe inputs; pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: Windows Setup Doctor smoke not passed
   classification: release_blocker
   reason: Windows installed-path Setup Doctor diagnostics evidence has not been recorded in `release_evidence/windows_installed_smoke.json`.
-  required_action: Run Setup Doctor from the installed Windows app path and pass `python tooling\windows_release_evidence.py`.
+  required_action: Run Setup Doctor from the installed Windows app path, record non-synthetic required checks, and pass `python tooling\windows_release_evidence.py`.
   blocks_release: yes
 
 - item: macOS planned portability target unverified
@@ -148,14 +148,14 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: Windows installed-path evidence validator
   classification: required_for_v1
-  reason: `tooling/windows_release_evidence.py` validates installed executable hash, installed-path launch evidence, first-run config/audit evidence, and Setup Doctor non-authority diagnostics before Windows release blockers can clear.
-  required_action: Keep evidence validation passing and reject copied, edited, or non-Windows evidence.
+  reason: `tooling/windows_release_evidence.py` validates installed executable hash, installed-path launch evidence, non-zero window handle, visible-surface evidence source, first-run config JSON parsing, audit write/read/delete probe, and non-synthetic Setup Doctor diagnostics before Windows release blockers can clear.
+  required_action: Keep evidence validation passing and reject copied, edited, synthetic, manually confirmed, shallow, or non-Windows evidence.
   blocks_release: no
 
 - item: Windows Setup Doctor diagnostics evidence not passed
   classification: release_blocker
   reason: Windows Setup Doctor real diagnostics have not passed for the Windows-first product target because installed-path evidence is missing.
-  required_action: Pass Windows Setup Doctor smoke with machine-readable evidence; macOS diagnostics remain planned portability validation.
+  required_action: Pass Windows Setup Doctor smoke with non-synthetic machine-verified evidence; macOS diagnostics remain planned portability validation.
   blocks_release: yes
 
 - item: validate_all.py strict release mode not passed

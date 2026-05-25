@@ -93,7 +93,7 @@ Release completion must not be claimed until strict Windows release validation p
 - item: Windows installed-path evidence validator
   classification: required_for_v1
   status: implemented
-  evidence: `tooling/windows_release_evidence.py` validates `release_evidence/windows_installed_smoke.json` for installed executable hash, installed-path first run, visible first-window surfaces, config/audit initialization, and Setup Doctor non-authority diagnostics.
+  evidence: `tooling/windows_release_evidence.py` validates `release_evidence/windows_installed_smoke.json` for installed executable hash, installed-path first run, non-zero window handle, visible-surface evidence source, config JSON parsing, audit write/read/delete probe, and non-synthetic Setup Doctor non-authority diagnostics.
   blocks_release: no
 
 ## Remaining Release Blockers
@@ -118,8 +118,8 @@ Release completion must not be claimed until strict Windows release validation p
 
 ## Next Execution Order
 
-1. Connect native Windows installed app path to Setup Doctor diagnostics evidence.
-2. Implement native Windows installer/first-run smoke and artifact/hash evidence.
+1. Connect native Windows installed app path to real Setup Doctor diagnostics evidence; synthetic Setup Doctor payloads must fail validation.
+2. Run native Windows installer/first-run smoke with measured window, visible-surface, config, and audit write/read/delete evidence.
 3. Add installed executable smoke evidence to the release bundle.
 4. Keep GitHub Actions CI covering schema, conformance, release smoke, release gate, Rust, Flutter, Windows build, and artifact validation.
 5. Run `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.

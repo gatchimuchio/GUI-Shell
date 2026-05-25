@@ -964,8 +964,36 @@ def test_evidence_bundle_is_development_classified_and_non_authoritative() -> li
 
 
 def _valid_windows_installed_evidence() -> dict:
+    setup_checks = []
+    for check_id in [
+        "windows.installed_app_path",
+        "windows.artifact_hash",
+        "first_run.config_created",
+        "first_run.audit_dir_writable",
+        "setup_doctor.ran_from_installed_app_path",
+        "setup_doctor.runtime_connection",
+        "setup_doctor.authority_boundary",
+        "setup_doctor.network_public_bind",
+        "setup_doctor.recovery_instruction",
+        "setup_doctor.audit_storage",
+    ]:
+        setup_checks.append(
+            {
+                "check_id": check_id,
+                "status": "pass",
+                "message": f"{check_id} passed",
+                "recovery_instruction": "Rerun installed-path smoke after remediation.",
+                "grants_authority": False,
+            }
+        )
     return {
         "platform": "windows",
+        "evidence_source": {
+            "collector": "installer/windows/collect_installed_smoke.ps1",
+            "collector_version": "2",
+            "manual_confirmation": False,
+            "screenshot_path": r"C:\ProgramData\GUI-Shell\evidence\first-window.png",
+        },
         "artifact": {
             "installed_exe_path": r"C:\Program Files\GUI-Shell\gui_shell_desktop.exe",
             "installed_exe_exists": True,
@@ -975,27 +1003,43 @@ def _valid_windows_installed_evidence() -> dict:
             "status": "passed",
             "command": r".\gui_shell_desktop.exe",
             "launched_from_installed_path": True,
+            "process_id": 1234,
+            "process_running_after_launch": True,
+            "main_window_handle": 100,
+            "window_title": "GUI-Shell",
             "first_window_visible": True,
             "visible_surfaces": ["Dashboard", "NavigationRail", "Runtime Status", "Invariant Status"],
+            "visible_surfaces_evidence": {
+                "source": "uiautomation",
+                "path": r"C:\ProgramData\GUI-Shell\evidence\visible-surfaces.json",
+                "captured_at": "2026-05-26T00:00:00Z",
+            },
+            "config_path": r"C:\ProgramData\GUI-Shell\config\gui_shell.json",
             "config_created": True,
+            "config_json_valid": True,
+            "audit_dir": r"C:\ProgramData\GUI-Shell\audit",
             "audit_dir_writable": True,
+            "audit_write_probe": {
+                "attempted": True,
+                "write": True,
+                "read": True,
+                "delete": True,
+                "probe_path": r"C:\ProgramData\GUI-Shell\audit\.gui-shell-write-probe",
+            },
             "installer_grants_authority": False,
             "installer_silently_approves_permissions": False,
         },
         "setup_doctor": {
             "status": "warning",
+            "evidence_source": {
+                "synthetic": False,
+                "command": r".\gui_shell_desktop.exe --setup-doctor --json",
+            },
             "ran_from_installed_app_path": True,
             "operator_readable": True,
             "installer_grants_authority": False,
             "installer_silently_approves_permissions": False,
-            "checks": [
-                {
-                    "check_id": "windows.installed_app_path",
-                    "status": "pass",
-                    "message": "installed path resolved",
-                    "grants_authority": False,
-                }
-            ],
+            "checks": setup_checks,
         },
     }
 
@@ -1029,6 +1073,28 @@ def test_windows_release_evidence_validator_rejects_authority_and_missing_instal
         errors.append("Windows first-run evidence validator accepted missing installed path or installer authority")
     if result_by_name["windows_setup_doctor_smoke"].classification != "release_blocker":
         errors.append("Windows Setup Doctor evidence validator accepted authority-granting check")
+    return errors
+
+
+def test_windows_release_evidence_validator_rejects_unmeasured_or_synthetic_evidence() -> list[str]:
+    bad = _valid_windows_installed_evidence()
+    bad["evidence_source"]["manual_confirmation"] = True
+    bad["first_run"]["main_window_handle"] = 0
+    bad["first_run"]["visible_surfaces_evidence"] = {"source": "manual", "path": ""}
+    bad["first_run"]["config_json_valid"] = False
+    bad["first_run"]["audit_write_probe"]["read"] = False
+    bad["setup_doctor"]["evidence_source"]["synthetic"] = True
+    bad["setup_doctor"]["checks"] = bad["setup_doctor"]["checks"][:1]
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "windows_installed_smoke.json"
+        path.write_text(json.dumps(bad), encoding="utf-8")
+        results = validate_windows_release_evidence(path)
+    result_by_name = {result.name: result for result in results}
+    errors = []
+    if result_by_name["windows_installer_first_run_smoke"].classification != "release_blocker":
+        errors.append("Windows first-run evidence validator accepted unmeasured/manual evidence")
+    if result_by_name["windows_setup_doctor_smoke"].classification != "release_blocker":
+        errors.append("Windows Setup Doctor evidence validator accepted synthetic or shallow evidence")
     return errors
 
 
@@ -1496,6 +1562,7 @@ def main() -> int:
         test_evidence_bundle_is_development_classified_and_non_authoritative,
         test_windows_release_evidence_validator_accepts_valid_installed_smoke,
         test_windows_release_evidence_validator_rejects_authority_and_missing_installed_path,
+        test_windows_release_evidence_validator_rejects_unmeasured_or_synthetic_evidence,
         test_invariant_evaluator_detects_intentional_import_violation,
         test_invariant_evaluator_detects_live_authority_invariants,
         test_rust_helper_required_sources_exist,

@@ -76,7 +76,7 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 87 checks
+    stdout: conformance skeleton passed: 88 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
@@ -90,7 +90,7 @@ checks:
       - GUI operation surfaces include Trust Center, Authority Map, Adapter Catalog, Problems Panel, Evidence Center, Command Palette, Audit Timeline, Recovery Playbook, Settings UX, and Status Bar vocabulary
       - Shell snapshot generator emits GUI operation state for local mode
       - Evidence bundle check preserves blockers and does not claim release readiness
-      - Windows installed-path evidence validator accepts valid evidence and rejects unsafe evidence
+      - Windows installed-path evidence validator accepts measured evidence and rejects unsafe, synthetic, shallow, manual, or unmeasured evidence
 
   - name: release_smoke
     command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/release_smoke.py
@@ -229,7 +229,7 @@ checks:
     exit: 0
     stdout_summary:
       - schema_check passed
-      - conformance_skeleton passed with 87 checks
+      - conformance_skeleton passed with 88 checks
       - release_gate_check passed
       - evidence_bundle passed and preserved Windows installed-path blockers
       - rust_helper_cargo_test passed
@@ -260,8 +260,8 @@ checks:
       - windows_flutter_test passed
       - windows_desktop_build_smoke passed
       - windows_desktop_launch_smoke passed
-      - windows_installer_first_run_smoke failed as release_blocker because `release_evidence/windows_installed_smoke.json` is missing
-      - windows_setup_doctor_smoke failed as release_blocker because `release_evidence/windows_installed_smoke.json` is missing
+      - windows_installer_first_run_smoke failed as release_blocker because measured `release_evidence/windows_installed_smoke.json` is missing
+      - windows_setup_doctor_smoke failed as release_blocker because non-synthetic installed-path Setup Doctor evidence is missing
 
 release_gate:
   status: fail_for_completed_product_release
@@ -328,13 +328,13 @@ release_gate:
       blocks_release: no
     - item: native Windows installed-path installer/first-run smoke
       classification: release_blocker
-      reason: native Windows installed-path installer and first-run evidence has not been recorded in this environment.
-      required_action: Run installed Windows artifact first-run smoke and record evidence.
+      reason: native Windows installed-path installer and first-run measured evidence has not been recorded in this environment.
+      required_action: Run installed Windows artifact first-run smoke and record measured window, visible-surface, config JSON, and audit write/read/delete evidence.
       blocks_release: yes
     - item: native Windows installed-path Setup Doctor smoke
       classification: release_blocker
-      reason: native Windows installed-path Setup Doctor diagnostics have not been recorded in this environment.
-      required_action: Run Setup Doctor from installed Windows app path and record diagnostics evidence.
+      reason: native Windows installed-path non-synthetic Setup Doctor diagnostics have not been recorded in this environment.
+      required_action: Run Setup Doctor from installed Windows app path and record non-synthetic required diagnostics evidence.
       blocks_release: yes
     - item: owner GO
       classification: release_blocker

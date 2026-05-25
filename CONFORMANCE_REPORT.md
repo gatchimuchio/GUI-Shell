@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 87 checks`
+  evidence: `conformance skeleton passed: 88 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -75,7 +75,7 @@
 - item: Windows installed-path evidence validator
   classification: required_for_v1
   status: implemented
-  evidence: conformance accepts valid `release_evidence/windows_installed_smoke.json` shape and rejects missing installed executable confirmation, installer authority grants, and authority-granting Setup Doctor checks.
+  evidence: conformance accepts valid `release_evidence/windows_installed_smoke.json` shape and rejects missing installed executable confirmation, installer authority grants, authority-granting Setup Doctor checks, unmeasured/manual GUI visibility evidence, missing config/audit probes, synthetic Setup Doctor evidence, and shallow one-check Setup Doctor payloads.
 
 ## Not Sufficient For Release
 
