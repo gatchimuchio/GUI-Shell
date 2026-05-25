@@ -309,10 +309,39 @@ Every completed change report must include:
 2. Changed files
 3. Risk classification
 4. Validation results
-5. Remaining risks
-6. Commit hash, or `not committed`
+5. Release-gate classification
+6. Remaining risks, classified
+7. Commit hash, or `not committed`
 
 Validation results must explicitly say which commands passed, failed, or were not run.
+
+## Release-Gate Classification Rule
+
+In this repository, "release" means completed product release.
+
+Any final report, release report, validation report, or remaining-risk section must classify every unfinished item as:
+
+- `release_blocker`
+- `post_v1_scope`
+- `known_limitation`
+
+No unclassified "remaining risks", "still needed", "not run", "not implemented", "not verified", "TODO", "skeleton only", or "future work" item is allowed.
+
+Any `release_blocker` prevents release claim.
+
+Any `post_v1_scope` item must explicitly state why it is outside v1.0 scope.
+
+Any `known_limitation` must be documented in `README.md`, `CLAIM.md`, or `RELEASE_CHECKLIST.md` before release.
+
+Remaining risks format:
+
+```text
+- item:
+  classification: release_blocker | post_v1_scope | known_limitation
+  reason:
+  required_action:
+  blocks_release: yes | no
+```
 
 ## 14. Documentation Language
 

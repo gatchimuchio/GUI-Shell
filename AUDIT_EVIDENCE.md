@@ -1,16 +1,49 @@
 # Audit Evidence
 
-Current evidence is contract-level.
+## Current Evidence
 
-- AuditEvent schema requires `event_id`, `timestamp`, `actor`, `action`, `target`, `result`, and `payload_hash`.
-- PolicyEvaluator requires `audit_event.event_id`.
-- PolicyEvaluator requires `audit_event.payload_hash` when payload exists.
-- AuditStore maintains previous hash linkage in memory.
-- Adapter mock exports audit events through generic AuditEvent schema.
+- item: AuditEvent schema requires core audit fields
+  classification: required_for_v1
+  status: schema validation present
 
-Remaining before production:
+- item: PolicyEvaluator requires audit_event.event_id
+  classification: required_for_v1
+  status: conformance present
 
-- persistent audit storage
-- tamper evidence over durable storage
-- export verification tooling
-- operator-facing audit chain validation
+- item: PolicyEvaluator requires audit_event.payload_hash when payload exists
+  classification: required_for_v1
+  status: conformance present
+
+- item: AuditStore maintains previous hash linkage in memory
+  classification: required_for_v1
+  status: contract-level implementation present
+
+- item: audit chain tamper detection
+  classification: required_for_v1
+  status: conformance and release smoke present
+
+- item: Shell Core persistence and audit smoke
+  classification: required_for_v1
+  status: `tooling/release_smoke.py` passes snapshot save/load, append-only audit chain verification, and tamper detection for the current implementation path.
+
+## Phase B Internal Operation
+
+- item: operator-facing audit chain validation
+  classification: required_for_v1
+  reason: Phase B owner operation needs audit status visible from the desktop shell.
+  required_action: Keep Audit Timeline and Evidence Center surfaces connected to Shell Core snapshot/evidence data.
+  blocks_release: no
+
+- item: audit export verification tooling
+  classification: required_for_v1
+  reason: evidence bundle export exists for development evidence and must remain non-authoritative until measured Windows installed-path evidence passes.
+  required_action: Keep `tooling/evidence_bundle.py --check` passing.
+  blocks_release: no
+
+## Remaining Release Blockers
+
+- item: measured Windows installed-path audit evidence
+  classification: release_blocker
+  reason: completed product release still requires native Windows installed-path evidence to prove config/audit initialization from the installed app path.
+  required_action: Generate measured `release_evidence/windows_installed_smoke.json` on native Windows and pass `python tooling/windows_release_evidence.py`.
+  blocks_release: yes

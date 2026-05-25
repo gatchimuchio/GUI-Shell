@@ -79,7 +79,7 @@ Expected successful output:
 
 ```text
 schema check passed: 19 schemas, 19 examples, 19 negative fixtures
-conformance skeleton passed: 67 checks
+conformance skeleton passed: 88 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).
@@ -147,7 +147,37 @@ tooling/
 
 ## Current status
 
-This repository is a v1.0 product-completion skeleton, not a production runtime.
+GUI-Shell has completed Phase A: personal Windows trial operation. The Windows desktop build and native launch smoke passed, and the first window showed Dashboard, NavigationRail, Runtime Status, and Invariant Status.
+
+The active phase is Phase B: owner-use operational hardening. The goal is to make the shell useful for daily personal operation while preserving authority, audit, approval, recovery, and evidence boundaries.
+
+This repository does not claim completed product release readiness. Strict Windows installed-path evidence, measured Setup Doctor evidence, and explicit owner GO are classified as `release_blocker` before any release-ready claim.
+
+## Release-Gate Classification
+
+- item: personal Windows trial operation
+  classification: required_for_v1
+  reason: Windows build and native launch smoke passed for owner trial use.
+  required_action: Keep the personal operation path usable while Phase B hardening continues.
+  blocks_release: no
+
+- item: completed product release
+  classification: release_blocker
+  reason: strict Windows installed-path release validation and owner GO have not passed.
+  required_action: Complete measured Windows installed-path evidence and all v1.0 release blockers in `RELEASE_CHECKLIST.md`.
+  blocks_release: yes
+
+- item: local single-user desktop scope
+  classification: known_limitation
+  reason: deliberate v1.0 product scope.
+  required_action: Keep README.md, CLAIM.md, and RELEASE_CHECKLIST.md aligned.
+  blocks_release: no
+
+- item: mobile full release
+  classification: post_v1_scope
+  reason: v1.0 is desktop-first unless owner changes scope.
+  required_action: Complete in mobile release phase.
+  blocks_release: no
 
 It intentionally prioritizes:
 
@@ -163,6 +193,7 @@ before product UI.
 
 - [AGENTS.md](./AGENTS.md): repository agent rules
 - [ROADMAP.md](./ROADMAP.md): phase roadmap and execution order
+- [docs/PHASE_STRATEGY.md](./docs/PHASE_STRATEGY.md): Phase A/B/C/D/E/F readiness boundaries
 - [docs/OPERATING_MODEL.md](./docs/OPERATING_MODEL.md): repository flow, backup model, and validation gates
 - [CLAIM.md](./CLAIM.md): current claim boundary
 - [CONFIG.md](./CONFIG.md): configuration reference

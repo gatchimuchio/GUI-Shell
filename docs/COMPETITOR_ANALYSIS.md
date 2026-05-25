@@ -10,25 +10,55 @@ Sources reviewed:
 - Ollama documentation: https://docs.ollama.com/
 - AIDev paper: https://arxiv.org/abs/2602.09185
 
-## Findings
+## Classified Requirements
 
-Docker Desktop establishes the benchmark for a GUI that hides lower-level runtime complexity while still exposing install, settings, images/containers/logs, troubleshooting, backup, security, AI/agents, MCP, and model-runner surfaces. GUI-Shell should mirror that operational breadth for AI runtimes and agents while preserving permission, approval, audit, and recovery boundaries.
+- requirement: Desktop GUI hides lower-level runtime complexity while exposing install, settings, logs, troubleshooting, backup, security, and AI/agent surfaces.
+  source/competitor: Docker Desktop
+  implementation target: Dashboard, Setup Doctor, Runtime Center, Agent Center, Audit Viewer, Recovery Center
+  classification: required_for_v1
+  blocks_release: yes
 
-AnythingLLM Desktop demonstrates the value of a single-user, local-first desktop product with a low-friction install path. GUI-Shell v1.0 should optimize for the same product shape: a complete desktop app for one local operator, not a multi-user cloud control plane.
+- requirement: Single-user local-first desktop product with low-friction install path.
+  source/competitor: AnythingLLM Desktop
+  implementation target: Desktop app plus installer first-run flow
+  classification: required_for_v1
+  blocks_release: yes
 
-OpenHands separates cloud, terminal, and local GUI usage. GUI-Shell should take the local GUI and environment-control lesson, but reduce Docker/CLI setup burden through Setup Doctor and installer flow.
+- requirement: Local GUI and environment control without forcing normal users through Docker/CLI setup.
+  source/competitor: OpenHands
+  implementation target: Setup Doctor and installer recovery actions
+  classification: required_for_v1
+  blocks_release: yes
 
-LM Studio, Open WebUI, and Ollama show that local model runtimes expose a mix of desktop, web UI, API, model management, localhost binding, and offline operation. GUI-Shell should not hard-code these runtimes; it needs runtime manifests and adapter manifests.
+- requirement: Runtime manifests and adapter manifests for local LLM runtimes.
+  source/competitor: LM Studio, Open WebUI, Ollama
+  implementation target: Runtime Catalog
+  classification: required_for_v1
+  blocks_release: yes
 
-Codex-like coding agents are now a major runtime category. GUI-Shell must model agent sessions, tasks, workspaces, tool calls, diffs, commits, approvals, and audit logs as first-class contracts.
+- requirement: Agent sessions, tasks, workspaces, tool calls, diffs, commits, approvals, and audit logs as first-class contracts.
+  source/competitor: Codex-like coding agents and AIDev paper
+  implementation target: Agent Runtime Contract
+  classification: required_for_v1
+  blocks_release: yes
 
-## Implementation Requirements
+- requirement: Live integrations for all major coding agents.
+  source/competitor: Codex, Claude Code, Copilot, Cursor, Devin, OpenHands
+  implementation target: adapter packages
+  classification: post_v1_scope
+  reason: v1.0 requires generic Agent Runtime contract and mock/reference agent.
+  blocks_release: no
 
-- Desktop-first single-user product scope.
-- Runtime Catalog based on signed manifests.
-- Agent Runtime Contract independent of any one agent vendor.
-- Setup Doctor checks for tools, ports, bind addresses, filesystem permissions, audit storage, workspace boundary, and secret path policy.
-- Agent Center in desktop UI.
-- Shell Core persistence using append-only JSONL and deterministic snapshots before DB complexity.
-- Audit chain verification and tamper detection.
-- Release gate must require actual Cargo and Flutter validation, not skeleton-only claims.
+- requirement: Cloud sync and multi-user administration.
+  source/competitor: broader runtime management products
+  implementation target: post-v1 service layer
+  classification: post_v1_scope
+  reason: v1.0 is desktop-first, local-first, single-user.
+  blocks_release: no
+
+- requirement: Only local single-user mode in v1.0.
+  source/competitor: AnythingLLM Desktop positioning
+  implementation target: README, CLAIM, installer, Shell Core assumptions
+  classification: known_limitation
+  reason: deliberate v1.0 scope.
+  blocks_release: no

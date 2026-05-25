@@ -6,6 +6,8 @@ No completed product release may be claimed if any Windows-first v1.0 `release_b
 
 GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete until validated on a macOS host.
 
+Phase A personal Windows trial operation is complete. Phase B owner-use operational hardening is active. This checklist remains the completed product release gate and must not be weakened for Phase B.
+
 ## Release Blockers
 
 - item: cargo test gate for in-scope Rust helper
