@@ -14,7 +14,11 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: schema and conformance skeleton
   classification: required_for_v1
-  status: passed in development validation; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior; ghost invariants are now measured by production InvariantEvaluator; normalization firewall conformance is present
+  status: passed in development validation with 84 conformance checks; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior; ghost invariants are measured by production InvariantEvaluator; normalization firewall conformance now covers PolicyEvaluator and adapter metadata ingress.
+
+- item: Flutter local Shell Core client
+  classification: required_for_v1
+  status: `ShellCoreClient.local()` reads structured local snapshot JSON and is no longer a direct mock alias; mock mode remains available for tests/demo.
 
 - item: Shell Core hardening skeleton
   classification: required_for_v1

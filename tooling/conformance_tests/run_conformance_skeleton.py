@@ -292,6 +292,16 @@ def test_adapter_loader_strips_authority_metadata_from_effective_payload() -> li
     return errors
 
 
+def test_adapter_loader_rejects_value_only_authority_metadata() -> list[str]:
+    adapter = load_contract_fixture("adapter.valid.json")
+    adapter["metadata"] = {"safe_label": "root"}
+    try:
+        load_adapter(adapter)
+    except ValueError:
+        return []
+    return ["adapter loader accepted value-only authority metadata"]
+
+
 def test_normalization_firewall_rejects_authority_aliases() -> list[str]:
     payload = {
         "Trust_Level": "root",
@@ -529,7 +539,10 @@ def test_shell_core_ignores_adapter_metadata_permissions() -> list[str]:
         "grants": ["all"],
         "trust_level": "root",
     }
-    record = load_adapter(adapter)
+    try:
+        record = load_adapter(adapter)
+    except ValueError:
+        return []
     if record.effective_capabilities() != tuple(adapter["declared_capabilities"]):
         return ["Shell Core trusted adapter metadata for permissions"]
     return []
@@ -792,6 +805,25 @@ def test_policy_evaluator_ignores_adapter_metadata_authority() -> list[str]:
     if "adapter_metadata_escalation_attempt" not in error_codes(result):
         return ["PolicyEvaluator did not flag adapter metadata authority claims"]
     return []
+
+
+def test_policy_evaluator_normalizes_adapter_metadata_authority() -> list[str]:
+    state = build_policy_state()
+    cases = [
+        {"Trust_Level": "root"},
+        {"permissionGrant": "all"},
+        {"trust\u200b_level": "root"},
+        {"ｔｒｕｓｔ＿ｌｅｖｅｌ": "root"},
+        {"safe_label": "root"},
+    ]
+    errors = []
+    for metadata in cases:
+        action = build_sensitive_action()
+        action["adapter_metadata"] = metadata
+        result = PolicyEvaluator(state).evaluate(action)
+        if result["allowed"] or "adapter_metadata_escalation_attempt" not in error_codes(result):
+            errors.append(f"PolicyEvaluator did not normalize and reject adapter metadata: {metadata}")
+    return errors
 
 
 def test_policy_evaluator_rejects_non_authority_source() -> list[str]:
@@ -1112,6 +1144,10 @@ def test_desktop_flutter_keeps_authority_in_shell_core_client() -> list[str]:
     client = (DESKTOP_FLUTTER / "lib" / "services" / "shell_core_client.dart").read_text(encoding="utf-8")
     if "full_payload_projected_without_full_visibility': false" not in client:
         errors.append("desktop Flutter mock client does not expose Shell Core invariant status")
+    if "factory ShellCoreClient.local() => ShellCoreClient.mock()" in client:
+        errors.append("desktop Flutter local client is still a direct mock alias")
+    if "ShellSnapshot.fromJson" not in client:
+        errors.append("desktop Flutter local client does not load structured snapshot JSON")
     return errors
 
 
@@ -1350,6 +1386,7 @@ def main() -> int:
         test_adapter_authority_strip_schema,
         test_inbound_authority_keys_are_stripped,
         test_adapter_loader_strips_authority_metadata_from_effective_payload,
+        test_adapter_loader_rejects_value_only_authority_metadata,
         test_normalization_firewall_rejects_authority_aliases,
         test_normalization_firewall_detects_value_only_escalation,
         test_external_metadata_cannot_escalate_authority,
@@ -1385,6 +1422,7 @@ def main() -> int:
         test_policy_evaluator_rejects_unknown_recovery_id,
         test_policy_evaluator_accepts_known_recovery_id,
         test_policy_evaluator_ignores_adapter_metadata_authority,
+        test_policy_evaluator_normalizes_adapter_metadata_authority,
         test_policy_evaluator_rejects_non_authority_source,
         test_sensitive_action_router_uses_policy_evaluator_when_state_is_provided,
         test_sensitive_action_router_blocks_policy_denied_action,

@@ -12,6 +12,16 @@ class RuntimeRecord {
   final String status;
   final String adapterId;
   final String diagnosticSummary;
+
+  factory RuntimeRecord.fromJson(Map<String, Object?> json) {
+    return RuntimeRecord(
+      runtimeId: json['runtime_id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      status: json['status'] as String? ?? '',
+      adapterId: json['adapter_id'] as String? ?? '',
+      diagnosticSummary: json['diagnostic_summary'] as String? ?? '',
+    );
+  }
 }
 
 class PermissionRecord {
@@ -28,6 +38,16 @@ class PermissionRecord {
   final String decision;
   final String source;
   final String? expiresAt;
+
+  factory PermissionRecord.fromJson(Map<String, Object?> json) {
+    return PermissionRecord(
+      permissionId: json['permission_id'] as String? ?? '',
+      capabilityId: json['capability_id'] as String? ?? '',
+      decision: json['decision'] as String? ?? '',
+      source: json['source'] as String? ?? '',
+      expiresAt: json['expires_at'] as String?,
+    );
+  }
 }
 
 class ApprovalRecord {
@@ -48,6 +68,19 @@ class ApprovalRecord {
   final Map<String, Object?> projectedContent;
   final List<String> editableFields;
   final List<String> protectedFields;
+
+  factory ApprovalRecord.fromJson(Map<String, Object?> json) {
+    return ApprovalRecord(
+      approvalId: json['approval_id'] as String? ?? '',
+      operation: json['operation'] as String? ?? '',
+      status: json['status'] as String? ?? '',
+      contentVisibility: json['content_visibility'] as String? ?? 'redacted',
+      projectedContent:
+          Map<String, Object?>.from(json['projected_content'] as Map? ?? {}),
+      editableFields: _stringList(json['editable_fields']),
+      protectedFields: _stringList(json['protected_fields']),
+    );
+  }
 }
 
 class AuditRecord {
@@ -64,6 +97,16 @@ class AuditRecord {
   final String result;
   final String payloadHash;
   final String? previousEventHash;
+
+  factory AuditRecord.fromJson(Map<String, Object?> json) {
+    return AuditRecord(
+      eventId: json['event_id'] as String? ?? '',
+      action: json['action'] as String? ?? '',
+      result: json['result'] as String? ?? '',
+      payloadHash: json['payload_hash'] as String? ?? '',
+      previousEventHash: json['previous_event_hash'] as String?,
+    );
+  }
 }
 
 class RecoveryRecord {
@@ -78,6 +121,15 @@ class RecoveryRecord {
   final String severity;
   final String message;
   final bool safeToRetry;
+
+  factory RecoveryRecord.fromJson(Map<String, Object?> json) {
+    return RecoveryRecord(
+      recoveryId: json['recovery_id'] as String? ?? '',
+      severity: json['severity'] as String? ?? '',
+      message: json['message'] as String? ?? '',
+      safeToRetry: json['safe_to_retry'] as bool? ?? false,
+    );
+  }
 }
 
 class AgentSessionRecord {
@@ -106,6 +158,22 @@ class AgentSessionRecord {
   final int pendingApprovalCount;
   final String rollbackCandidate;
   final String auditEventId;
+
+  factory AgentSessionRecord.fromJson(Map<String, Object?> json) {
+    return AgentSessionRecord(
+      sessionId: json['session_id'] as String? ?? '',
+      workspace: json['workspace'] as String? ?? '',
+      task: json['task'] as String? ?? '',
+      changedFiles: _stringList(json['changed_files']),
+      toolCalls: _stringList(json['tool_calls']),
+      shellCommands: _stringList(json['shell_commands']),
+      testStatus: json['test_status'] as String? ?? '',
+      diffSummary: json['diff_summary'] as String? ?? '',
+      pendingApprovalCount: json['pending_approval_count'] as int? ?? 0,
+      rollbackCandidate: json['rollback_candidate'] as String? ?? '',
+      auditEventId: json['audit_event_id'] as String? ?? '',
+    );
+  }
 }
 
 class SetupDoctorCheckRecord {
@@ -122,6 +190,16 @@ class SetupDoctorCheckRecord {
   final String message;
   final String? recoveryInstruction;
   final bool grantsAuthority;
+
+  factory SetupDoctorCheckRecord.fromJson(Map<String, Object?> json) {
+    return SetupDoctorCheckRecord(
+      checkId: json['check_id'] as String? ?? '',
+      status: json['status'] as String? ?? '',
+      message: json['message'] as String? ?? '',
+      recoveryInstruction: json['recovery_instruction'] as String?,
+      grantsAuthority: json['grants_authority'] as bool? ?? false,
+    );
+  }
 }
 
 class ShellSnapshot {
@@ -150,4 +228,41 @@ class ShellSnapshot {
   final String setupDoctorStatus;
   final bool installerGrantsAuthority;
   final bool installerSilentlyApprovesPermissions;
+
+  factory ShellSnapshot.fromJson(Map<String, Object?> json) {
+    return ShellSnapshot(
+      runtimes: _records(json['runtimes'], RuntimeRecord.fromJson),
+      agentSessions:
+          _records(json['agent_sessions'], AgentSessionRecord.fromJson),
+      permissions: _records(json['permissions'], PermissionRecord.fromJson),
+      pendingApprovals:
+          _records(json['pending_approvals'], ApprovalRecord.fromJson),
+      auditEvents: _records(json['audit_events'], AuditRecord.fromJson),
+      recoveryActions:
+          _records(json['recovery_actions'], RecoveryRecord.fromJson),
+      invariantFlags:
+          Map<String, bool>.from(json['invariant_flags'] as Map? ?? {}),
+      setupDoctorChecks: _records(
+          json['setup_doctor_checks'], SetupDoctorCheckRecord.fromJson),
+      setupDoctorStatus: json['setup_doctor_status'] as String? ?? 'warning',
+      installerGrantsAuthority:
+          json['installer_grants_authority'] as bool? ?? false,
+      installerSilentlyApprovesPermissions:
+          json['installer_silently_approves_permissions'] as bool? ?? false,
+    );
+  }
+}
+
+List<String> _stringList(Object? value) {
+  return (value as List? ?? []).map((item) => item.toString()).toList();
+}
+
+List<T> _records<T>(
+  Object? value,
+  T Function(Map<String, Object?> json) decode,
+) {
+  return (value as List? ?? [])
+      .whereType<Map>()
+      .map((item) => decode(Map<String, Object?>.from(item)))
+      .toList();
 }

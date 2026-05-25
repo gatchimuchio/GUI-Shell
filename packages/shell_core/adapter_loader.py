@@ -1,4 +1,4 @@
-from .normalization import strip_authority_keys
+from .normalization import authority_values_in, strip_authority_keys
 
 
 class AdapterRecord:
@@ -11,6 +11,8 @@ class AdapterRecord:
         self.transport = adapter.get("transport", "mock")
         self.declared_capabilities = tuple(adapter.get("declared_capabilities", []))
         self.metadata = strip_authority_keys(adapter.get("metadata", {}))
+        if authority_values_in(self.metadata):
+            raise ValueError("adapter metadata contains authority-like values")
 
     def effective_capabilities(self) -> tuple[str, ...]:
         return self.declared_capabilities

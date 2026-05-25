@@ -13,7 +13,7 @@ from .error_taxonomy import (
 )
 from .permission_ledger import NON_AUTHORITY_SOURCES
 from .runtime_state import RuntimeState
-from .authority_keys import AUTHORITY_KEYS
+from .normalization import authority_keys_in, authority_values_in, strip_authority_keys
 
 
 ALLOWED_PERMISSION_DECISIONS = {"allow", "approved"}
@@ -113,8 +113,5 @@ class PolicyEvaluator:
         return any(key in action for key in ("payload", "full_payload", "redacted_payload"))
 
     def _metadata_claims_authority(self, value) -> bool:
-        if isinstance(value, dict):
-            return any(key in AUTHORITY_KEYS or self._metadata_claims_authority(item) for key, item in value.items())
-        if isinstance(value, list):
-            return any(self._metadata_claims_authority(item) for item in value)
-        return False
+        stripped = strip_authority_keys(value)
+        return bool(authority_keys_in(value) or authority_values_in(stripped))

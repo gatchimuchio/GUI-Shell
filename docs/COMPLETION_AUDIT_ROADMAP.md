@@ -33,7 +33,19 @@ Release completion must not be claimed until strict Windows release validation p
 - item: normalization firewall
   classification: required_for_v1
   status: implemented
-  evidence: `packages/shell_core/normalization.py` preserves raw payloads, normalizes keys, strips authority aliases, detects authority-like values, quarantines ambiguous authority-bearing payloads, and emits normalization audit event metadata.
+  evidence: `packages/shell_core/normalization.py` preserves raw payloads, normalizes keys, strips authority aliases, detects authority-like values, quarantines ambiguous authority-bearing payloads, and emits normalization audit event metadata. PolicyEvaluator, AdapterLoader, RuntimeCatalog, and BLUE-TANUKI authority trace now use the shared normalization authority scanners instead of exact raw key matching.
+  blocks_release: no
+
+- item: metadata value-only authority policy
+  classification: required_for_v1
+  status: implemented
+  evidence: adapter metadata with authority-like values after key stripping is rejected; PolicyEvaluator flags value-only adapter metadata authority attempts.
+  blocks_release: no
+
+- item: Flutter local Shell Core client
+  classification: required_for_v1
+  status: implemented
+  evidence: `ShellCoreClient.local()` loads structured local snapshot JSON from `GUI_SHELL_SNAPSHOT_JSON` or `.gui-shell/shell_snapshot.json`; `ShellCoreClient.mock()` remains separate for tests/demo.
   blocks_release: no
 
 - item: conformance coverage

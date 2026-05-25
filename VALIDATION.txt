@@ -76,16 +76,17 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 82 checks
+    stdout: conformance skeleton passed: 84 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
       - approval_state self-reporting checks use RuntimeState approval status
       - recovery_id checks require RuntimeState recovery catalog entry
       - invariant flags are measured by production InvariantEvaluator
-      - normalization firewall covers Unicode/case/zero-width/alias/value-only authority attempts
+      - normalization firewall covers Unicode/case/zero-width/alias/value-only authority attempts across adapter loader and PolicyEvaluator metadata paths
       - integrated Shell Core release smoke passed
       - first-run and Setup Doctor implementation smoke passed
+      - Flutter local client no longer aliases mock and reads structured local snapshot JSON
       - Windows installed-path evidence validator accepts valid evidence and rejects unsafe evidence
 
   - name: release_smoke
@@ -136,8 +137,10 @@ checks:
     stdout_summary:
       - GUI Shell desktop app smoke test passed
       - Setup Doctor client surface is structured and non-authoritative passed
+      - ShellCoreClient.local structured snapshot JSON test passed
+      - Setup Doctor UI local diagnostic rendering test passed
       - Approval Center hidden full payload smoke passed
-      - All tests passed
+      - All 5 Flutter tests passed
 
   - name: desktop_flutter_build_linux
     command: cd apps/desktop_flutter && flutter build linux
@@ -214,7 +217,7 @@ checks:
     exit: 0
     stdout_summary:
       - schema_check passed
-      - conformance_skeleton passed with 82 checks
+      - conformance_skeleton passed with 84 checks
       - release_gate_check passed
       - rust_helper_cargo_test passed
       - desktop_flutter_analyze passed

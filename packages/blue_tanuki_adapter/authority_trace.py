@@ -1,13 +1,9 @@
-from packages.shell_core.authority_keys import AUTHORITY_KEYS
+from packages.shell_core.normalization import authority_keys_in, authority_values_in, strip_authority_keys
 
 
 def metadata_attempts_authority(metadata: dict) -> bool:
-    for key, value in metadata.items():
-        if key in AUTHORITY_KEYS:
-            return True
-        if isinstance(value, dict) and metadata_attempts_authority(value):
-            return True
-    return False
+    stripped = strip_authority_keys(metadata)
+    return bool(authority_keys_in(metadata) or authority_values_in(stripped))
 
 
 def authority_trace() -> dict:

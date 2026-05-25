@@ -1,6 +1,6 @@
 import copy
 
-from packages.shell_core.authority_keys import AUTHORITY_KEYS
+from packages.shell_core.normalization import authority_keys_in, authority_values_in, strip_authority_keys
 
 
 class RuntimeCatalog:
@@ -30,11 +30,5 @@ class RuntimeCatalog:
         return False
 
     def metadata_attempts_authority(self, metadata: dict) -> bool:
-        return self._contains_authority_key(metadata)
-
-    def _contains_authority_key(self, value) -> bool:
-        if isinstance(value, dict):
-            return any(key in AUTHORITY_KEYS or self._contains_authority_key(item) for key, item in value.items())
-        if isinstance(value, list):
-            return any(self._contains_authority_key(item) for item in value)
-        return False
+        stripped = strip_authority_keys(metadata)
+        return bool(authority_keys_in(metadata) or authority_values_in(stripped))

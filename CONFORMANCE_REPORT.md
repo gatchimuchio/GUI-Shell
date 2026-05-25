@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 82 checks`
+  evidence: `conformance skeleton passed: 84 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -40,7 +40,12 @@
 - item: normalization firewall
   classification: required_for_v1
   status: implemented
-  evidence: conformance covers `Trust_Level`, fullwidth `ｔｒｕｓｔ＿ｌｅｖｅｌ`, zero-width `trust\u200b_level`, `permissionGrant`, `admin_context`, nested frame metadata authority, and value-only authority attempts.
+  evidence: conformance covers `Trust_Level`, fullwidth `ｔｒｕｓｔ＿ｌｅｖｅｌ`, zero-width `trust\u200b_level`, `permissionGrant`, `admin_context`, nested frame metadata authority, value-only authority attempts, PolicyEvaluator adapter metadata normalization, and adapter metadata value-only rejection.
+
+- item: Flutter local Shell Core client
+  classification: required_for_v1
+  status: implemented
+  evidence: `ShellCoreClient.local()` reads structured local snapshot JSON instead of aliasing `mock()`, and Flutter tests verify local mode, Setup Doctor local diagnostics rendering, redacted content projection, and snapshot-sourced invariant flags.
 
 - item: integrated Shell Core release smoke
   classification: required_for_v1

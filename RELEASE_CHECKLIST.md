@@ -64,8 +64,14 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: normalization firewall
   classification: required_for_v1
-  reason: Shell Core now normalizes inbound authority-bearing payloads before authority strip and conformance covers Unicode, case, zero-width, alias, envelope, and value-only escalation attempts.
-  required_action: Keep raw payload preservation, normalized projection, quarantine decision, and normalization audit metadata in the authority path.
+  reason: Shell Core now normalizes inbound authority-bearing payloads before authority strip; PolicyEvaluator, AdapterLoader, RuntimeCatalog, and BLUE-TANUKI authority trace use shared normalization scanners; conformance covers Unicode, case, zero-width, alias, envelope, and value-only escalation attempts.
+  required_action: Keep raw payload preservation, normalized projection, quarantine decision, normalization audit metadata, and metadata value-only rejection in authority-bearing ingress paths.
+  blocks_release: no
+
+- item: Flutter local Shell Core client
+  classification: required_for_v1
+  reason: `ShellCoreClient.local()` reads structured local snapshot JSON and is no longer a direct mock alias; mock mode remains separate for tests and demo data.
+  required_action: Keep local snapshot loading covered by Flutter tests and replace fallback diagnostics with installed app data on release candidates.
   blocks_release: no
 
 - item: duplicate authority key definitions
