@@ -25,10 +25,10 @@ No completed product release may be claimed if any `release_blocker` remains.
   blocks_release: no
 
 - item: Linux desktop project configuration gate
-  classification: release_blocker
-  reason: `cd apps/desktop_flutter && flutter build linux` fails with `No Linux desktop project configured.`
-  required_action: Add Linux desktop project support for `apps/desktop_flutter` through the approved Flutter desktop support path, then pass `flutter build linux`.
-  blocks_release: yes
+  classification: required_for_v1
+  reason: Linux desktop project support is configured and `cd apps/desktop_flutter && flutter build linux` passed on 2026-05-25, producing `build/linux/x64/release/bundle/gui_shell_desktop`.
+  required_action: Keep Linux desktop project files and pass `flutter build linux` on the release candidate.
+  blocks_release: no
 
 - item: validate_all.py strict release mode not passed
   classification: release_blocker
@@ -43,8 +43,8 @@ No completed product release may be claimed if any `release_blocker` remains.
 
 - item: desktop app launch smoke not passed
   classification: release_blocker
-  reason: Linux desktop launch smoke requires a built desktop artifact, but `flutter build linux` currently fails because no Linux desktop project is configured.
-  required_action: Add and pass desktop launch smoke validation.
+  reason: Linux desktop build smoke now passes, but the built artifact has not been launched and first-window startup evidence has not been recorded.
+  required_action: Launch `build/linux/x64/release/bundle/gui_shell_desktop` and record first-window startup evidence.
   blocks_release: yes
 
 - item: Setup Doctor real diagnostics not passed

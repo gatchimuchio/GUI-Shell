@@ -85,17 +85,28 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: No issues found! (ran in 1.1s)
+    stdout: No issues found! (ran in 2.2s)
+
+  - name: desktop_flutter_test
+    command: cd apps/desktop_flutter && flutter test
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout_summary:
+      - GUI Shell desktop app smoke test passed
+      - All tests passed
 
   - name: desktop_flutter_build_linux
     command: cd apps/desktop_flutter && flutter build linux
-    status: failed
-    classification: release_blocker
-    blocks_release: yes
-    reason: Linux desktop project is not configured for `apps/desktop_flutter`.
-    required_action: Add Linux desktop project support for `apps/desktop_flutter`, preserve Shell Core / UI / Adapter authority boundaries, then rerun `flutter build linux`.
-    exit: 1
-    stderr: No Linux desktop project configured. See https://flutter.dev/to/add-desktop-support to learn about adding Linux support to a project.
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    required_action: Keep Linux desktop project files and toolchain available for release candidates.
+    exit: 0
+    stdout: Built build/linux/x64/release/bundle/gui_shell_desktop
 
   - name: validate_all
     command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py
@@ -132,15 +143,10 @@ checks:
 release_gate:
   status: fail_for_completed_product_release
   blockers:
-    - item: desktop Flutter Linux build
-      classification: release_blocker
-      reason: `flutter build linux` fails because no Linux desktop project is configured.
-      required_action: Add Linux desktop project support for `apps/desktop_flutter`, then pass `flutter build linux`.
-      blocks_release: yes
     - item: desktop Flutter launch smoke
       classification: release_blocker
-      reason: no launchable Linux desktop artifact exists until build smoke passes.
-      required_action: Pass Linux desktop build smoke, then launch the built artifact and record first-window startup evidence.
+      reason: Linux desktop build smoke now passes, but the built app has not been launched from `build/linux/x64/release/bundle/gui_shell_desktop` and first-window startup evidence has not been recorded.
+      required_action: Launch the built Linux desktop artifact and record first-window startup evidence.
       blocks_release: yes
     - item: mobile full release
       classification: post_v1_scope

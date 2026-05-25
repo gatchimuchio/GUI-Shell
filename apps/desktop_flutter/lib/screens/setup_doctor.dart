@@ -14,17 +14,26 @@ class SetupDoctor extends StatelessWidget {
     return ShellPage(
       title: 'Setup Doctor',
       children: [
-        SectionList(
+        const SectionList(
           title: 'Environment',
-          rows: const ['Python: checked by schema tools', 'Rust: not detected in current environment', 'Flutter: not detected in current environment'],
+          rows: [
+            'Python: checked by schema tools',
+            'Rust: not detected in current environment',
+            'Flutter: not detected in current environment'
+          ],
         ),
         SectionList(
           title: 'Runtime Connection',
-          rows: [for (final runtime in snapshot.runtimes) '${runtime.runtimeId}: ${runtime.status}'],
+          rows: [
+            for (final runtime in snapshot.runtimes)
+              '${runtime.runtimeId}: ${runtime.status}'
+          ],
         ),
         SectionList(
           title: 'Recovery Instructions',
-          rows: [for (final recovery in snapshot.recoveryActions) recovery.message],
+          rows: [
+            for (final recovery in snapshot.recoveryActions) recovery.message
+          ],
         ),
       ],
     );
