@@ -1,17 +1,17 @@
 # GUI Shell Roadmap
 
-Status: Phase 9 release-hardening skeleton roadmap  
+Status: v1.0 desktop product-completion roadmap  
 Project: GUI Shell / Runtime Operation Shell  
-Reference runtime: BLUE-TANUKI via adapter only  
+Reference consumer/runtime: BLUE-TANUKI via adapter only  
 Primary implementation candidate: Flutter + Rust helper
 
 ## 0. Product Definition
 
-GUI Shell is a generic Runtime Operation Shell for local runtimes, agents, tools, and services.
+GUI Shell is a desktop-first AI Runtime / Agent Operation Shell for local runtimes, agents, tools, and services.
 
 It is not a BLUE-TANUKI-specific GUI.
 
-BLUE-TANUKI is the first reference runtime and must connect through an adapter boundary. GUI Shell Core must not contain BLUE-TANUKI-specific logic.
+BLUE-TANUKI is a reference consumer/runtime and must connect through an adapter boundary. GUI Shell Core must not contain BLUE-TANUKI-specific logic. BLUE-TANUKI live integration is not a v1.0 release gate.
 
 ## 1. Non-Negotiable Priorities
 
@@ -378,7 +378,7 @@ Exit criteria:
 
 Until later promotion, GUI Shell only claims:
 
-- generic Runtime Operation Shell skeleton with Phase 3H through Phase 9 scaffolding
+- desktop-first AI Runtime / Agent Operation Shell skeleton with v1.0 product-completion scaffolding
 - schema-first contracts
 - conformance-first work order
 - Flutter + Rust helper as first implementation candidate

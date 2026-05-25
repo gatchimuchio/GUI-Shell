@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/agent_session.schema.json",
+  "title": "AgentSession",
+  "type": "object",
+  "required": ["session_id", "agent_runtime_id", "workspace_id", "status", "audit_event_id"],
+  "additionalProperties": false,
+  "properties": {
+    "session_id": {"type": "string", "minLength": 1},
+    "agent_runtime_id": {"type": "string", "minLength": 1},
+    "workspace_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["pending", "running", "blocked", "completed", "failed"]},
+    "audit_event_id": {"type": "string", "minLength": 1}
+  }
+}

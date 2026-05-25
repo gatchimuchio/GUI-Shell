@@ -2,10 +2,12 @@
 
 from .adapter_loader import AdapterRecord, load_adapter
 from .approval_queue import ApprovalQueue
+from .audit_chain import chain_event, verify_audit_chain
 from .audit_store import AuditStore
 from .content_exposure import project_approval_content
 from .error_taxonomy import ShellCoreError, shell_error
 from .permission_ledger import PermissionLedger
+from .persistence import JsonPersistence
 from .policy_evaluator import PolicyEvaluator
 from .recovery_catalog import RecoveryCatalog
 from .runtime_state import RuntimeState
@@ -18,6 +20,7 @@ __all__ = [
     "AdapterRecord",
     "ApprovalQueue",
     "AuditStore",
+    "JsonPersistence",
     "PermissionLedger",
     "PolicyEvaluator",
     "RecoveryCatalog",
@@ -27,8 +30,10 @@ __all__ = [
     "ShellCoreError",
     "UpdatePolicyStore",
     "create_state_snapshot",
+    "chain_event",
     "deterministic_snapshot_json",
     "load_adapter",
     "project_approval_content",
     "shell_error",
+    "verify_audit_chain",
 ]

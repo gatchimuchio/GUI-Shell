@@ -1,0 +1,8 @@
+{
+  "agent_runtime_id": "mock_agent",
+  "runtime_id": "mock_agent_runtime",
+  "display_name": "Mock Agent",
+  "status": "ready",
+  "workspace_required": false,
+  "auto_permission_mode": "advisory_only"
+}

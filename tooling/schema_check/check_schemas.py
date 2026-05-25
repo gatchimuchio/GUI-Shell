@@ -19,6 +19,14 @@ REQUIRED = {
     "update.schema.json",
     "content_exposure.schema.json",
     "framework_risk_profile.schema.json",
+    "runtime_manifest.schema.json",
+    "adapter_manifest.schema.json",
+    "agent_runtime.schema.json",
+    "agent_session.schema.json",
+    "agent_workspace.schema.json",
+    "agent_task.schema.json",
+    "agent_tool_call.schema.json",
+    "agent_diff.schema.json",
 }
 
 TYPE_MAP = {

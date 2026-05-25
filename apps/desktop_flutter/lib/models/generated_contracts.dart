@@ -80,9 +80,38 @@ class RecoveryRecord {
   final bool safeToRetry;
 }
 
+class AgentSessionRecord {
+  const AgentSessionRecord({
+    required this.sessionId,
+    required this.workspace,
+    required this.task,
+    required this.changedFiles,
+    required this.toolCalls,
+    required this.shellCommands,
+    required this.testStatus,
+    required this.diffSummary,
+    required this.pendingApprovalCount,
+    required this.rollbackCandidate,
+    required this.auditEventId,
+  });
+
+  final String sessionId;
+  final String workspace;
+  final String task;
+  final List<String> changedFiles;
+  final List<String> toolCalls;
+  final List<String> shellCommands;
+  final String testStatus;
+  final String diffSummary;
+  final int pendingApprovalCount;
+  final String rollbackCandidate;
+  final String auditEventId;
+}
+
 class ShellSnapshot {
   const ShellSnapshot({
     required this.runtimes,
+    required this.agentSessions,
     required this.permissions,
     required this.pendingApprovals,
     required this.auditEvents,
@@ -91,6 +120,7 @@ class ShellSnapshot {
   });
 
   final List<RuntimeRecord> runtimes;
+  final List<AgentSessionRecord> agentSessions;
   final List<PermissionRecord> permissions;
   final List<ApprovalRecord> pendingApprovals;
   final List<AuditRecord> auditEvents;

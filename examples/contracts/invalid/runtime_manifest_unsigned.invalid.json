@@ -1,0 +1,16 @@
+{
+  "runtime_id": "mock_local_llm",
+  "display_name": "Mock Local LLM",
+  "runtime_type": "llm_runtime",
+  "supported_platforms": ["linux"],
+  "required_tools": ["python3"],
+  "required_ports": [11434],
+  "storage_paths": ["~/.gui-shell/runtimes/mock_local_llm"],
+  "network_policy": "localhost_only",
+  "capabilities": ["runtime.read"],
+  "permissions": ["permission.runtime.read"],
+  "audit_profile": "default_audit_chain",
+  "recovery_profile": "default_runtime_recovery",
+  "trust_profile": "signed_local",
+  "signed_manifest": false
+}

@@ -1,0 +1,13 @@
+{
+  "adapter_id": "mock_local_llm_adapter",
+  "runtime_id": "mock_local_llm",
+  "contract_version": "v1.0",
+  "transport": "mock",
+  "authority_strip": false,
+  "content_exposure_policy_id": "default_safe",
+  "declared_capabilities": ["runtime.read"],
+  "metadata": {
+    "permissions": ["all"]
+  },
+  "signed_manifest": true
+}

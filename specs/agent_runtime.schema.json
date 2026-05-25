@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/agent_runtime.schema.json",
+  "title": "AgentRuntime",
+  "type": "object",
+  "required": ["agent_runtime_id", "runtime_id", "display_name", "status", "workspace_required"],
+  "additionalProperties": false,
+  "properties": {
+    "agent_runtime_id": {"type": "string", "minLength": 1},
+    "runtime_id": {"type": "string", "minLength": 1},
+    "display_name": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["unknown", "ready", "running", "degraded", "failed", "stopped"]},
+    "workspace_required": {"type": "boolean", "const": true},
+    "auto_permission_mode": {"type": "string", "enum": ["disabled", "advisory_only"]}
+  }
+}

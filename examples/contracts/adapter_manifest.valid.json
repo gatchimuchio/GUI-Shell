@@ -1,0 +1,13 @@
+{
+  "adapter_id": "mock_local_llm_adapter",
+  "runtime_id": "mock_local_llm",
+  "contract_version": "v1.0",
+  "transport": "mock",
+  "authority_strip": true,
+  "content_exposure_policy_id": "default_safe",
+  "declared_capabilities": ["runtime.read", "model.chat"],
+  "metadata": {
+    "note": "untrusted"
+  },
+  "signed_manifest": true
+}

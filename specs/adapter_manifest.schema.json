@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/adapter_manifest.schema.json",
+  "title": "AdapterManifest",
+  "type": "object",
+  "required": [
+    "adapter_id",
+    "runtime_id",
+    "contract_version",
+    "transport",
+    "authority_strip",
+    "content_exposure_policy_id",
+    "signed_manifest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "adapter_id": {"type": "string", "minLength": 1},
+    "runtime_id": {"type": "string", "minLength": 1},
+    "contract_version": {"type": "string", "pattern": "^v[0-9]+\\.[0-9]+$"},
+    "transport": {"type": "string", "enum": ["http", "stdio", "ipc", "mock"]},
+    "authority_strip": {"type": "boolean", "const": true},
+    "content_exposure_policy_id": {"type": "string", "minLength": 1},
+    "declared_capabilities": {"type": "array", "items": {"type": "string"}},
+    "metadata": {"type": "object", "additionalProperties": true},
+    "signed_manifest": {"type": "boolean", "const": true}
+  }
+}

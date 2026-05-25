@@ -1,0 +1,7 @@
+{
+  "workspace_id": "workspace-1",
+  "root_path": "/workspace/project",
+  "boundary_policy": "allow_outside_workspace",
+  "secret_paths": [".env"],
+  "outside_access_default": "allow"
+}

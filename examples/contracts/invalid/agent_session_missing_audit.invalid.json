@@ -1,0 +1,6 @@
+{
+  "session_id": "agent-session-1",
+  "agent_runtime_id": "mock_agent",
+  "workspace_id": "workspace-1",
+  "status": "running"
+}

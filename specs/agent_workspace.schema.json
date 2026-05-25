@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/agent_workspace.schema.json",
+  "title": "AgentWorkspace",
+  "type": "object",
+  "required": ["workspace_id", "root_path", "boundary_policy", "secret_paths", "outside_access_default"],
+  "additionalProperties": false,
+  "properties": {
+    "workspace_id": {"type": "string", "minLength": 1},
+    "root_path": {"type": "string", "minLength": 1},
+    "boundary_policy": {"type": "string", "enum": ["deny_outside_workspace"]},
+    "secret_paths": {"type": "array", "items": {"type": "string"}},
+    "outside_access_default": {"type": "string", "enum": ["deny"]}
+  }
+}

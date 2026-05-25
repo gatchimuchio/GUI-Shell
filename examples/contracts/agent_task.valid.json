@@ -1,0 +1,7 @@
+{
+  "task_id": "agent-task-1",
+  "session_id": "agent-session-1",
+  "description": "Update documentation",
+  "status": "running",
+  "audit_event_id": "audit-1"
+}

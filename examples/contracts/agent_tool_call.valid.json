@@ -1,0 +1,9 @@
+{
+  "tool_call_id": "tool-call-1",
+  "session_id": "agent-session-1",
+  "tool_name": "shell.command",
+  "permission_id": "permission.shell.command",
+  "approval_required": true,
+  "audit_event_id": "audit-1",
+  "rollback_candidate_id": "rollback-1"
+}

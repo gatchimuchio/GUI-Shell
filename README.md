@@ -1,8 +1,8 @@
 # GUI Shell
 
-GUI Shell is a generic Runtime Operation Shell for local runtimes, agents, tools, and services.
+GUI Shell is a desktop-first AI Runtime / Agent Operation Shell for local runtimes, agents, tools, and services.
 
-It is **not** a BLUE-TANUKI-specific GUI. BLUE-TANUKI is the first reference runtime and must connect through an adapter boundary.
+It is **not** a BLUE-TANUKI-specific GUI. BLUE-TANUKI is a reference consumer/runtime and must connect through an adapter boundary; it is not a v1.0 release gate.
 
 ## TL;DR
 
@@ -78,8 +78,8 @@ python3 tooling/conformance_tests/run_conformance_skeleton.py
 Expected successful output:
 
 ```text
-schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 55 checks
+schema check passed: 19 schemas, 19 examples, 19 negative fixtures
+conformance skeleton passed: 67 checks
 ```
 
 See [QUICKSTART.md](./QUICKSTART.md).
@@ -147,7 +147,7 @@ tooling/
 
 ## Current status
 
-This repository is a Phase 9 release-hardening skeleton, not a production runtime.
+This repository is a v1.0 product-completion skeleton, not a production runtime.
 
 It intentionally prioritizes:
 

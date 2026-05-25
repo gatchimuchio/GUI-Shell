@@ -2,15 +2,17 @@
 
 ## Current claim
 
-GUI Shell is a generic Runtime Operation Shell skeleton with Phase 3H through Phase 9 release-hardening scaffolding.
+GUI Shell is a Desktop-first AI Runtime / Agent Operation Shell skeleton aimed at a completed v1.0 desktop product release.
 
 It claims:
 
-- schema-first contracts for runtime operation shell concepts;
-- conformance-first work order with 55 checks in the current skeleton;
+- schema-first contracts for runtime and agent operation shell concepts;
+- conformance-first work order with 67 checks in the current skeleton;
 - framework-independent Shell Core hardening for permissions, approvals, audit, recovery, policy evaluation, and deterministic state snapshots;
+- Runtime Catalog and Agent Runtime contract skeletons;
+- append-only JSONL audit chain and persistence skeletons;
 - bounded Rust helper boundary skeleton;
-- BLUE-TANUKI as a reference runtime through adapter contract only;
+- BLUE-TANUKI as a reference consumer/runtime through adapter contract only, not a v1.0 release dependency;
 - desktop and mobile Flutter operator skeletons that do not own authority;
 - Setup Doctor skeleton with explicit non-authority installer status;
 - release-hardening documents with explicit non-production claim boundary.
@@ -21,12 +23,13 @@ GUI Shell does not yet claim:
 
 - production readiness;
 - signed native installer readiness;
-- stable mobile companion readiness;
+- completed mobile companion readiness;
 - BLUE-TANUKI feature parity;
 - live runtime permission enforcement outside the schema/conformance skeleton;
 - complete Rust helper implementation;
 - complete Flutter product UI;
 - stable live BLUE-TANUKI integration;
+- completed v1.0 product release;
 - security completeness.
 
 ## Promotion condition

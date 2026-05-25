@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/gui-shell/schemas/runtime_manifest.schema.json",
+  "title": "RuntimeManifest",
+  "type": "object",
+  "required": [
+    "runtime_id",
+    "display_name",
+    "runtime_type",
+    "supported_platforms",
+    "required_tools",
+    "required_ports",
+    "storage_paths",
+    "network_policy",
+    "capabilities",
+    "permissions",
+    "audit_profile",
+    "recovery_profile",
+    "trust_profile",
+    "signed_manifest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runtime_id": {"type": "string", "minLength": 1},
+    "display_name": {"type": "string", "minLength": 1},
+    "runtime_type": {"type": "string", "enum": ["llm_runtime", "agent_runtime", "tool_runtime", "reference_runtime"]},
+    "supported_platforms": {"type": "array", "items": {"type": "string"}},
+    "required_tools": {"type": "array", "items": {"type": "string"}},
+    "required_ports": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+    "storage_paths": {"type": "array", "items": {"type": "string"}},
+    "network_policy": {"type": "string", "enum": ["localhost_only", "local_network", "external_allowed"]},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "permissions": {"type": "array", "items": {"type": "string"}},
+    "audit_profile": {"type": "string", "minLength": 1},
+    "recovery_profile": {"type": "string", "minLength": 1},
+    "trust_profile": {"type": "string", "enum": ["untrusted", "local_user", "signed_local", "system"]},
+    "signed_manifest": {"type": "boolean", "const": true}
+  }
+}

@@ -1,6 +1,6 @@
 # GUI Shell Operating Model
 
-Status: Phase 9 release-hardening skeleton operating model  
+Status: v1.0 desktop product-completion skeleton operating model  
 Reference style: BLUE-TANUKI direct-main owner workflow  
 Scope: repository flow, safety posture, validation, backup, and reporting
 
@@ -15,12 +15,15 @@ standard
   -> schema
   -> conformance
   -> Shell Core
+  -> Runtime Catalog
+  -> Agent Runtime Contract
   -> adapter
   -> Rust helper
-  -> product UI
+  -> Shell Core persistence / audit chain
+  -> desktop product UI
   -> installer / update
-  -> mobile companion
-  -> release hardening
+  -> v1.0 release gate
+  -> post-v1.0 mobile companion
 ```
 
 Later phases must not weaken earlier guarantees.

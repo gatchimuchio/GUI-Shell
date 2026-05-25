@@ -1,0 +1,8 @@
+{
+  "diff_id": "agent-diff-1",
+  "session_id": "agent-session-1",
+  "changed_files": ["README.md"],
+  "payload_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "audit_event_id": "audit-1",
+  "rollback_candidate_id": "rollback-1"
+}

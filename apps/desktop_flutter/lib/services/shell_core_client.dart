@@ -17,6 +17,21 @@ class ShellCoreClient {
             diagnosticSummary: 'mock adapter contract available',
           ),
         ],
+        agentSessions: [
+          AgentSessionRecord(
+            sessionId: 'agent-session-1',
+            workspace: '/workspace/project',
+            task: 'Update documentation',
+            changedFiles: ['README.md', 'docs/STRATEGY.md'],
+            toolCalls: ['shell.command', 'git.diff'],
+            shellCommands: ['python3 tooling/conformance_tests/run_conformance_skeleton.py'],
+            testStatus: 'conformance passed',
+            diffSummary: '2 files changed',
+            pendingApprovalCount: 1,
+            rollbackCandidate: 'rollback-1',
+            auditEventId: 'audit-1',
+          ),
+        ],
         permissions: [
           PermissionRecord(
             permissionId: 'permission.fs.write.workspace',

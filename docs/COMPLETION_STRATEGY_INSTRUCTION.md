@@ -1,9 +1,9 @@
 # GUI-Shell Completion Strategy Instruction
 
-Status: release-hardening skeleton, not production runtime  
+Status: v1.0 product-completion skeleton, not production runtime  
 Repository: `gatchimuchio/GUI-Shell`  
-Primary goal: complete GUI-Shell as a generic Runtime Operation Shell, not a BLUE-TANUKI-specific GUI.  
-Reference runtime: BLUE-TANUKI through adapter contract only.  
+Primary goal: complete GUI-Shell as a desktop-first AI Runtime / Agent Operation Shell.  
+Reference consumer/runtime: BLUE-TANUKI through adapter contract only.  
 
 ## 0. Current Position
 
@@ -19,15 +19,15 @@ GUI-Shell currently has:
 - Phase 7 Installer / Setup Doctor skeleton
 - Phase 8 Mobile companion skeleton
 - Phase 9 release-hardening documents
-- 11 schemas
-- 11 valid examples
-- 11 negative fixtures
-- 53 conformance checks
+- 19 schemas
+- 19 valid examples
+- 19 negative fixtures
+- 67 conformance checks
 
 Current claim boundary:
 
 ```text
-Release-hardening skeleton exists.
+v1.0 product-completion skeleton exists.
 Not yet a production Shell Core runtime.
 Not yet a complete Rust helper.
 Not yet a live BLUE-TANUKI adapter.
@@ -407,8 +407,8 @@ cd apps/mobile_flutter && flutter analyze
 Current known environment result:
 
 ```text
-schema check passed: 11 schemas, 11 examples, 11 negative fixtures
-conformance skeleton passed: 55 checks
+schema check passed: 19 schemas, 19 examples, 19 negative fixtures
+conformance skeleton passed: 67 checks
 cargo test: not run, cargo not found on PATH
 desktop flutter analyze: not run, flutter not found on PATH
 mobile flutter analyze: not run, flutter not found on PATH

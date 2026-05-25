@@ -28,6 +28,9 @@ from packages.blue_tanuki_adapter.adapter import BlueTanukiAdapter
 from packages.blue_tanuki_adapter.approvals import normalize_approval, projected_approval
 from packages.blue_tanuki_adapter.authority_trace import metadata_attempts_authority
 from packages.blue_tanuki_adapter.recovery import recovery_candidates
+from packages.agent_runtime import AgentRuntimeContract
+from packages.runtime_catalog import RuntimeCatalog
+from packages.shell_core.audit_chain import chain_event, verify_audit_chain
 from tooling.schema_check.check_schemas import validate_instance
 
 REQUIRED_SCHEMA_NAMES = {
@@ -42,6 +45,14 @@ REQUIRED_SCHEMA_NAMES = {
     "update",
     "content_exposure",
     "framework_risk_profile",
+    "runtime_manifest",
+    "adapter_manifest",
+    "agent_runtime",
+    "agent_session",
+    "agent_workspace",
+    "agent_task",
+    "agent_tool_call",
+    "agent_diff",
 }
 
 VISIBILITY_VALUES = ["none", "hash_only", "summary", "redacted", "full"]
@@ -81,6 +92,7 @@ DESKTOP_FLUTTER_REQUIRED_FILES = {
     "lib/screens/dashboard.dart",
     "lib/screens/setup_doctor.dart",
     "lib/screens/runtime_center.dart",
+    "lib/screens/agent_center.dart",
     "lib/screens/permission_center.dart",
     "lib/screens/approval_center.dart",
     "lib/screens/audit_viewer.dart",
@@ -115,6 +127,7 @@ CLAIM_REVIEW_FILES = {
     "VALIDATION.txt",
     "CONFORMANCE_REPORT.md",
     "docs/OPERATING_MODEL.md",
+    "docs/COMPLETION_STRATEGY_INSTRUCTION.md",
 }
 
 
@@ -220,9 +233,11 @@ def test_required_docs_exist() -> list[str]:
     errors = []
     required_docs = {
         "adapter-conformance.md",
+        "agent-runtime.md",
         "authority-strip-conformance.md",
         "content-exposure-policy.md",
         "approval-visibility-boundary.md",
+        "runtime-catalog.md",
     }
     existing = {path.name for path in DOC_SPECS.glob("*.md")}
     for missing in sorted(required_docs - existing):
@@ -968,7 +983,7 @@ def test_validation_reporter_exists() -> list[str]:
 
 
 def test_claim_documents_do_not_contain_stale_phase_or_check_counts() -> list[str]:
-    stale_patterns = ["23 checks", "49 checks", "51 checks", "53 checks", "Phase 0 / Phase 1"]
+    stale_patterns = ["23 checks", "49 checks", "51 checks", "53 checks", "55 checks", "Phase 0 / Phase 1"]
     errors = []
     for relative in sorted(CLAIM_REVIEW_FILES):
         text = (ROOT / relative).read_text(encoding="utf-8")
@@ -976,6 +991,132 @@ def test_claim_documents_do_not_contain_stale_phase_or_check_counts() -> list[st
             if pattern in text:
                 errors.append(f"{relative} contains stale claim text: {pattern}")
     return errors
+
+
+def test_runtime_manifest_invalid_fixture_rejected() -> list[str]:
+    schema = load_schema("runtime_manifest.schema.json")
+    invalid = json.loads((INVALID_CONTRACT_EXAMPLES / "runtime_manifest_unsigned.invalid.json").read_text(encoding="utf-8"))
+    if not validate_instance(invalid, schema):
+        return ["runtime manifest invalid fixture was accepted"]
+    return []
+
+
+def test_adapter_manifest_authority_escalation_rejected() -> list[str]:
+    schema = load_schema("adapter_manifest.schema.json")
+    invalid = json.loads((INVALID_CONTRACT_EXAMPLES / "adapter_manifest_authority_escalation.invalid.json").read_text(encoding="utf-8"))
+    errors = []
+    if not validate_instance(invalid, schema):
+        errors.append("adapter manifest authority escalation fixture was accepted")
+    catalog = RuntimeCatalog()
+    if not catalog.metadata_attempts_authority(invalid.get("metadata", {})):
+        errors.append("RuntimeCatalog did not detect adapter manifest metadata authority attempt")
+    return errors
+
+
+def test_runtime_catalog_cannot_grant_authority() -> list[str]:
+    catalog = RuntimeCatalog()
+    manifest = load_contract_fixture("runtime_manifest.valid.json")
+    catalog.register_runtime_manifest(manifest)
+    if catalog.can_grant_authority(manifest):
+        return ["RuntimeCatalog granted authority from manifest"]
+    return []
+
+
+def test_agent_workspace_outside_access_default_deny() -> list[str]:
+    workspace = load_contract_fixture("agent_workspace.valid.json")
+    contract = AgentRuntimeContract(workspace)
+    if contract.path_allowed("/outside/project/file.txt"):
+        return ["agent runtime allowed access outside workspace by default"]
+    return []
+
+
+def test_agent_secret_path_read_default_deny() -> list[str]:
+    workspace = load_contract_fixture("agent_workspace.valid.json")
+    contract = AgentRuntimeContract(workspace)
+    if contract.path_allowed("/workspace/project/.env"):
+        return ["agent runtime allowed secret path read by default"]
+    return []
+
+
+def test_agent_shell_command_requires_permission_mapping() -> list[str]:
+    workspace = load_contract_fixture("agent_workspace.valid.json")
+    contract = AgentRuntimeContract(workspace)
+    allowed = contract.shell_command_requires_permission(load_contract_fixture("agent_tool_call.valid.json"))
+    denied = contract.shell_command_requires_permission({"tool_name": "shell.command"})
+    if not allowed or denied:
+        return ["agent shell command permission mapping check failed"]
+    return []
+
+
+def test_agent_git_push_requires_explicit_approval() -> list[str]:
+    contract = AgentRuntimeContract(load_contract_fixture("agent_workspace.valid.json"))
+    if not contract.git_push_requires_explicit_approval({"tool_name": "git.push", "permission_id": "permission.git.push", "approval_required": True}):
+        return ["agent git push explicit approval was rejected"]
+    if contract.git_push_requires_explicit_approval({"tool_name": "git.push", "permission_id": "permission.git.push", "approval_required": False}):
+        return ["agent git push did not require explicit approval"]
+    return []
+
+
+def test_agent_generated_diff_must_be_auditable() -> list[str]:
+    contract = AgentRuntimeContract(load_contract_fixture("agent_workspace.valid.json"))
+    if not contract.diff_is_auditable(load_contract_fixture("agent_diff.valid.json")):
+        return ["agent generated diff with audit evidence was rejected"]
+    if contract.diff_is_auditable({"diff_id": "diff-1", "payload_hash": "sha256:" + "5" * 64}):
+        return ["agent generated diff without audit was accepted"]
+    return []
+
+
+def test_agent_auto_permission_is_advisory_only() -> list[str]:
+    contract = AgentRuntimeContract(load_contract_fixture("agent_workspace.valid.json"))
+    if not contract.auto_permission_is_advisory_only(load_contract_fixture("agent_runtime.valid.json")):
+        return ["agent advisory auto-permission mode was rejected"]
+    if contract.auto_permission_is_advisory_only({"auto_permission_mode": "authority"}):
+        return ["agent auto-permission authority mode was accepted"]
+    return []
+
+
+def test_audit_chain_verification_fails_on_tampered_event() -> list[str]:
+    event = load_contract_fixture("audit.valid.json")
+    first = chain_event(event, None)
+    second = chain_event({**event, "event_id": "audit-2", "target": "runtime"}, first["event_hash"])
+    valid = verify_audit_chain([first, second])
+    tampered = copy.deepcopy(second)
+    tampered["target"] = "tampered"
+    invalid = verify_audit_chain([first, tampered])
+    errors = []
+    if valid["ok"] is not True:
+        errors.append("valid audit chain did not verify")
+    if invalid["ok"] is not False:
+        errors.append("tampered audit chain verified")
+    return errors
+
+
+def test_setup_doctor_public_bind_warning_exists() -> list[str]:
+    from installer.setup_doctor import setup_doctor_report
+
+    report = setup_doctor_report()
+    matches = [check for check in report["checks"] if check["check_id"] == "network.public_bind"]
+    if not matches or matches[0].get("status") != "warning" or not matches[0].get("recovery_action"):
+        return ["Setup Doctor public bind warning missing"]
+    return []
+
+
+def test_desktop_agent_center_required_surface_exists() -> list[str]:
+    path = DESKTOP_FLUTTER / "lib" / "screens" / "agent_center.dart"
+    text = path.read_text(encoding="utf-8")
+    required = [
+        "Workspace",
+        "Task",
+        "Changed Files",
+        "Tool Calls",
+        "Shell Commands",
+        "Test Status",
+        "Diff Summary",
+        "Pending Approvals",
+        "Rollback Candidate",
+        "Audit Link",
+    ]
+    return [f"Agent Center missing surface: {item}" for item in required if item not in text]
 
 
 def main() -> int:
@@ -1035,6 +1176,18 @@ def main() -> int:
         test_release_hardening_does_not_overclaim_readiness,
         test_validation_reporter_exists,
         test_claim_documents_do_not_contain_stale_phase_or_check_counts,
+        test_runtime_manifest_invalid_fixture_rejected,
+        test_adapter_manifest_authority_escalation_rejected,
+        test_runtime_catalog_cannot_grant_authority,
+        test_agent_workspace_outside_access_default_deny,
+        test_agent_secret_path_read_default_deny,
+        test_agent_shell_command_requires_permission_mapping,
+        test_agent_git_push_requires_explicit_approval,
+        test_agent_generated_diff_must_be_auditable,
+        test_agent_auto_permission_is_advisory_only,
+        test_audit_chain_verification_fails_on_tampered_event,
+        test_setup_doctor_public_bind_warning_exists,
+        test_desktop_agent_center_required_surface_exists,
     ]
     errors = []
     for test in tests:
