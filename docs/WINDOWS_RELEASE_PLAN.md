@@ -4,6 +4,8 @@ Status date: 2026-05-25
 
 GUI-Shell v1.0 is Windows-first. Linux build and launch smoke are useful development verification, but they are not final product proof by themselves. BLUE-TANUKI remains a consumer/reference runtime and is not a GUI-Shell release dependency.
 
+macOS is an unverified planned portability target. GUI-Shell v1.0 does not claim verified macOS support.
+
 ## Toolchain Requirements
 
 - item: Flutter Windows desktop SDK

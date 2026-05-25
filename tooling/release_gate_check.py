@@ -49,6 +49,21 @@ PATTERNS = [
 
 CLASSIFICATIONS = ["release_blocker", "post_v1_scope", "known_limitation", "required_for_v1"]
 
+MACOS_CLAIM_PATTERNS = [
+    r"\bmacos\b.{0,80}\b(verified|supported|ready|complete|release-ready)\b",
+    r"\b(verified|supported|ready|complete|release-ready)\b.{0,80}\bmacos\b",
+]
+
+MACOS_NEGATION_HINTS = [
+    "does not claim",
+    "must not be advertised",
+    "before claiming",
+    "unverified",
+    "known_limitation",
+    "planned portability",
+    "no macos validation environment",
+]
+
 
 def classified_near(lines: list[str], index: int) -> bool:
     start = max(0, index - 2)
@@ -77,6 +92,20 @@ def release_claim_exists_without_classification(text: str) -> bool:
     return bool(release_claim and blocker and "not yet a completed product release" not in lower)
 
 
+def macos_support_claim_errors(text: str) -> list[str]:
+    errors: list[str] = []
+    lower = text.lower()
+    for pattern in MACOS_CLAIM_PATTERNS:
+        for match in re.finditer(pattern, lower, flags=re.DOTALL):
+            start = max(0, match.start() - 120)
+            end = min(len(lower), match.end() + 120)
+            window = lower[start:end]
+            if not any(hint in window for hint in MACOS_NEGATION_HINTS):
+                errors.append("macOS support appears claimed without validation evidence")
+                return errors
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--strict-release", action="store_true")
@@ -94,6 +123,7 @@ def main() -> int:
         errors.append("strict release mode found release_blocker classifications")
     if release_claim_exists_without_classification(combined):
         errors.append("release claim appears while release_blocker exists")
+    errors.extend(macos_support_claim_errors(combined))
 
     if errors:
         print("release gate check failed:")

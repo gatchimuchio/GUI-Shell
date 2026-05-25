@@ -12,12 +12,12 @@ GUI-Shell v1.0 means completed Windows-first PC desktop product release.
 Platform priority:
 
 - Primary: Windows
-- Secondary: macOS
+- Planned portability target: macOS
 - Development/verification slice: Linux
 
 - item: Desktop app
   classification: required_for_v1
-  reason: v1.0 desktop release is Windows-first, with macOS portability and Linux development verification.
+  reason: v1.0 desktop release is Windows-first, with Linux development verification and macOS planned portability.
   blocks_release: yes
 
 - item: Linux desktop build and launch smoke
@@ -31,11 +31,11 @@ Platform priority:
   required_action: Generate Windows support if missing and pass all Windows target validation.
   blocks_release: yes
 
-- item: macOS desktop project support, build, launch, packaging/notarization, installer, and first-run smoke
-  classification: release_blocker
-  reason: macOS is the secondary portability target, and macOS project support, toolchain, build, launch, packaging/notarization plan, installer, and first-run smoke have not passed.
-  required_action: Generate macOS support if missing and pass macOS target validation.
-  blocks_release: yes
+- item: macOS planned portability target
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support.
+  blocks_release: no
 
 - item: Windows Setup Doctor diagnostics
   classification: release_blocker

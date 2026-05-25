@@ -2,7 +2,9 @@
 
 In this repository, "release" means completed product release. Skeleton, preview, alpha, beta, scaffold, and contract-preview states are not release states.
 
-No completed product release may be claimed if any `release_blocker` remains. GUI-Shell v1.0 is Windows-first: Windows is primary, macOS is secondary portability, and Linux is the validated development/verification slice.
+No completed product release may be claimed if any Windows-first v1.0 `release_blocker` remains. GUI-Shell v1.0 is Windows-first: Windows is primary, Linux is the validated development/verification slice, and macOS is an unverified planned portability target.
+
+GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete until validated on a macOS host.
 
 ## Release Blockers
 
@@ -90,52 +92,22 @@ No completed product release may be claimed if any `release_blocker` remains. GU
   required_action: Pass Windows-specific Setup Doctor diagnostics smoke.
   blocks_release: yes
 
-- item: macOS desktop project support not generated
-  classification: release_blocker
-  reason: `apps/desktop_flutter/macos` is missing.
-  required_action: Generate macOS Flutter desktop project support and commit bounded project files.
-  blocks_release: yes
-
-- item: macOS Flutter toolchain not verified
-  classification: release_blocker
-  reason: macOS Flutter desktop toolchain has not been verified on a macOS host.
-  required_action: Run macOS Flutter doctor/analyze/build validation on macOS.
-  blocks_release: yes
-
-- item: macOS desktop build smoke not passed
-  classification: release_blocker
-  reason: macOS build smoke has not passed.
-  required_action: Pass `flutter build macos` on a macOS release-candidate host.
-  blocks_release: yes
-
-- item: macOS desktop launch smoke not passed
-  classification: release_blocker
-  reason: macOS launch smoke evidence has not been recorded.
-  required_action: Launch the macOS desktop artifact and record first-window evidence.
-  blocks_release: yes
-
-- item: macOS installer first-run smoke not passed
-  classification: release_blocker
-  reason: macOS installer and first-run smoke have not passed.
-  required_action: Pass macOS installer/first-run smoke validation.
-  blocks_release: yes
-
-- item: macOS packaging notarization plan not documented
-  classification: release_blocker
-  reason: macOS packaging/notarization plan is not documented as release-ready.
-  required_action: Document and validate macOS packaging/notarization plan.
-  blocks_release: yes
+- item: macOS planned portability target unverified
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support as supported, ready, or complete.
+  blocks_release: no
 
 - item: cross-platform Setup Doctor diagnostics not passed
   classification: release_blocker
-  reason: Setup Doctor real diagnostics have not passed for Windows-first release and portability targets.
-  required_action: Pass Windows Setup Doctor smoke first, then macOS/Linux diagnostics as target support expands.
+  reason: Windows Setup Doctor real diagnostics have not passed for the Windows-first product target.
+  required_action: Pass Windows Setup Doctor smoke; macOS diagnostics remain planned portability validation.
   blocks_release: yes
 
 - item: validate_all.py strict release mode not passed
   classification: release_blocker
   reason: Current-host Linux validation may pass, but Windows-first strict release mode must not report release blockers before completed product release.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; pass `--desktop-platform=all` before claiming all-desktop support.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; `--desktop-platform=all` may still fail because macOS is unverified, but that does not block Windows-first v1.0.
   blocks_release: yes
 
 - item: installer first-run smoke not passed

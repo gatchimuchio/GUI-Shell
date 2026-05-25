@@ -188,51 +188,51 @@ def platform_evidence_checks(desktop_platform: str) -> list[EvidenceCheck]:
             [
                 EvidenceCheck(
                     "macos_desktop_project_support_exists",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "`apps/desktop_flutter/macos` is not present, so macOS desktop project support is not generated.",
-                    "Generate macOS desktop project support and commit the bounded Flutter desktop project files.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "No macOS validation environment is currently available; GUI-Shell v1.0 does not claim verified macOS support.",
+                    "Validate on a macOS host before claiming macOS support.",
                 ),
                 EvidenceCheck(
                     "macos_flutter_toolchain",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "macOS Flutter desktop toolchain has not been verified on a macOS host.",
-                    "Run macOS Flutter doctor/analyze/build validation on macOS.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "No macOS validation environment is currently available.",
+                    "Validate macOS Flutter toolchain on macOS before claiming support.",
                 ),
                 EvidenceCheck(
                     "macos_desktop_build_smoke",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "macOS desktop build smoke has not passed.",
-                    "Pass `flutter build macos` on a macOS release-candidate host.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "macOS build smoke has not run because no macOS validation environment is currently available.",
+                    "Pass `flutter build macos` on a macOS host before claiming support.",
                 ),
                 EvidenceCheck(
                     "macos_desktop_launch_smoke",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "macOS desktop launch smoke evidence has not been recorded.",
-                    "Launch the macOS desktop artifact and record first-window evidence.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "macOS launch smoke evidence is not recorded because no macOS validation environment is currently available.",
+                    "Launch macOS artifact and record evidence before claiming support.",
                 ),
                 EvidenceCheck(
                     "macos_packaging_notarization_plan",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "macOS packaging/notarization plan is not yet documented as passed for release.",
-                    "Document and validate the macOS packaging/notarization plan.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "macOS packaging/notarization remains planned portability validation.",
+                    "Document and validate on macOS before claiming support.",
                 ),
                 EvidenceCheck(
                     "macos_installer_first_run_smoke",
-                    "failed",
-                    "release_blocker",
-                    "yes",
-                    "macOS installer/first-run smoke has not passed.",
-                    "Create and pass macOS installer/first-run smoke validation.",
+                    "unverified_planned",
+                    "known_limitation",
+                    "no",
+                    "macOS installer/first-run smoke is not in the Windows-first v1.0 release gate.",
+                    "Validate on macOS host before claiming support.",
                 ),
             ]
         )
@@ -291,7 +291,7 @@ def run_step(step: ValidationStep, strict_release: bool, desktop_platform: str) 
         blocks_release = "yes"
         if strict_release and desktop_platform == "all" and step.name == "release_gate_check":
             reason = "all-desktop strict release gate found documented release_blocker classifications"
-            required_action = "Resolve every classified release_blocker, including Windows-first and macOS portability evidence, then rerun all-desktop strict validation."
+            required_action = "Resolve every classified Windows-first release_blocker, then rerun all-desktop strict validation. macOS remains an unverified known limitation unless owner changes scope."
         else:
             reason = "validation command failed"
             required_action = "Fix the failing validation command and rerun."

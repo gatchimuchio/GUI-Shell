@@ -6,7 +6,9 @@ GUI-Shell is not yet a completed product release.
 
 Current claim: PC-first AI Runtime / Agent Operation Shell product-completion skeleton.
 
-GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a development/verification slice, but it is not final product proof by itself. macOS is a secondary portability target, and BLUE-TANUKI remains a consumer/reference runtime rather than a GUI-Shell release dependency.
+GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a development/verification slice, but it is not final product proof by itself. macOS is an unverified planned portability target, and BLUE-TANUKI remains a consumer/reference runtime rather than a GUI-Shell release dependency.
+
+GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete without validation evidence from a macOS host.
 
 ## Current Completed Areas
 
@@ -56,11 +58,11 @@ GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a dev
   required_action: Pass Windows project support, toolchain, `flutter analyze`, `flutter test`, `flutter build windows`, launch smoke, Setup Doctor smoke, and installer/first-run smoke.
   blocks_release: yes
 
-- item: macOS desktop release validation not passed
-  classification: release_blocker
-  reason: macOS is the secondary portability target; macOS project support, toolchain verification, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke have not passed.
-  required_action: Pass macOS project support, toolchain, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke.
-  blocks_release: yes
+- item: macOS planned portability target unverified
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support.
+  blocks_release: no
 
 - item: Windows Setup Doctor diagnostics not passed
   classification: release_blocker
@@ -100,8 +102,8 @@ GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a dev
 
 - item: Strict release validation not passed
   classification: release_blocker
-  reason: completed Windows-first product release requires Windows strict validation; all-desktop validation remains blocked until Windows, macOS, and Linux evidence is complete.
-  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; pass `--desktop-platform=all` before claiming all-desktop support.
+  reason: completed Windows-first product release requires Windows strict validation.
+  required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; `--desktop-platform=all` may still fail because macOS is unverified, but that does not block Windows-first v1.0.
   blocks_release: yes
 
 - item: Owner GO missing

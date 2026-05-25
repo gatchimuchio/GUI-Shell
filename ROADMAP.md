@@ -20,10 +20,12 @@ GUI-Shell v1.0 is Windows-first.
 Platform priority:
 
 - Primary: Windows
-- Secondary: macOS
+- Planned portability target: macOS
 - Development/verification slice: Linux
 
 Linux build and launch smoke are passed and useful, but Linux is not final product proof by itself. Windows is the main product gate.
+
+GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete until it is validated on a macOS host.
 
 - item: Linux desktop build smoke
   classification: required_for_v1
@@ -43,11 +45,11 @@ Linux build and launch smoke are passed and useful, but Linux is not final produ
   required_action: Pass Windows project support, toolchain, `flutter analyze`, `flutter test`, `flutter build windows`, launch smoke, Setup Doctor smoke, and installer/first-run smoke.
   blocks_release: yes
 
-- item: macOS portability gates
-  classification: release_blocker
-  reason: macOS is the secondary portability target, and macOS project support, Flutter toolchain verification, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke have not passed.
-  required_action: Pass macOS project support, toolchain, build smoke, launch smoke, packaging/notarization plan, and installer/first-run smoke.
-  blocks_release: yes
+- item: macOS planned portability target
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support as supported, ready, or complete.
+  blocks_release: no
 
 - item: Windows Setup Doctor diagnostics
   classification: release_blocker

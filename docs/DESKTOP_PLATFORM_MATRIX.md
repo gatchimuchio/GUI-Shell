@@ -2,12 +2,14 @@
 
 Status date: 2026-05-25
 
-GUI-Shell v1.0 is Windows-first. Windows is the primary product target, macOS is the secondary portability target, and Linux is the validated development/verification slice. Current-host Linux validation can pass on Linux, but it is not final product proof by itself.
+GUI-Shell v1.0 is Windows-first. Windows is the primary product target, Linux is the validated development/verification slice, and macOS is an unverified planned portability target. Current-host Linux validation can pass on Linux, but it is not final product proof by itself.
+
+GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete until validated on a macOS host.
 
 | Platform | Priority | Project support | Required toolchain | Validation command | Build smoke | Launch smoke evidence | Installer / first-run status | Release classification |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Windows | Primary product target | generated | Flutter Windows desktop toolchain on Windows host, including Visual Studio Build Tools; Windows-side PATH currently lacks Flutter, rustc, and cargo | `cd apps/desktop_flutter && flutter analyze && flutter test && flutter build windows` | not_passed: release_blocker; WSL attempt failed because Windows build requires Windows host | not_recorded: release_blocker | not_passed: release_blocker | release_blocker |
-| macOS | Secondary portability target | not_generated: release_blocker | Flutter macOS desktop toolchain on macOS host, including Xcode | `cd apps/desktop_flutter && flutter analyze && flutter build macos` | not_passed: release_blocker | not_recorded: release_blocker | not_passed: release_blocker; packaging/notarization plan not_documented: release_blocker | release_blocker |
+| macOS | Planned portability target | unverified_planned | Flutter macOS desktop toolchain on macOS host, including Xcode | `cd apps/desktop_flutter && flutter analyze && flutter build macos` before claiming support | unverified_planned: known_limitation | unverified_planned: known_limitation | unverified_planned: known_limitation | known_limitation; blocks_release: no |
 | Linux | Development/verification slice | generated | Flutter Linux desktop toolchain: clang, cmake, ninja, pkg-config | `cd apps/desktop_flutter && flutter analyze && flutter test && flutter build linux` | passed on 2026-05-25 | passed under WSLg; first window opened; Dashboard, NavigationRail, Runtime Status, and Invariant Status visible | not_primary_release_gate: known_limitation | required_for_v1 development slice; current build and launch smoke blocks_release: no |
 
 ## Release Gate
@@ -30,11 +32,11 @@ GUI-Shell v1.0 is Windows-first. Windows is the primary product target, macOS is
   required_action: Install/verify Windows toolchains and validate Windows release path on a native Windows host.
   blocks_release: yes
 
-- item: macOS desktop validation
-  classification: release_blocker
-  reason: macOS project support, toolchain verification, build smoke, launch smoke, packaging/notarization plan, installer smoke, and first-run smoke have not passed.
-  required_action: Generate macOS support if missing and validate macOS release path on a macOS host.
-  blocks_release: yes
+- item: macOS planned portability target
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support.
+  blocks_release: no
 
 - item: Windows Setup Doctor diagnostics
   classification: release_blocker

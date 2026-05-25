@@ -14,14 +14,16 @@ Agent Runtime support is part of the generic Shell strategy, but live third-part
 Platform priority:
 
 - Primary: Windows
-- Secondary: macOS
+- Planned portability target: macOS
 - Development/verification slice: Linux
+
+GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be advertised as supported, ready, or complete until validated on a macOS host.
 
 ## Product Definition
 
 - item: desktop operator app
   classification: required_for_v1
-  reason: Windows is the primary product target, macOS is secondary portability, and Linux is development verification.
+  reason: Windows is the primary product target, macOS is planned unverified portability, and Linux is development verification.
   blocks_release: yes
 
 - item: Linux desktop build and launch smoke
@@ -35,11 +37,11 @@ Platform priority:
   required_action: Complete and validate Windows desktop release path.
   blocks_release: yes
 
-- item: macOS desktop release validation
-  classification: release_blocker
-  reason: macOS project support, toolchain verification, build smoke, launch smoke, packaging/notarization plan, installer smoke, and first-run smoke have not passed.
-  required_action: Complete and validate macOS desktop release path.
-  blocks_release: yes
+- item: macOS planned portability target
+  classification: known_limitation
+  reason: no macOS validation environment is currently available, so GUI-Shell v1.0 does not claim verified macOS support.
+  required_action: Validate on a macOS host before claiming macOS support.
+  blocks_release: no
 
 - item: Windows Setup Doctor diagnostics
   classification: release_blocker
