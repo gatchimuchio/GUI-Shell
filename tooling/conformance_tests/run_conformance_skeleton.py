@@ -2,6 +2,7 @@ from pathlib import Path
 import copy
 import hashlib
 import json
+import subprocess
 import sys
 import tempfile
 
@@ -949,6 +950,37 @@ def test_shell_snapshot_contains_gui_operation_state() -> list[str]:
     return errors
 
 
+def test_shell_snapshot_generator_writes_phase_b_local_snapshot() -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        output = Path(tmp) / ".gui_shell" / "shell_snapshot.json"
+        release_evidence = ROOT / "release_evidence" / "windows_installed_smoke.json"
+        existed_before = release_evidence.exists()
+        result = subprocess.run(
+            [sys.executable, "tooling/shell_snapshot.py", "--write", str(output)],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return [f"shell snapshot generator failed: {result.stderr or result.stdout}"]
+        if not output.exists():
+            return ["shell snapshot generator did not write output"]
+        snapshot = json.loads(output.read_text(encoding="utf-8"))
+    errors = []
+    if snapshot.get("phase_status", {}).get("phase_a_status") != "complete":
+        errors.append("generated snapshot does not mark Phase A complete")
+    if snapshot.get("phase_status", {}).get("phase_b_status") != "active":
+        errors.append("generated snapshot does not mark Phase B active")
+    if snapshot.get("operation_status", {}).get("release_state") != "not claimed":
+        errors.append("generated snapshot claimed release readiness")
+    if not any(problem.get("classification") == "release_blocker" for problem in snapshot.get("problems", [])):
+        errors.append("generated snapshot lacks expected release blockers")
+    if release_evidence.exists() != existed_before:
+        errors.append("shell snapshot generator created or removed Windows release evidence")
+    return errors
+
+
 def test_evidence_bundle_is_development_classified_and_non_authoritative() -> list[str]:
     bundle = build_evidence_bundle()
     errors = validate_evidence_bundle(bundle)
@@ -1563,6 +1595,7 @@ def main() -> int:
         test_shell_core_integrated_release_smoke,
         test_release_smoke_runs_first_run_and_setup_doctor,
         test_shell_snapshot_contains_gui_operation_state,
+        test_shell_snapshot_generator_writes_phase_b_local_snapshot,
         test_evidence_bundle_is_development_classified_and_non_authoritative,
         test_windows_release_evidence_validator_accepts_valid_installed_smoke,
         test_windows_release_evidence_validator_rejects_authority_and_missing_installed_path,

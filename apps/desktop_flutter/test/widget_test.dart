@@ -68,6 +68,9 @@ void main() {
 
   testWidgets('Evidence center shows strict Windows expected failure',
       (WidgetTester tester) async {
+    final releaseEvidence =
+        File('release_evidence/windows_installed_smoke.json');
+    final existedBefore = releaseEvidence.existsSync();
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(body: EvidenceCenter(client: ShellCoreClient.mock())),
@@ -81,6 +84,7 @@ void main() {
         find.textContaining(
             'missing measured Windows evidence: release_blocker'),
         findsOneWidget);
+    expect(releaseEvidence.existsSync(), existedBefore);
   });
 
   testWidgets('Recovery playbook marks Windows evidence safe for Phase B',
@@ -156,6 +160,43 @@ void main() {
     expect(snapshot.runtimes.single.runtimeId, 'runtime-from-json');
     expect(snapshot.setupDoctorChecks.single.checkId, 'local.json');
     expect(snapshot.invariantFlags['flutter_imported_by_shell_core'], isTrue);
+    expect(snapshot.snapshotSource, 'local');
+    expect(snapshot.operationStatus.releaseState, 'not claimed');
+  });
+
+  test('local snapshot fallback does not claim release-ready', () {
+    final tempDir = Directory.systemTemp.createTempSync('gui-shell-missing-');
+    addTearDown(() => tempDir.deleteSync(recursive: true));
+    final missingPath = '${tempDir.path}/missing_snapshot.json';
+
+    final snapshot =
+        ShellCoreClient.local(snapshotPath: missingPath).getSnapshot();
+
+    expect(snapshot.snapshotSource, 'fallback');
+    expect(snapshot.snapshotFreshness, 'missing');
+    expect(snapshot.operationStatus.releaseState, 'not claimed');
+    expect(
+        snapshot.problems
+            .any((problem) => problem.item == 'local snapshot missing'),
+        isTrue);
+  });
+
+  test('local snapshot parse failure falls back safely', () {
+    final tempDir = Directory.systemTemp.createTempSync('gui-shell-bad-json-');
+    addTearDown(() => tempDir.deleteSync(recursive: true));
+    final snapshotFile = File('${tempDir.path}/bad_snapshot.json')
+      ..writeAsStringSync('{bad json');
+
+    final snapshot =
+        ShellCoreClient.local(snapshotPath: snapshotFile.path).getSnapshot();
+
+    expect(snapshot.snapshotSource, 'fallback');
+    expect(snapshot.snapshotFreshness, 'parse failed');
+    expect(snapshot.operationStatus.releaseState, 'not claimed');
+    expect(
+        snapshot.problems
+            .any((problem) => problem.item == 'local snapshot parse failed'),
+        isTrue);
   });
 
   testWidgets('Setup Doctor UI displays local diagnostic data',

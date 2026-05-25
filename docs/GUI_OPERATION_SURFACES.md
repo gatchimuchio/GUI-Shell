@@ -57,7 +57,7 @@ GUI-Shell GUI hardening imports proven operation patterns without moving authori
 - item: Shell snapshot generator
   classification: required_for_v1
   status: implemented
-  evidence: `python3 tooling/shell_snapshot.py --output .gui-shell/shell_snapshot.json` creates the local JSON consumed by `ShellCoreClient.local()`.
+  evidence: `python3 tooling/shell_snapshot.py --write .gui_shell/shell_snapshot.json` creates the local JSON consumed by `ShellCoreClient.local()`.
   authority_boundary: snapshot generation records Shell Core and Setup Doctor state; it does not grant authority.
 
 - item: Evidence bundle export

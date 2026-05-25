@@ -53,6 +53,15 @@ class Dashboard extends StatelessWidget {
           ],
         ),
         SectionList(
+          title: 'Snapshot Source',
+          rows: [
+            'snapshot source: ${snapshot.snapshotSource}',
+            'snapshot path: ${snapshot.snapshotPath}',
+            'snapshot freshness: ${snapshot.snapshotFreshness}',
+            'release: ${operation.releaseState}',
+          ],
+        ),
+        SectionList(
           title: 'Trust Status',
           rows: [
             for (final trust in snapshot.trustRecords)

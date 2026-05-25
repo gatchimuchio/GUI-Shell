@@ -29,8 +29,24 @@ Expected successful output:
 
 ```text
 schema check passed: 19 schemas, 19 examples, 19 negative fixtures
-conformance skeleton passed: 67 checks
+conformance skeleton passed: 89 checks
 ```
+
+## Phase B owner launch
+
+Generate a local owner-operation snapshot and launch the desktop shell without running strict release validation:
+
+```bash
+bash scripts/launch_owner_desktop.sh
+```
+
+On native Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\launch_owner_desktop.ps1
+```
+
+This path is for Phase B local owner operation. It does not create `release_evidence/windows_installed_smoke.json`, does not claim release readiness, and does not satisfy measured Windows installed-path release evidence.
 
 ## Optional Rust helper check
 

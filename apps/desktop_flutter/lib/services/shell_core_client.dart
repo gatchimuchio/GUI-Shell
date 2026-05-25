@@ -10,15 +10,57 @@ class ShellCoreClient {
   final String mode;
 
   factory ShellCoreClient.local({String? snapshotPath}) {
-    final resolvedPath = snapshotPath ??
-        Platform.environment['GUI_SHELL_SNAPSHOT_JSON'] ??
-        '.gui-shell/shell_snapshot.json';
-    final file = File(resolvedPath);
-    if (file.existsSync()) {
-      final json = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
-      return ShellCoreClient._(ShellSnapshot.fromJson(json), 'local');
+    final paths = snapshotPath == null
+        ? _candidateSnapshotPaths()
+        : <String>[snapshotPath];
+    for (final resolvedPath in paths) {
+      final file = File(resolvedPath);
+      if (!file.existsSync()) {
+        continue;
+      }
+      try {
+        final json =
+            jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
+        final snapshot = ShellSnapshot.fromJson(json).copyWith(
+          snapshotSource: json['snapshot_source'] as String? ?? 'local',
+          snapshotPath: resolvedPath,
+          snapshotFreshness: json['snapshot_freshness'] as String? ??
+              file.lastModifiedSync().toIso8601String(),
+        );
+        return ShellCoreClient._(snapshot, 'local');
+      } on Object {
+        return ShellCoreClient._(
+          _snapshotWithLocalIssue(
+            problemId: 'local-snapshot-parse-failed',
+            item: 'local snapshot parse failed',
+            classification: 'required_for_v1',
+            severity: 'warning',
+            message: 'Local owner-operation snapshot could not be parsed.',
+            target: resolvedPath,
+            requiredAction:
+                'Regenerate the snapshot with python3 tooling/shell_snapshot.py --write .gui_shell/shell_snapshot.json.',
+            source: 'fallback',
+            freshness: 'parse failed',
+          ),
+          'local',
+        );
+      }
     }
-    return const ShellCoreClient._(_localFallbackSnapshot, 'local');
+    return ShellCoreClient._(
+      _snapshotWithLocalIssue(
+        problemId: 'local-snapshot-missing',
+        item: 'local snapshot missing',
+        classification: 'known_limitation',
+        severity: 'info',
+        message: 'Local owner-operation snapshot file is missing.',
+        target: paths.first,
+        requiredAction:
+            'Generate .gui_shell/shell_snapshot.json for live local owner state.',
+        source: 'fallback',
+        freshness: 'missing',
+      ),
+      'local',
+    );
   }
 
   factory ShellCoreClient.mock() {
@@ -29,6 +71,60 @@ class ShellCoreClient {
   }
 
   ShellSnapshot getSnapshot() => snapshot;
+}
+
+List<String> _candidateSnapshotPaths() {
+  final explicit = Platform.environment['GUI_SHELL_SNAPSHOT_JSON'];
+  if (explicit != null && explicit.isNotEmpty) {
+    return [explicit];
+  }
+  final paths = <String>[];
+  if (Platform.isWindows) {
+    final localAppData = Platform.environment['LOCALAPPDATA'];
+    if (localAppData != null && localAppData.isNotEmpty) {
+      paths.add('$localAppData\\GUI-Shell\\shell_snapshot.json');
+    }
+  }
+  paths.add('.gui_shell/shell_snapshot.json');
+  paths.add('.gui-shell/shell_snapshot.json');
+  return paths;
+}
+
+ShellSnapshot _snapshotWithLocalIssue({
+  required String problemId,
+  required String item,
+  required String classification,
+  required String severity,
+  required String message,
+  required String target,
+  required String requiredAction,
+  required String source,
+  required String freshness,
+}) {
+  final problem = ProblemRecord(
+    problemId: problemId,
+    severity: severity,
+    category: 'local_snapshot',
+    message: message,
+    target: target,
+    recoveryId: 'recover-local-snapshot',
+    item: item,
+    classification: classification,
+    reason: message,
+    requiredAction: requiredAction,
+    blocksRelease: false,
+  );
+  final problems = [problem, ..._localFallbackSnapshot.problems];
+  return _localFallbackSnapshot.copyWith(
+    problems: problems,
+    operationStatus: _localFallbackSnapshot.operationStatus.copyWith(
+      problemsCount: problems.length,
+      releaseState: 'not claimed',
+    ),
+    snapshotSource: source,
+    snapshotPath: target,
+    snapshotFreshness: freshness,
+  );
 }
 
 const _mockSnapshot = ShellSnapshot(
@@ -350,7 +446,7 @@ const _mockSnapshot = ShellSnapshot(
   releaseBlockerCount: 3,
   evidenceSummary: EvidenceSummaryRecord(
     schemaCheck: 'passed',
-    conformanceCheckCount: 88,
+    conformanceCheckCount: 89,
     releaseSmoke: 'passed',
     releaseGateCheck: 'passed',
     evidenceBundle: 'passed',
@@ -412,6 +508,9 @@ const _mockSnapshot = ShellSnapshot(
       blocksCompletedProductRelease: false,
     ),
   ],
+  snapshotSource: 'mock',
+  snapshotPath: 'embedded mock',
+  snapshotFreshness: 'static',
 );
 
 const _localFallbackSnapshot = ShellSnapshot(
@@ -475,7 +574,7 @@ const _localFallbackSnapshot = ShellSnapshot(
       status: 'warning',
       message: 'Local Shell Core snapshot file not found',
       recoveryInstruction:
-          'Generate .gui-shell/shell_snapshot.json or set GUI_SHELL_SNAPSHOT_JSON.',
+          'Generate .gui_shell/shell_snapshot.json or set GUI_SHELL_SNAPSHOT_JSON.',
       grantsAuthority: false,
     ),
   ],
@@ -504,8 +603,14 @@ const _localFallbackSnapshot = ShellSnapshot(
       severity: 'warning',
       category: 'missing_evidence',
       message: 'Local Shell Core snapshot file is missing.',
-      target: '.gui-shell/shell_snapshot.json',
+      target: '.gui_shell/shell_snapshot.json',
       recoveryId: 'recover-local-snapshot',
+      item: 'fallback snapshot active',
+      classification: 'known_limitation',
+      reason: 'Local snapshot was not available; safe fallback is active.',
+      requiredAction:
+          'Generate .gui_shell/shell_snapshot.json for local owner state.',
+      blocksRelease: false,
     ),
   ],
   evidence: [
@@ -513,7 +618,7 @@ const _localFallbackSnapshot = ShellSnapshot(
       evidenceId: 'local-shell-snapshot',
       kind: 'snapshot',
       status: 'missing',
-      path: '.gui-shell/shell_snapshot.json',
+      path: '.gui_shell/shell_snapshot.json',
       hash: '',
       exportable: false,
     ),
@@ -522,9 +627,9 @@ const _localFallbackSnapshot = ShellSnapshot(
     SettingRecord(
       key: 'snapshot.path',
       group: 'local',
-      defaultValue: '.gui-shell/shell_snapshot.json',
-      currentValue: '.gui-shell/shell_snapshot.json',
-      effectiveValue: '.gui-shell/shell_snapshot.json',
+      defaultValue: '.gui_shell/shell_snapshot.json',
+      currentValue: '.gui_shell/shell_snapshot.json',
+      effectiveValue: '.gui_shell/shell_snapshot.json',
       source: 'GUI_SHELL_SNAPSHOT_JSON',
       modified: false,
       dangerous: false,
@@ -536,7 +641,7 @@ const _localFallbackSnapshot = ShellSnapshot(
   releaseBlockerCount: 1,
   evidenceSummary: EvidenceSummaryRecord(
     schemaCheck: 'passed',
-    conformanceCheckCount: 88,
+    conformanceCheckCount: 89,
     releaseSmoke: 'passed',
     releaseGateCheck: 'passed',
     evidenceBundle: 'passed',
@@ -553,7 +658,7 @@ const _localFallbackSnapshot = ShellSnapshot(
       classification: 'required_for_v1',
       safeToIgnoreForPhaseB: false,
       requiredAction:
-          'Generate .gui-shell/shell_snapshot.json or set GUI_SHELL_SNAPSHOT_JSON.',
+          'Generate .gui_shell/shell_snapshot.json or set GUI_SHELL_SNAPSHOT_JSON.',
       blocksCompletedProductRelease: false,
     ),
     RecoveryPlaybookRecord(
@@ -565,4 +670,7 @@ const _localFallbackSnapshot = ShellSnapshot(
       blocksCompletedProductRelease: true,
     ),
   ],
+  snapshotSource: 'fallback',
+  snapshotPath: '.gui_shell/shell_snapshot.json',
+  snapshotFreshness: 'missing',
 );

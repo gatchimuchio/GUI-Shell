@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -14,7 +15,7 @@ from packages.shell_core.invariant_evaluator import InvariantEvaluator
 from packages.shell_core.release_smoke import build_reference_state
 
 
-DEFAULT_SNAPSHOT_PATH = ROOT / ".gui-shell" / "shell_snapshot.json"
+DEFAULT_SNAPSHOT_PATH = ROOT / ".gui_shell" / "shell_snapshot.json"
 
 
 def build_shell_snapshot() -> dict:
@@ -78,6 +79,9 @@ def build_shell_snapshot() -> dict:
         for recovery_id, recovery in sorted(state.recovery_actions.items())
     ]
     return {
+        "snapshot_source": "generated",
+        "snapshot_path": str(DEFAULT_SNAPSHOT_PATH.relative_to(ROOT)),
+        "snapshot_freshness": datetime.now(timezone.utc).isoformat(),
         "phase_status": _phase_status(),
         "operation_status": _operation_status(runtimes, approvals, invariant_flags),
         "runtimes": runtimes,
@@ -383,7 +387,7 @@ def _settings_records() -> list[dict]:
 def _evidence_summary() -> dict:
     return {
         "schema_check": "passed",
-        "conformance_check_count": 88,
+        "conformance_check_count": 89,
         "release_smoke": "passed",
         "release_gate_check": "passed",
         "evidence_bundle": "passed",
@@ -451,12 +455,16 @@ def _recovery_playbook() -> list[dict]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--write", type=Path)
     args = parser.parse_args()
     snapshot = build_shell_snapshot()
+    output_path = args.write or args.output
+    if output_path:
+        snapshot["snapshot_path"] = str(output_path)
     encoded = json.dumps(snapshot, indent=2, sort_keys=True)
-    if args.output:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(encoded + "\n", encoding="utf-8")
+    if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(encoded + "\n", encoding="utf-8")
     else:
         print(encoded)
     return 0

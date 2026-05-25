@@ -513,6 +513,27 @@ class OperationStatusRecord {
       releaseState: json['release_state'] as String? ?? 'not claimed',
     );
   }
+
+  OperationStatusRecord copyWith({
+    String? runtimeStatus,
+    String? invariantStatus,
+    String? trustStatus,
+    int? pendingApprovalsCount,
+    String? auditChainStatus,
+    int? problemsCount,
+    String? releaseState,
+  }) {
+    return OperationStatusRecord(
+      runtimeStatus: runtimeStatus ?? this.runtimeStatus,
+      invariantStatus: invariantStatus ?? this.invariantStatus,
+      trustStatus: trustStatus ?? this.trustStatus,
+      pendingApprovalsCount:
+          pendingApprovalsCount ?? this.pendingApprovalsCount,
+      auditChainStatus: auditChainStatus ?? this.auditChainStatus,
+      problemsCount: problemsCount ?? this.problemsCount,
+      releaseState: releaseState ?? this.releaseState,
+    );
+  }
 }
 
 class EvidenceSummaryRecord {
@@ -543,7 +564,7 @@ class EvidenceSummaryRecord {
   factory EvidenceSummaryRecord.fromJson(Map<String, Object?> json) {
     return EvidenceSummaryRecord(
       schemaCheck: json['schema_check'] as String? ?? 'passed',
-      conformanceCheckCount: json['conformance_check_count'] as int? ?? 88,
+      conformanceCheckCount: json['conformance_check_count'] as int? ?? 89,
       releaseSmoke: json['release_smoke'] as String? ?? 'passed',
       releaseGateCheck: json['release_gate_check'] as String? ?? 'passed',
       evidenceBundle: json['evidence_bundle'] as String? ?? 'passed',
@@ -617,6 +638,9 @@ class ShellSnapshot {
     required this.releaseBlockerCount,
     required this.evidenceSummary,
     required this.recoveryPlaybook,
+    this.snapshotSource = 'fallback',
+    this.snapshotPath = '',
+    this.snapshotFreshness = 'unknown',
   });
 
   final PhaseStatusRecord phaseStatus;
@@ -644,6 +668,9 @@ class ShellSnapshot {
   final int releaseBlockerCount;
   final EvidenceSummaryRecord evidenceSummary;
   final List<RecoveryPlaybookRecord> recoveryPlaybook;
+  final String snapshotSource;
+  final String snapshotPath;
+  final String snapshotFreshness;
 
   factory ShellSnapshot.fromJson(Map<String, Object?> json) {
     final runtimes = _records(json['runtimes'], RuntimeRecord.fromJson);
@@ -705,6 +732,50 @@ class ShellSnapshot {
           Map<String, Object?>.from(json['evidence_summary'] as Map? ?? {})),
       recoveryPlaybook:
           _records(json['recovery_playbook'], RecoveryPlaybookRecord.fromJson),
+      snapshotSource: json['snapshot_source'] as String? ?? 'local',
+      snapshotPath: json['snapshot_path'] as String? ?? '',
+      snapshotFreshness: json['snapshot_freshness'] as String? ?? 'generated',
+    );
+  }
+
+  ShellSnapshot copyWith({
+    OperationStatusRecord? operationStatus,
+    List<ProblemRecord>? problems,
+    List<EvidenceRecord>? evidence,
+    String? snapshotSource,
+    String? snapshotPath,
+    String? snapshotFreshness,
+  }) {
+    return ShellSnapshot(
+      phaseStatus: phaseStatus,
+      operationStatus: operationStatus ?? this.operationStatus,
+      runtimes: runtimes,
+      agentSessions: agentSessions,
+      permissions: permissions,
+      pendingApprovals: pendingApprovals,
+      auditEvents: auditEvents,
+      recoveryActions: recoveryActions,
+      invariantFlags: invariantFlags,
+      setupDoctorChecks: setupDoctorChecks,
+      setupDoctorStatus: setupDoctorStatus,
+      installerGrantsAuthority: installerGrantsAuthority,
+      installerSilentlyApprovesPermissions:
+          installerSilentlyApprovesPermissions,
+      trustRecords: trustRecords,
+      authorityMap: authorityMap,
+      adapterCatalog: adapterCatalog,
+      permissionDiffs: permissionDiffs,
+      problems: problems ?? this.problems,
+      evidence: evidence ?? this.evidence,
+      settings: settings,
+      auditChainStatus: auditChainStatus,
+      networkExposure: networkExposure,
+      releaseBlockerCount: releaseBlockerCount,
+      evidenceSummary: evidenceSummary,
+      recoveryPlaybook: recoveryPlaybook,
+      snapshotSource: snapshotSource ?? this.snapshotSource,
+      snapshotPath: snapshotPath ?? this.snapshotPath,
+      snapshotFreshness: snapshotFreshness ?? this.snapshotFreshness,
     );
   }
 }

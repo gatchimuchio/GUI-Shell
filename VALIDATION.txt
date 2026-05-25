@@ -76,7 +76,7 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 88 checks
+    stdout: conformance skeleton passed: 89 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
@@ -229,7 +229,7 @@ checks:
     exit: 0
     stdout_summary:
       - schema_check passed
-      - conformance_skeleton passed with 88 checks
+      - conformance_skeleton passed with 89 checks
       - release_gate_check passed
       - evidence_bundle passed and preserved Windows installed-path blockers
       - rust_helper_cargo_test passed

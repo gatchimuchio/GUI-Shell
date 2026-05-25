@@ -132,6 +132,8 @@ class ShellStatusBar extends StatelessWidget {
                   label: 'Problems', value: '${operation.problemsCount}'),
               const SizedBox(width: 8),
               StatusPill(label: 'Release', value: operation.releaseState),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Snapshot', value: snapshot.snapshotSource),
             ],
           ),
         ),

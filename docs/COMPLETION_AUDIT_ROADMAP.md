@@ -45,7 +45,7 @@ Release completion must not be claimed until strict Windows release validation p
 - item: Flutter local Shell Core client
   classification: required_for_v1
   status: implemented
-  evidence: `ShellCoreClient.local()` loads structured local snapshot JSON from `GUI_SHELL_SNAPSHOT_JSON` or `.gui-shell/shell_snapshot.json`; `ShellCoreClient.mock()` remains separate for tests/demo.
+  evidence: `ShellCoreClient.local()` loads structured local snapshot JSON from `GUI_SHELL_SNAPSHOT_JSON`, `%LOCALAPPDATA%\GUI-Shell\shell_snapshot.json` on Windows, or `.gui_shell/shell_snapshot.json` for local development; `ShellCoreClient.mock()` remains separate for tests/demo.
   blocks_release: no
 
 - item: GUI operation surfaces
