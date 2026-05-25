@@ -30,6 +30,18 @@ No completed product release may be claimed if any `release_blocker` remains.
   required_action: Keep Linux desktop project files and pass `flutter build linux` on the release candidate.
   blocks_release: no
 
+- item: Linux desktop launch smoke gate
+  classification: required_for_v1
+  reason: `./build/linux/x64/release/bundle/gui_shell_desktop` launched successfully under WSLg on 2026-05-25; the first window opened with Dashboard, NavigationRail, Runtime Status, and Invariant Status visible.
+  required_action: Keep Linux desktop launch smoke passing on release candidates.
+  blocks_release: no
+
+- item: WSLg libEGL/MESA graphics warnings
+  classification: known_limitation
+  reason: WSLg emitted libEGL/MESA warnings during Linux desktop launch, but rendering and first-window stability did not fail.
+  required_action: Keep documented in release-facing docs and reclassify as `release_blocker` if rendering or stability fails.
+  blocks_release: no
+
 - item: validate_all.py strict release mode not passed
   classification: release_blocker
   reason: Aggregate validation passes in development mode, but strict release mode must not report release blockers before completed product release.
@@ -39,12 +51,6 @@ No completed product release may be claimed if any `release_blocker` remains.
 - item: installer first-run smoke not passed
   classification: release_blocker
   required_action: Add and pass installer first-run smoke validation.
-  blocks_release: yes
-
-- item: desktop app launch smoke not passed
-  classification: release_blocker
-  reason: Linux desktop build smoke now passes, but the built artifact has not been launched and first-window startup evidence has not been recorded.
-  required_action: Launch `build/linux/x64/release/bundle/gui_shell_desktop` and record first-window startup evidence.
   blocks_release: yes
 
 - item: Setup Doctor real diagnostics not passed

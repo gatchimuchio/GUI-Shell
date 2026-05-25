@@ -37,13 +37,15 @@ Linux desktop build smoke is resolved as of 2026-05-25.
 
 ### Launch Smoke
 
-- command: launch the produced Linux desktop bundle after `flutter build linux` succeeds
+- command: `cd apps/desktop_flutter && ./build/linux/x64/release/bundle/gui_shell_desktop`
 - purpose: verify first-window startup from the built desktop artifact
-- current_status: not_passed
-- classification: release_blocker
-- blocks_release: yes
-- reason: `build/linux/x64/release/bundle/gui_shell_desktop` exists, but the built app has not been launched and first-window startup evidence has not been recorded.
-- required_action: Launch the built Linux desktop artifact and record first-window startup evidence.
+- current_status: passed
+- classification: required_for_v1
+- blocks_release: no
+- evidence: first window opened under WSLg; Dashboard visible; NavigationRail visible; Runtime Status visible; Invariant Status visible
+- required_action: Keep Linux desktop launch smoke passing on release candidates.
+
+WSLg emitted libEGL/MESA warnings in the terminal during launch. These warnings are a `known_limitation`, not a `release_blocker`, unless rendering or stability fails in future smoke runs.
 
 ## Release Gate
 
@@ -54,7 +56,13 @@ Linux desktop build smoke is resolved as of 2026-05-25.
   blocks_release: no
 
 - item: Linux desktop launch smoke
-  classification: release_blocker
-  reason: launch and first-window startup evidence have not been recorded for the built Linux desktop artifact.
-  required_action: Launch the built Linux desktop artifact and record first-window startup evidence.
-  blocks_release: yes
+  classification: required_for_v1
+  reason: `cd apps/desktop_flutter && ./build/linux/x64/release/bundle/gui_shell_desktop` launched successfully under WSLg on 2026-05-25 and first-window evidence was recorded.
+  required_action: Keep Linux desktop launch smoke passing on release candidates.
+  blocks_release: no
+
+- item: WSLg libEGL/MESA graphics warnings
+  classification: known_limitation
+  reason: warnings appeared in terminal during WSLg launch but did not prevent the gui_shell_desktop window from opening or rendering Dashboard, NavigationRail, Runtime Status, and Invariant Status.
+  required_action: Reclassify as `release_blocker` if rendering or stability fails.
+  blocks_release: no

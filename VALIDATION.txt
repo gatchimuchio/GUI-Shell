@@ -108,6 +108,23 @@ checks:
     exit: 0
     stdout: Built build/linux/x64/release/bundle/gui_shell_desktop
 
+  - name: desktop_flutter_launch_smoke
+    command: cd apps/desktop_flutter && ./build/linux/x64/release/bundle/gui_shell_desktop
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    required_action: Keep Linux desktop launch smoke in release-candidate validation.
+    exit: 0
+    stdout_summary:
+      - first window opened under WSLg
+      - Dashboard visible
+      - NavigationRail visible
+      - Runtime Status visible
+      - Invariant Status visible
+      - terminal emitted libEGL/MESA warnings that did not prevent launch
+    evidence: first window opened, Dashboard visible, NavigationRail visible, Invariant Status visible
+
   - name: validate_all
     command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py
     status: passed
@@ -144,9 +161,59 @@ release_gate:
   status: fail_for_completed_product_release
   blockers:
     - item: desktop Flutter launch smoke
+      classification: none
+      reason: Linux desktop launch smoke passed under WSLg with first-window evidence recorded.
+      required_action: Keep launch smoke passing on release candidates.
+      blocks_release: no
+    - item: WSLg libEGL/MESA graphics warnings
+      classification: known_limitation
+      reason: WSLg emitted libEGL/MESA terminal warnings during launch, but the app window opened and the Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible.
+      required_action: Treat as non-blocking unless rendering or stability fails in future smoke runs.
+      blocks_release: no
+    - item: installer first-run smoke
       classification: release_blocker
-      reason: Linux desktop build smoke now passes, but the built app has not been launched from `build/linux/x64/release/bundle/gui_shell_desktop` and first-window startup evidence has not been recorded.
-      required_action: Launch the built Linux desktop artifact and record first-window startup evidence.
+      reason: Installed first-run smoke has not passed.
+      required_action: Add and pass installer first-run smoke validation.
+      blocks_release: yes
+    - item: Setup Doctor real diagnostics smoke
+      classification: release_blocker
+      reason: Real diagnostics smoke has not passed from the installed app path.
+      required_action: Run Setup Doctor from installed app path and pass diagnostics.
+      blocks_release: yes
+    - item: Shell Core persistence smoke
+      classification: release_blocker
+      reason: Save/load snapshot and persistence smoke validation has not passed.
+      required_action: Pass Shell Core persistence smoke validation.
+      blocks_release: yes
+    - item: audit chain verification smoke
+      classification: release_blocker
+      reason: Audit chain verification and tamper detection smoke validation has not passed.
+      required_action: Pass audit chain verification smoke validation.
+      blocks_release: yes
+    - item: approval edit/revalidation smoke
+      classification: release_blocker
+      reason: Approval edit to rehash to revalidation workflow smoke has not passed.
+      required_action: Pass approval edit/revalidation smoke validation.
+      blocks_release: yes
+    - item: content_visibility UI enforcement smoke
+      classification: release_blocker
+      reason: UI projection enforcement smoke validation has not passed.
+      required_action: Pass content_visibility UI enforcement smoke validation.
+      blocks_release: yes
+    - item: runtime catalog/reference runtime smoke
+      classification: release_blocker
+      reason: Runtime Catalog validation and reference runtime smoke have not passed.
+      required_action: Pass Runtime Catalog validation and reference runtime smoke.
+      blocks_release: yes
+    - item: agent runtime/reference agent smoke
+      classification: release_blocker
+      reason: Agent Runtime Contract validation and reference agent smoke have not passed.
+      required_action: Pass Agent Runtime Contract validation and reference agent smoke.
+      blocks_release: yes
+    - item: owner GO
+      classification: release_blocker
+      reason: Explicit owner GO has not been given.
+      required_action: Obtain explicit owner GO before claiming completed product release.
       blocks_release: yes
     - item: mobile full release
       classification: post_v1_scope
