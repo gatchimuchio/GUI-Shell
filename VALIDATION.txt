@@ -1,32 +1,129 @@
-schema_check:
-command=python3 tooling/schema_check/check_schemas.py
-status=passed
-exit=0
-stdout:
-schema check passed: 19 schemas, 19 examples, 19 negative fixtures
-stderr:
+validation_mode: development
+validation_date: 2026-05-25
+repository: /home/mzcum/GUI-Shell
+commit: pre_commit_validation
 
+toolchain_detection:
+  - command: python3 --version
+    exit: 0
+    stdout: Python 3.14.4
+  - command: git --version
+    exit: 0
+    stdout: git version 2.53.0
+  - command: cargo --version
+    exit: 0
+    stdout: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
+  - command: rustc --version
+    exit: 0
+    stdout: rustc 1.95.0 (59807616e 2026-04-14)
+  - command: which cargo
+    exit: 0
+    stdout: /home/mzcum/.cargo/bin/cargo
+  - command: which unzip
+    exit: 0
+    stdout: /usr/bin/unzip
+  - command: which flutter
+    exit: 0
+    stdout: /home/mzcum/dev/flutter/bin/flutter
+  - command: flutter --version
+    exit: 0
+    stdout_summary:
+      - Flutter 3.44.0, channel stable
+      - Framework revision 559ffa3f75, 2026-05-15 14:13:13 -0700
+      - Engine revision 4c525dac5e
+      - Dart 3.12.0
+      - DevTools 2.57.0
+  - command: flutter doctor
+    exit: 0
+    stdout_summary:
+      - Flutter passed: Channel stable, 3.44.0, Ubuntu 26.04 LTS on WSL2
+      - Android toolchain failed: Android SDK cannot be located
+      - Chrome failed: Chrome executable google-chrome cannot be found
+      - Linux toolchain failed: clang++, CMake, ninja, and pkg-config are required
+      - Connected device passed: 1 available
+      - Network resources passed
+    classification: release_blocker
+    reason: Desktop-first v1.0 still requires installed-app launch/build smoke and Setup Doctor validation; Flutter doctor reports missing Linux desktop build dependencies.
+    required_action: Install Linux desktop build dependencies and pass desktop launch/build validation before release.
+    blocks_release: yes
 
-conformance_skeleton:
-command=python3 tooling/conformance_tests/run_conformance_skeleton.py
-status=passed
-exit=0
-stdout:
-conformance skeleton passed: 67 checks
-stderr:
+checks:
+  - name: schema_check
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/schema_check/check_schemas.py
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout: schema check passed: 19 schemas, 19 examples, 19 negative fixtures
 
+  - name: conformance_skeleton
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/conformance_tests/run_conformance_skeleton.py
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout: conformance skeleton passed: 67 checks
 
-rust_helper_cargo_test:
-command=cargo test
-status=not run
-reason=cargo not found on PATH
+  - name: rust_helper_cargo_test
+    command: cd native/rust_helper && cargo test
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout_summary:
+      - running 5 tests
+      - test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+      - Doc-tests gui_shell_rust_helper: 0 passed; 0 failed
 
-desktop_flutter_analyze:
-command=flutter analyze
-status=not run
-reason=flutter not found on PATH
+  - name: desktop_flutter_analyze
+    command: cd apps/desktop_flutter && flutter analyze
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout: No issues found! (ran in 11.8s)
 
-mobile_flutter_analyze:
-command=flutter analyze
-status=not run
-reason=flutter not found on PATH
+  - name: validate_all
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout_summary:
+      - schema_check passed
+      - conformance_skeleton passed
+      - release_gate_check passed
+      - rust_helper_cargo_test passed
+      - desktop_flutter_analyze passed
+      - mobile_flutter_analyze passed with classification post_v1_scope and blocks_release no
+      - release_gate status: pass
+
+  - name: validate_all_include_mobile_release_scope
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --include-mobile-release
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout_summary:
+      - mobile_flutter_analyze passed with classification none when explicitly included in release scope
+      - release_gate status: pass
+
+release_gate:
+  status: fail_for_completed_product_release
+  blockers:
+    - item: flutter doctor Linux desktop toolchain dependencies
+      classification: release_blocker
+      reason: clang++, CMake, ninja, and pkg-config are missing, so desktop launch/build smoke remains blocked.
+      required_action: Install Linux desktop build dependencies and pass desktop launch/build smoke.
+      blocks_release: yes
+    - item: mobile full release
+      classification: post_v1_scope
+      reason: v1.0 is desktop-first unless owner explicitly includes mobile.
+      required_action: No v1.0 action required.
+      blocks_release: no
