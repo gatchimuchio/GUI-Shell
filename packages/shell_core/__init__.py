@@ -14,6 +14,7 @@ from .policy_evaluator import PolicyEvaluator
 from .recovery_catalog import RecoveryCatalog
 from .runtime_state import RuntimeState
 from .runtime_registry import RuntimeRegistry
+from .release_smoke import run_shell_core_release_smoke
 from .sensitive_action_router import SensitiveActionRouter
 from .state_snapshot import create_state_snapshot, deterministic_snapshot_json
 from .update_policy_store import UpdatePolicyStore
@@ -39,6 +40,7 @@ __all__ = [
     "normalize_inbound_payload",
     "normalize_key",
     "project_approval_content",
+    "run_shell_core_release_smoke",
     "shell_error",
     "verify_audit_chain",
 ]

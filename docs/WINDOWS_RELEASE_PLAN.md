@@ -58,15 +58,21 @@ Mobile remains `post_v1_scope` unless the owner explicitly changes v1.0 scope.
 
 ## Installer And First-Run Requirement
 
+- item: implementation first-run and Setup Doctor smoke
+  classification: required_for_v1
+  reason: cross-platform implementation smoke creates first-run config/audit paths, verifies audit writability, runs structured Setup Doctor diagnostics, and confirms installer/setup state grants no authority and silently approves no permissions.
+  required_action: Keep `python3 tooling/release_smoke.py` passing while completing native Windows installed-path validation.
+  blocks_release: no
+
 - item: Windows installer and first-run smoke
   classification: release_blocker
-  reason: Windows installer and first-run smoke have not passed.
+  reason: native Windows installed-path installer and first-run smoke have not passed.
   required_action: Install through the Windows release path, launch from the installed app path, and record first-run evidence.
   blocks_release: yes
 
 - item: Windows Setup Doctor smoke
   classification: release_blocker
-  reason: Windows Setup Doctor smoke has not passed from the Windows app path.
+  reason: native Windows Setup Doctor smoke has not passed from the installed Windows app path.
   required_action: Run Setup Doctor from the installed Windows app path and record diagnostics evidence.
   blocks_release: yes
 

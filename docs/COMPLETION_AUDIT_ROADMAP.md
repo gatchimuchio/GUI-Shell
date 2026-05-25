@@ -42,6 +42,24 @@ Release completion must not be claimed until strict Windows release validation p
   evidence: conformance covers Unicode/case/zero-width/camelCase/alias/value-only authority attempts and intentional invariant import violation detection.
   blocks_release: no
 
+- item: Shell Core persistence, audit, approval, and recovery smoke
+  classification: required_for_v1
+  status: implemented
+  evidence: `packages/shell_core/release_smoke.py` covers state snapshot save/load, append-only audit verification, audit tamper detection, approval edit rehash/revalidation, and recovery_id policy verification.
+  blocks_release: no
+
+- item: implementation first-run and Setup Doctor smoke
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/release_smoke.py` runs first-run config/audit initialization and structured Setup Doctor non-authority checks.
+  blocks_release: no
+
+- item: Runtime Catalog and Agent Runtime reference smoke
+  classification: required_for_v1
+  status: implemented
+  evidence: `tooling/release_smoke.py` registers reference manifests through RuntimeCatalog and validates Agent Runtime workspace, secret path, permission mapping, and auditable diff behavior.
+  blocks_release: no
+
 ## Remaining Release Blockers
 
 - item: Windows installer and first-run smoke
@@ -56,36 +74,6 @@ Release completion must not be claimed until strict Windows release validation p
   required_action: connect desktop UI and installed app path smoke to real Setup Doctor diagnostics.
   blocks_release: yes
 
-- item: Shell Core persistence smoke
-  classification: release_blocker
-  reason: save/load crash recovery and state persistence smoke remains unpassed as a release gate.
-  required_action: pass integrated persistence smoke, not only helper-level checks.
-  blocks_release: yes
-
-- item: audit chain verification smoke
-  classification: release_blocker
-  reason: release-gate audit chain and tamper-detection smoke remains unpassed.
-  required_action: pass integrated append-only audit and tamper-detection smoke.
-  blocks_release: yes
-
-- item: content visibility UI smoke
-  classification: release_blocker
-  reason: Flutter UI enforcement smoke for content visibility remains unpassed.
-  required_action: add widget/integration evidence that full payload is hidden unless `content_visibility=full`.
-  blocks_release: yes
-
-- item: Runtime Catalog live/use smoke
-  classification: release_blocker
-  reason: Runtime Catalog use against reference runtime remains unpassed.
-  required_action: pass Runtime Catalog and reference runtime smoke.
-  blocks_release: yes
-
-- item: reference Runtime/Agent smoke
-  classification: release_blocker
-  reason: reference Runtime/Agent smoke remains unpassed.
-  required_action: pass mock/reference runtime and agent smoke.
-  blocks_release: yes
-
 - item: Owner GO
   classification: release_blocker
   reason: completed product release requires explicit owner approval.
@@ -94,10 +82,10 @@ Release completion must not be claimed until strict Windows release validation p
 
 ## Next Execution Order
 
-1. Complete Shell Core persistence, append-only audit, recovery linkage, and approval lifecycle smokes.
-2. Connect desktop Setup Doctor UI to real diagnostics and validate from installed app path.
-3. Implement Windows installer/first-run smoke and artifact/hash evidence.
-4. Add GitHub Actions CI for schema, conformance, release gate, Rust, Flutter, Windows build, and artifact validation.
+1. Connect native Windows installed app path to Setup Doctor diagnostics evidence.
+2. Implement native Windows installer/first-run smoke and artifact/hash evidence.
+3. Add installed executable smoke evidence to the release bundle.
+4. Keep GitHub Actions CI covering schema, conformance, release smoke, release gate, Rust, Flutter, Windows build, and artifact validation.
 5. Run `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.
 
 ## Release Rule

@@ -30,6 +30,7 @@ Release validation:
 - no unclassified remaining risk allowed
 - any `release_blocker` fails validation
 - `validate_all.py --strict-release` must pass
+- `python3 tooling/release_smoke.py` must pass
 - `cargo test` must pass if Rust helper is in release scope
 - desktop `flutter analyze` must pass if desktop app is in release scope
 - mobile `flutter analyze` is required only if mobile is in release scope

@@ -27,6 +27,7 @@ from packages.shell_core.normalization import normalize_inbound_payload, normali
 from packages.shell_core.permission_ledger import PermissionLedger
 from packages.shell_core.policy_evaluator import PolicyEvaluator
 from packages.shell_core.runtime_state import RuntimeState
+from packages.shell_core.release_smoke import run_shell_core_release_smoke
 from packages.shell_core.sensitive_action_router import SensitiveActionRouter
 from packages.shell_core.state_snapshot import create_state_snapshot, deterministic_snapshot_json
 from packages.blue_tanuki_adapter.adapter import BlueTanukiAdapter
@@ -37,6 +38,7 @@ from packages.agent_runtime import AgentRuntimeContract
 from packages.runtime_catalog import RuntimeCatalog
 from packages.shell_core.audit_chain import chain_event, verify_audit_chain
 from tooling.schema_check.check_schemas import validate_instance
+from tooling.release_smoke import run_release_smokes
 
 REQUIRED_SCHEMA_NAMES = {
     "runtime",
@@ -853,6 +855,42 @@ def test_state_snapshot_reports_invariant_flags() -> list[str]:
     return errors
 
 
+def test_shell_core_integrated_release_smoke() -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        result = run_shell_core_release_smoke(Path(tmp))
+    if not result["ok"]:
+        return [f"Shell Core release smoke failed: {error}" for error in result["errors"]]
+    errors = []
+    if result["snapshot_saved"] is not True:
+        errors.append("Shell Core release smoke did not save snapshot")
+    if result["audit_chain_verified"] is not True:
+        errors.append("Shell Core release smoke did not verify audit chain")
+    if result["tamper_detected"] is not True:
+        errors.append("Shell Core release smoke did not detect tamper")
+    if result["approval_revalidation_required"] is not True:
+        errors.append("Shell Core release smoke did not require approval revalidation")
+    if result["recovery_id_verified"] is not True:
+        errors.append("Shell Core release smoke did not verify recovery mapping")
+    return errors
+
+
+def test_release_smoke_runs_first_run_and_setup_doctor() -> list[str]:
+    result = run_release_smokes()
+    if not result["ok"]:
+        return [f"release smoke failed: {error}" for error in result["errors"]]
+    first_run = result["first_run"]
+    errors = []
+    if first_run["config_created"] is not True:
+        errors.append("first-run smoke did not create config")
+    if first_run["audit_dir_writable"] is not True:
+        errors.append("first-run smoke did not verify audit dir writability")
+    if first_run["installer_grants_authority"] is not False:
+        errors.append("first-run smoke grants authority")
+    if first_run["installer_silently_approves_permissions"] is not False:
+        errors.append("first-run smoke silently approves permissions")
+    return errors
+
+
 def test_invariant_evaluator_detects_intentional_import_violation() -> list[str]:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -1282,6 +1320,8 @@ def main() -> int:
         test_sensitive_action_router_blocks_policy_denied_action,
         test_state_snapshot_is_deterministic,
         test_state_snapshot_reports_invariant_flags,
+        test_shell_core_integrated_release_smoke,
+        test_release_smoke_runs_first_run_and_setup_doctor,
         test_invariant_evaluator_detects_intentional_import_violation,
         test_invariant_evaluator_detects_live_authority_invariants,
         test_rust_helper_required_sources_exist,

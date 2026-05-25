@@ -76,7 +76,7 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 78 checks
+    stdout: conformance skeleton passed: 80 checks
     stdout_summary:
       - authority stripping conformance imports production strip_authority_keys
       - approval edit guard conformance imports production ApprovalQueue
@@ -84,6 +84,25 @@ checks:
       - recovery_id checks require RuntimeState recovery catalog entry
       - invariant flags are measured by production InvariantEvaluator
       - normalization firewall covers Unicode/case/zero-width/alias/value-only authority attempts
+      - integrated Shell Core release smoke passed
+      - first-run and Setup Doctor implementation smoke passed
+
+  - name: release_smoke
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/release_smoke.py
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    exit: 0
+    stdout_summary:
+      - Shell Core snapshot save/load passed
+      - append-only audit chain verification passed
+      - audit tamper detection passed
+      - approval edit rehash/revalidation passed
+      - first-run config and audit directory smoke passed
+      - Setup Doctor non-authority smoke passed
+      - Runtime Catalog reference smoke passed
+      - Agent Runtime reference smoke passed
 
   - name: rust_helper_cargo_test
     command: cd native/rust_helper && cargo test
@@ -115,6 +134,8 @@ checks:
     exit: 0
     stdout_summary:
       - GUI Shell desktop app smoke test passed
+      - Setup Doctor client surface is structured and non-authoritative passed
+      - Approval Center hidden full payload smoke passed
       - All tests passed
 
   - name: desktop_flutter_build_linux
@@ -211,6 +232,7 @@ checks:
       - schema_check passed
       - conformance_skeleton passed
       - release_gate_check passed
+      - release_smoke passed
       - rust_helper_cargo_test passed
       - desktop_flutter_analyze passed
       - desktop_flutter_test passed
@@ -252,45 +274,50 @@ release_gate:
       reason: WSLg emitted libEGL/MESA terminal warnings during launch, but the app window opened and the Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible.
       required_action: Treat as non-blocking unless rendering or stability fails in future smoke runs.
       blocks_release: no
-    - item: installer first-run smoke
-      classification: release_blocker
-      reason: Installed first-run smoke has not passed.
-      required_action: Add and pass installer first-run smoke validation.
-      blocks_release: yes
-    - item: Setup Doctor real diagnostics smoke
-      classification: release_blocker
-      reason: Real diagnostics smoke has not passed from the installed app path.
-      required_action: Run Setup Doctor from installed app path and pass diagnostics.
-      blocks_release: yes
+    - item: implementation first-run and Setup Doctor smoke
+      classification: none
+      reason: `python3 tooling/release_smoke.py` passed first-run config/audit initialization and Setup Doctor non-authority diagnostics.
+      required_action: Keep implementation smoke passing while completing native Windows installed-path validation.
+      blocks_release: no
     - item: Shell Core persistence smoke
-      classification: release_blocker
-      reason: Save/load snapshot and persistence smoke validation has not passed.
-      required_action: Pass Shell Core persistence smoke validation.
-      blocks_release: yes
+      classification: none
+      reason: integrated release smoke passed save/load snapshot validation.
+      required_action: Keep Shell Core persistence smoke passing.
+      blocks_release: no
     - item: audit chain verification smoke
-      classification: release_blocker
-      reason: Audit chain verification and tamper detection smoke validation has not passed.
-      required_action: Pass audit chain verification smoke validation.
-      blocks_release: yes
+      classification: none
+      reason: integrated release smoke passed append-only audit chain verification and tamper detection.
+      required_action: Keep audit chain smoke passing.
+      blocks_release: no
     - item: approval edit/revalidation smoke
-      classification: release_blocker
-      reason: Approval edit to rehash to revalidation workflow smoke has not passed.
-      required_action: Pass approval edit/revalidation smoke validation.
-      blocks_release: yes
+      classification: none
+      reason: integrated release smoke passed approval edit rehash and requires_validation transition.
+      required_action: Keep approval lifecycle smoke passing.
+      blocks_release: no
     - item: content_visibility UI enforcement smoke
-      classification: release_blocker
-      reason: UI projection enforcement smoke validation has not passed.
-      required_action: Pass content_visibility UI enforcement smoke validation.
-      blocks_release: yes
+      classification: none
+      reason: desktop Flutter widget smoke confirms redacted projection is visible and hidden full payload is not rendered.
+      required_action: Keep content visibility UI smoke passing.
+      blocks_release: no
     - item: runtime catalog/reference runtime smoke
-      classification: release_blocker
-      reason: Runtime Catalog validation and reference runtime smoke have not passed.
-      required_action: Pass Runtime Catalog validation and reference runtime smoke.
-      blocks_release: yes
+      classification: none
+      reason: release smoke passed Runtime Catalog reference manifest registration and authority boundary checks.
+      required_action: Keep Runtime Catalog smoke passing.
+      blocks_release: no
     - item: agent runtime/reference agent smoke
+      classification: none
+      reason: release smoke passed Agent Runtime reference workspace, permission mapping, and auditability checks.
+      required_action: Keep Agent Runtime smoke passing.
+      blocks_release: no
+    - item: native Windows installed-path installer/first-run smoke
       classification: release_blocker
-      reason: Agent Runtime Contract validation and reference agent smoke have not passed.
-      required_action: Pass Agent Runtime Contract validation and reference agent smoke.
+      reason: native Windows installed-path installer and first-run evidence has not been recorded in this environment.
+      required_action: Run installed Windows artifact first-run smoke and record evidence.
+      blocks_release: yes
+    - item: native Windows installed-path Setup Doctor smoke
+      classification: release_blocker
+      reason: native Windows installed-path Setup Doctor diagnostics have not been recorded in this environment.
+      required_action: Run Setup Doctor from installed Windows app path and record diagnostics evidence.
       blocks_release: yes
     - item: owner GO
       classification: release_blocker

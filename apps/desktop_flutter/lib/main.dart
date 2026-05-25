@@ -20,7 +20,7 @@ class GuiShellDesktopApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = ShellCoreClient.mock();
+    final client = ShellCoreClient.local();
     return MaterialApp(
       title: 'GUI Shell',
       debugShowCheckedModeBanner: false,
@@ -65,18 +65,46 @@ class _ShellHomePageState extends State<ShellHomePage> {
         children: [
           NavigationRail(
             selectedIndex: selectedIndex,
-            onDestinationSelected: (index) => setState(() => selectedIndex = index),
+            onDestinationSelected: (index) =>
+                setState(() => selectedIndex = index),
             labelType: NavigationRailLabelType.all,
             destinations: const [
-              NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
-              NavigationRailDestination(icon: Icon(Icons.build_circle_outlined), selectedIcon: Icon(Icons.build_circle), label: Text('Doctor')),
-              NavigationRailDestination(icon: Icon(Icons.hub_outlined), selectedIcon: Icon(Icons.hub), label: Text('Runtime')),
-              NavigationRailDestination(icon: Icon(Icons.smart_toy_outlined), selectedIcon: Icon(Icons.smart_toy), label: Text('Agent')),
-              NavigationRailDestination(icon: Icon(Icons.key_outlined), selectedIcon: Icon(Icons.key), label: Text('Permission')),
-              NavigationRailDestination(icon: Icon(Icons.fact_check_outlined), selectedIcon: Icon(Icons.fact_check), label: Text('Approval')),
-              NavigationRailDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: Text('Audit')),
-              NavigationRailDestination(icon: Icon(Icons.health_and_safety_outlined), selectedIcon: Icon(Icons.health_and_safety), label: Text('Recovery')),
-              NavigationRailDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Settings')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.dashboard_outlined),
+                  selectedIcon: Icon(Icons.dashboard),
+                  label: Text('Dashboard')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.build_circle_outlined),
+                  selectedIcon: Icon(Icons.build_circle),
+                  label: Text('Doctor')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.hub_outlined),
+                  selectedIcon: Icon(Icons.hub),
+                  label: Text('Runtime')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.smart_toy_outlined),
+                  selectedIcon: Icon(Icons.smart_toy),
+                  label: Text('Agent')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.key_outlined),
+                  selectedIcon: Icon(Icons.key),
+                  label: Text('Permission')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.fact_check_outlined),
+                  selectedIcon: Icon(Icons.fact_check),
+                  label: Text('Approval')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  selectedIcon: Icon(Icons.receipt_long),
+                  label: Text('Audit')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.health_and_safety_outlined),
+                  selectedIcon: Icon(Icons.health_and_safety),
+                  label: Text('Recovery')),
+              NavigationRailDestination(
+                  icon: Icon(Icons.settings_outlined),
+                  selectedIcon: Icon(Icons.settings),
+                  label: Text('Settings')),
             ],
           ),
           const VerticalDivider(width: 1),

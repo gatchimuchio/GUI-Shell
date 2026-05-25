@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 78 checks`
+  evidence: `conformance skeleton passed: 80 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -41,6 +41,16 @@
   classification: required_for_v1
   status: implemented
   evidence: conformance covers `Trust_Level`, fullwidth `ｔｒｕｓｔ＿ｌｅｖｅｌ`, zero-width `trust\u200b_level`, `permissionGrant`, `admin_context`, nested frame metadata authority, and value-only authority attempts.
+
+- item: integrated Shell Core release smoke
+  classification: required_for_v1
+  status: passed
+  evidence: production smoke covers save/load snapshot, append-only audit chain verification, tamper detection, approval edit rehash/revalidation, and recovery_id policy verification.
+
+- item: first-run and Setup Doctor implementation smoke
+  classification: required_for_v1
+  status: passed
+  evidence: `tooling/release_smoke.py` creates first-run config/audit paths, verifies audit writability, runs Setup Doctor, and confirms installer/setup state grants no authority and silently approves no permissions.
 
 ## Not Sufficient For Release
 

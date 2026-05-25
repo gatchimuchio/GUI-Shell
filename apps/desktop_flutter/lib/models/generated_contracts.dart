@@ -108,6 +108,22 @@ class AgentSessionRecord {
   final String auditEventId;
 }
 
+class SetupDoctorCheckRecord {
+  const SetupDoctorCheckRecord({
+    required this.checkId,
+    required this.status,
+    required this.message,
+    required this.recoveryInstruction,
+    required this.grantsAuthority,
+  });
+
+  final String checkId;
+  final String status;
+  final String message;
+  final String? recoveryInstruction;
+  final bool grantsAuthority;
+}
+
 class ShellSnapshot {
   const ShellSnapshot({
     required this.runtimes,
@@ -117,6 +133,10 @@ class ShellSnapshot {
     required this.auditEvents,
     required this.recoveryActions,
     required this.invariantFlags,
+    required this.setupDoctorChecks,
+    required this.setupDoctorStatus,
+    required this.installerGrantsAuthority,
+    required this.installerSilentlyApprovesPermissions,
   });
 
   final List<RuntimeRecord> runtimes;
@@ -126,4 +146,8 @@ class ShellSnapshot {
   final List<AuditRecord> auditEvents;
   final List<RecoveryRecord> recoveryActions;
   final Map<String, bool> invariantFlags;
+  final List<SetupDoctorCheckRecord> setupDoctorChecks;
+  final String setupDoctorStatus;
+  final bool installerGrantsAuthority;
+  final bool installerSilentlyApprovesPermissions;
 }

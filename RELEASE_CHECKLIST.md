@@ -134,60 +134,53 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`; `--desktop-platform=all` may still fail because macOS is unverified, but that does not block Windows-first v1.0.
   blocks_release: yes
 
-- item: installer first-run smoke not passed
-  classification: release_blocker
-  required_action: Add and pass installer first-run smoke validation.
-  blocks_release: yes
+- item: implementation first-run smoke
+  classification: required_for_v1
+  reason: `tooling/release_smoke.py` creates first-run config and audit paths, verifies audit directory writability, and confirms installer/setup state grants no authority and silently approves no permissions.
+  required_action: Keep implementation first-run smoke passing; native Windows installed-path first-run smoke remains a separate release blocker.
+  blocks_release: no
 
-- item: Setup Doctor real diagnostics not passed
-  classification: release_blocker
-  required_action: Run Setup Doctor from installed app path and pass diagnostics.
-  blocks_release: yes
+- item: implementation Setup Doctor diagnostics smoke
+  classification: required_for_v1
+  reason: `tooling/release_smoke.py` runs structured Setup Doctor diagnostics and verifies all checks remain non-authoritative.
+  required_action: Keep implementation Setup Doctor smoke passing; native Windows installed-path Setup Doctor smoke remains a separate release blocker.
+  blocks_release: no
 
-- item: Shell Core persistence smoke not passed
-  classification: release_blocker
-  required_action: Pass save/load snapshot and persistence smoke validation.
-  blocks_release: yes
+- item: Shell Core persistence smoke
+  classification: required_for_v1
+  reason: integrated Shell Core release smoke saves and loads a deterministic state snapshot.
+  required_action: Keep integrated persistence smoke passing.
+  blocks_release: no
 
-- item: audit chain verification not passed
-  classification: release_blocker
-  required_action: Pass audit chain verification and tamper detection smoke validation.
-  blocks_release: yes
+- item: audit chain verification smoke
+  classification: required_for_v1
+  reason: integrated Shell Core release smoke appends JSONL audit events, verifies hash chain linkage, and detects tampering.
+  required_action: Keep integrated audit chain smoke passing.
+  blocks_release: no
 
-- item: approval edit to rehash to revalidation smoke not passed
-  classification: release_blocker
-  required_action: Pass approval edit workflow smoke validation.
-  blocks_release: yes
+- item: approval edit to rehash to revalidation smoke
+  classification: required_for_v1
+  reason: integrated Shell Core release smoke edits an allowed approval field, recalculates payload hash, and marks the approval `requires_validation`.
+  required_action: Keep approval lifecycle smoke passing.
+  blocks_release: no
 
-- item: content_visibility UI enforcement not passed
-  classification: release_blocker
-  required_action: Pass UI projection enforcement smoke validation.
-  blocks_release: yes
+- item: content_visibility UI enforcement smoke
+  classification: required_for_v1
+  reason: desktop Flutter widget smoke confirms redacted approval projection is visible and hidden full payload content is not rendered.
+  required_action: Keep UI projection smoke passing.
+  blocks_release: no
 
-- item: Runtime Catalog validation not passed
-  classification: release_blocker
-  required_action: Pass Runtime Catalog validation and use smoke.
-  blocks_release: yes
+- item: Runtime Catalog validation and use smoke
+  classification: required_for_v1
+  reason: `tooling/release_smoke.py` registers runtime and adapter manifests through production RuntimeCatalog and confirms catalog does not grant authority.
+  required_action: Keep Runtime Catalog smoke passing.
+  blocks_release: no
 
-- item: Agent Runtime Contract validation not passed
-  classification: release_blocker
-  required_action: Pass Agent Runtime Contract validation and mock/reference smoke.
-  blocks_release: yes
-
-- item: reference runtime smoke not passed
-  classification: release_blocker
-  required_action: Add and pass reference runtime smoke validation.
-  blocks_release: yes
-
-- item: reference agent smoke not passed
-  classification: release_blocker
-  required_action: Add and pass reference agent smoke validation.
-  blocks_release: yes
-
-- item: README / CLAIM / RELEASE_CHECKLIST not aligned with actual release state
-  classification: release_blocker
-  required_action: Pass release gate document scan.
-  blocks_release: yes
+- item: Agent Runtime Contract validation and reference smoke
+  classification: required_for_v1
+  reason: `tooling/release_smoke.py` checks workspace boundary, secret path denial, shell permission mapping, and auditable diff behavior through production AgentRuntimeContract.
+  required_action: Keep Agent Runtime reference smoke passing.
+  blocks_release: no
 
 - item: owner GO missing
   classification: release_blocker

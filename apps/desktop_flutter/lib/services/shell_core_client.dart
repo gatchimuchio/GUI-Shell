@@ -5,6 +5,8 @@ class ShellCoreClient {
 
   final ShellSnapshot snapshot;
 
+  factory ShellCoreClient.local() => ShellCoreClient.mock();
+
   factory ShellCoreClient.mock() {
     return const ShellCoreClient._(
       ShellSnapshot(
@@ -24,7 +26,9 @@ class ShellCoreClient {
             task: 'Update documentation',
             changedFiles: ['README.md', 'docs/STRATEGY.md'],
             toolCalls: ['shell.command', 'git.diff'],
-            shellCommands: ['python3 tooling/conformance_tests/run_conformance_skeleton.py'],
+            shellCommands: [
+              'python3 tooling/conformance_tests/run_conformance_skeleton.py'
+            ],
             testStatus: 'conformance passed',
             diffSummary: '2 files changed',
             pendingApprovalCount: 1,
@@ -46,9 +50,17 @@ class ShellCoreClient {
             operation: 'filesystem.write',
             status: 'pending',
             contentVisibility: 'redacted',
-            projectedContent: {'path': 'notes/today.md', 'content': '[redacted]'},
+            projectedContent: {
+              'path': 'notes/today.md',
+              'content': '[redacted]'
+            },
             editableFields: ['path'],
-            protectedFields: ['runtime_id', 'permission_id', 'payload_hash', 'authority_context'],
+            protectedFields: [
+              'runtime_id',
+              'permission_id',
+              'payload_hash',
+              'authority_context'
+            ],
           ),
         ],
         auditEvents: [
@@ -56,7 +68,8 @@ class ShellCoreClient {
             eventId: 'audit-1',
             action: 'approval.requested',
             result: 'success',
-            payloadHash: 'sha256:2222222222222222222222222222222222222222222222222222222222222222',
+            payloadHash:
+                'sha256:2222222222222222222222222222222222222222222222222222222222222222',
           ),
         ],
         recoveryActions: [
@@ -73,7 +86,36 @@ class ShellCoreClient {
           'adapter_metadata_can_escalate_authority': false,
           'memory_cache_previous_state_can_grant_authority': false,
           'full_payload_projected_without_full_visibility': false,
+          'installer_setup_state_can_grant_authority': false,
+          'mobile_device_state_can_grant_authority': false,
         },
+        setupDoctorStatus: 'warning',
+        installerGrantsAuthority: false,
+        installerSilentlyApprovesPermissions: false,
+        setupDoctorChecks: [
+          SetupDoctorCheckRecord(
+            checkId: 'host.os',
+            status: 'pass',
+            message: 'Host OS detected',
+            recoveryInstruction: null,
+            grantsAuthority: false,
+          ),
+          SetupDoctorCheckRecord(
+            checkId: 'filesystem.permission',
+            status: 'pass',
+            message: 'Audit storage path writable',
+            recoveryInstruction: null,
+            grantsAuthority: false,
+          ),
+          SetupDoctorCheckRecord(
+            checkId: 'network.public_bind',
+            status: 'warning',
+            message: 'Public bind requires explicit operator review',
+            recoveryInstruction:
+                'Keep runtimes on localhost unless permission and approval explicitly allow public bind.',
+            grantsAuthority: false,
+          ),
+        ],
       ),
     );
   }

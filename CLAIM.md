@@ -70,35 +70,35 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Pass Windows Setup Doctor diagnostics smoke.
   blocks_release: yes
 
-- item: Installer first-run smoke not passed
-  classification: release_blocker
-  reason: installer and first-run are in v1.0 scope.
-  required_action: Add and pass installer first-run smoke validation.
-  blocks_release: yes
+- item: implementation first-run smoke
+  classification: required_for_v1
+  reason: implementation first-run smoke creates config/audit paths and verifies installer/setup state is non-authoritative.
+  required_action: Keep implementation first-run smoke passing; native Windows installed-path first-run remains a release blocker.
+  blocks_release: no
 
-- item: Shell Core persistence smoke not passed
-  classification: release_blocker
-  reason: persistence is in v1.0 scope.
-  required_action: Add and pass persistence smoke validation.
-  blocks_release: yes
+- item: Shell Core persistence smoke
+  classification: required_for_v1
+  reason: integrated Shell Core release smoke saves and loads state snapshots.
+  required_action: Keep persistence smoke passing on release candidates.
+  blocks_release: no
 
-- item: Audit chain verification smoke not passed
-  classification: release_blocker
-  reason: audit chain verification is in v1.0 scope.
-  required_action: Add and pass audit chain smoke validation.
-  blocks_release: yes
+- item: Audit chain verification smoke
+  classification: required_for_v1
+  reason: integrated Shell Core release smoke verifies audit chain linkage and detects tampering.
+  required_action: Keep audit chain smoke passing on release candidates.
+  blocks_release: no
 
-- item: Runtime Catalog live/use smoke not passed
-  classification: release_blocker
-  reason: Runtime Catalog is in v1.0 scope.
-  required_action: Add and pass Runtime Catalog smoke validation.
-  blocks_release: yes
+- item: Runtime Catalog live/use smoke
+  classification: required_for_v1
+  reason: release smoke registers runtime and adapter manifests through RuntimeCatalog and confirms catalog authority remains false.
+  required_action: Keep Runtime Catalog smoke passing.
+  blocks_release: no
 
-- item: Agent Runtime mock/reference smoke not passed
-  classification: release_blocker
-  reason: Agent Runtime is in v1.0 scope.
-  required_action: Add and pass mock/reference agent smoke validation.
-  blocks_release: yes
+- item: Agent Runtime mock/reference smoke
+  classification: required_for_v1
+  reason: release smoke validates workspace boundary, secret path denial, shell command permission mapping, and auditable diff behavior.
+  required_action: Keep Agent Runtime reference smoke passing.
+  blocks_release: no
 
 - item: Strict release validation not passed
   classification: release_blocker

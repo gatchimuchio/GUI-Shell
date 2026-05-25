@@ -15,11 +15,18 @@ class SetupDoctor extends StatelessWidget {
       title: 'Setup Doctor',
       children: [
         const SectionList(
-          title: 'Environment',
+          title: 'Authority Boundary',
           rows: [
-            'Python: checked by schema tools',
-            'Rust: not detected in current environment',
-            'Flutter: not detected in current environment'
+            'installer_grants_authority=false',
+            'installer_silently_approves_permissions=false'
+          ],
+        ),
+        SectionList(
+          title: 'Diagnostics',
+          rows: [
+            'status: ${snapshot.setupDoctorStatus}',
+            for (final check in snapshot.setupDoctorChecks)
+              '${check.checkId}: ${check.status} - ${check.message}${check.recoveryInstruction == null ? '' : ' / ${check.recoveryInstruction}'}',
           ],
         ),
         SectionList(
