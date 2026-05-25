@@ -30,6 +30,14 @@ class SetupDoctor extends StatelessWidget {
           ],
         ),
         SectionList(
+          title: 'Installed Path Evidence',
+          rows: [
+            for (final evidence in snapshot.evidence
+                .where((item) => item.kind == 'installed-path'))
+              '${evidence.evidenceId}: ${evidence.status} ${evidence.path}',
+          ],
+        ),
+        SectionList(
           title: 'Runtime Connection',
           rows: [
             for (final runtime in snapshot.runtimes)

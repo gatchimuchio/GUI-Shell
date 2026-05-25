@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'screens/approval_center.dart';
 import 'screens/audit_viewer.dart';
+import 'screens/authority_map.dart';
 import 'screens/dashboard.dart';
 import 'screens/agent_center.dart';
 import 'screens/permission_center.dart';
 import 'screens/recovery_center.dart';
 import 'screens/runtime_center.dart';
 import 'screens/settings.dart';
+import 'screens/shared.dart';
 import 'screens/setup_doctor.dart';
+import 'screens/trust_center.dart';
 import 'services/shell_core_client.dart';
 
 void main() {
@@ -50,6 +53,8 @@ class _ShellHomePageState extends State<ShellHomePage> {
   Widget build(BuildContext context) {
     final pages = [
       Dashboard(client: widget.client),
+      TrustCenter(client: widget.client),
+      AuthorityMap(client: widget.client),
       SetupDoctor(client: widget.client),
       RuntimeCenter(client: widget.client),
       AgentCenter(client: widget.client),
@@ -61,54 +66,69 @@ class _ShellHomePageState extends State<ShellHomePage> {
     ];
 
     return Scaffold(
-      body: Row(
+      body: Column(
         children: [
-          NavigationRail(
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (index) =>
-                setState(() => selectedIndex = index),
-            labelType: NavigationRailLabelType.all,
-            destinations: const [
-              NavigationRailDestination(
-                  icon: Icon(Icons.dashboard_outlined),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: Text('Dashboard')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.build_circle_outlined),
-                  selectedIcon: Icon(Icons.build_circle),
-                  label: Text('Doctor')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.hub_outlined),
-                  selectedIcon: Icon(Icons.hub),
-                  label: Text('Runtime')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.smart_toy_outlined),
-                  selectedIcon: Icon(Icons.smart_toy),
-                  label: Text('Agent')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.key_outlined),
-                  selectedIcon: Icon(Icons.key),
-                  label: Text('Permission')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.fact_check_outlined),
-                  selectedIcon: Icon(Icons.fact_check),
-                  label: Text('Approval')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long),
-                  label: Text('Audit')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.health_and_safety_outlined),
-                  selectedIcon: Icon(Icons.health_and_safety),
-                  label: Text('Recovery')),
-              NavigationRailDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: Text('Settings')),
-            ],
+          Expanded(
+            child: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (index) =>
+                      setState(() => selectedIndex = index),
+                  labelType: NavigationRailLabelType.selected,
+                  destinations: const [
+                    NavigationRailDestination(
+                        icon: Icon(Icons.dashboard_outlined),
+                        selectedIcon: Icon(Icons.dashboard),
+                        label: Text('Dashboard')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.verified_user_outlined),
+                        selectedIcon: Icon(Icons.verified_user),
+                        label: Text('Trust')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.account_tree_outlined),
+                        selectedIcon: Icon(Icons.account_tree),
+                        label: Text('Authority')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.build_circle_outlined),
+                        selectedIcon: Icon(Icons.build_circle),
+                        label: Text('Doctor')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.hub_outlined),
+                        selectedIcon: Icon(Icons.hub),
+                        label: Text('Runtime')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.smart_toy_outlined),
+                        selectedIcon: Icon(Icons.smart_toy),
+                        label: Text('Agent')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.key_outlined),
+                        selectedIcon: Icon(Icons.key),
+                        label: Text('Permission')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.fact_check_outlined),
+                        selectedIcon: Icon(Icons.fact_check),
+                        label: Text('Approval')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.receipt_long_outlined),
+                        selectedIcon: Icon(Icons.receipt_long),
+                        label: Text('Audit')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.health_and_safety_outlined),
+                        selectedIcon: Icon(Icons.health_and_safety),
+                        label: Text('Recovery')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.settings_outlined),
+                        selectedIcon: Icon(Icons.settings),
+                        label: Text('Settings')),
+                  ],
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(child: pages[selectedIndex]),
+              ],
+            ),
           ),
-          const VerticalDivider(width: 1),
-          Expanded(child: pages[selectedIndex]),
+          ShellStatusBar(snapshot: widget.client.getSnapshot()),
         ],
       ),
     );

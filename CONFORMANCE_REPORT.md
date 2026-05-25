@@ -10,7 +10,7 @@
 - item: conformance checks
   classification: required_for_v1
   status: passed
-  evidence: `conformance skeleton passed: 84 checks`
+  evidence: `conformance skeleton passed: 85 checks`
 
 - item: conformance tautology fix
   classification: required_for_v1
@@ -46,6 +46,11 @@
   classification: required_for_v1
   status: implemented
   evidence: `ShellCoreClient.local()` reads structured local snapshot JSON instead of aliasing `mock()`, and Flutter tests verify local mode, Setup Doctor local diagnostics rendering, redacted content projection, and snapshot-sourced invariant flags.
+
+- item: GUI operation surfaces
+  classification: required_for_v1
+  status: implemented
+  evidence: conformance verifies Trust Center, Authority Map, Adapter Catalog, Permission Diff, Problems Panel, Evidence Center, Command Palette, Audit Timeline actions, Recovery Playbook vocabulary, and Status Bar are present in the desktop Flutter surface.
 
 - item: integrated Shell Core release smoke
   classification: required_for_v1

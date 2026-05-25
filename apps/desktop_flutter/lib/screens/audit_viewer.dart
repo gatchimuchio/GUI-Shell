@@ -14,6 +14,23 @@ class AuditViewer extends StatelessWidget {
     return ShellPage(
       title: 'Audit Viewer',
       children: [
+        const Wrap(spacing: 8, runSpacing: 8, children: [
+          StatusPill(label: 'filter', value: 'runtime'),
+          StatusPill(label: 'filter', value: 'adapter'),
+          StatusPill(label: 'filter', value: 'approval'),
+          StatusPill(label: 'filter', value: 'permission'),
+          StatusPill(label: 'filter', value: 'setup_doctor'),
+          StatusPill(label: 'filter', value: 'normalization'),
+          StatusPill(label: 'filter', value: 'installer'),
+          StatusPill(label: 'filter', value: 'error/warning/blocked'),
+        ]),
+        SectionList(
+          title: 'Chain Status',
+          rows: [
+            'audit_chain_status: ${client.getSnapshot().auditChainStatus}',
+            'actions: copy event / export JSONL / verify chain / jump to related approval-runtime-adapter',
+          ],
+        ),
         DataTable(
           columns: const [
             DataColumn(label: Text('Event')),

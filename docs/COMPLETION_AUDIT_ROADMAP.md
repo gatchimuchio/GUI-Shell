@@ -48,6 +48,12 @@ Release completion must not be claimed until strict Windows release validation p
   evidence: `ShellCoreClient.local()` loads structured local snapshot JSON from `GUI_SHELL_SNAPSHOT_JSON` or `.gui-shell/shell_snapshot.json`; `ShellCoreClient.mock()` remains separate for tests/demo.
   blocks_release: no
 
+- item: GUI operation surfaces
+  classification: required_for_v1
+  status: implemented
+  evidence: `docs/GUI_OPERATION_SURFACES.md` records Trust Center, Authority Map, Audit Timeline, Recovery Playbook, Adapter Catalog, Permission Diff, Settings UX, Problems Panel, Evidence Center, Command Palette, and Status Bar surfaces.
+  blocks_release: no
+
 - item: conformance coverage
   classification: required_for_v1
   status: implemented

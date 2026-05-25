@@ -202,6 +202,239 @@ class SetupDoctorCheckRecord {
   }
 }
 
+class TrustRecord {
+  const TrustRecord({
+    required this.scope,
+    required this.state,
+    required this.source,
+    required this.expiresAt,
+    required this.blockedOperations,
+  });
+
+  final String scope;
+  final String state;
+  final String source;
+  final String? expiresAt;
+  final List<String> blockedOperations;
+
+  factory TrustRecord.fromJson(Map<String, Object?> json) {
+    return TrustRecord(
+      scope: json['scope'] as String? ?? '',
+      state: json['state'] as String? ?? 'unknown',
+      source: json['source'] as String? ?? '',
+      expiresAt: json['expires_at'] as String?,
+      blockedOperations: _stringList(json['blocked_operations']),
+    );
+  }
+}
+
+class AuthorityMapRecord {
+  const AuthorityMapRecord({
+    required this.runtimeId,
+    required this.capabilityId,
+    required this.permissionId,
+    required this.approvalId,
+    required this.auditEventId,
+    required this.recoveryId,
+    required this.dangerous,
+    required this.warning,
+  });
+
+  final String runtimeId;
+  final String capabilityId;
+  final String permissionId;
+  final String approvalId;
+  final String auditEventId;
+  final String recoveryId;
+  final bool dangerous;
+  final String warning;
+
+  factory AuthorityMapRecord.fromJson(Map<String, Object?> json) {
+    return AuthorityMapRecord(
+      runtimeId: json['runtime_id'] as String? ?? '',
+      capabilityId: json['capability_id'] as String? ?? '',
+      permissionId: json['permission_id'] as String? ?? '',
+      approvalId: json['approval_id'] as String? ?? '',
+      auditEventId: json['audit_event_id'] as String? ?? '',
+      recoveryId: json['recovery_id'] as String? ?? '',
+      dangerous: json['dangerous'] as bool? ?? false,
+      warning: json['warning'] as String? ?? '',
+    );
+  }
+}
+
+class AdapterCatalogRecord {
+  const AdapterCatalogRecord({
+    required this.adapterId,
+    required this.runtimeId,
+    required this.publisher,
+    required this.version,
+    required this.signature,
+    required this.hash,
+    required this.requestedCapabilities,
+    required this.grantedCapabilities,
+    required this.deniedCapabilities,
+    required this.trustStatus,
+    required this.lastVerified,
+    required this.updateAvailable,
+    required this.knownRisks,
+  });
+
+  final String adapterId;
+  final String runtimeId;
+  final String publisher;
+  final String version;
+  final String signature;
+  final String hash;
+  final List<String> requestedCapabilities;
+  final List<String> grantedCapabilities;
+  final List<String> deniedCapabilities;
+  final String trustStatus;
+  final String lastVerified;
+  final bool updateAvailable;
+  final List<String> knownRisks;
+
+  factory AdapterCatalogRecord.fromJson(Map<String, Object?> json) {
+    return AdapterCatalogRecord(
+      adapterId: json['adapter_id'] as String? ?? '',
+      runtimeId: json['runtime_id'] as String? ?? '',
+      publisher: json['publisher'] as String? ?? '',
+      version: json['version'] as String? ?? '',
+      signature: json['signature'] as String? ?? '',
+      hash: json['hash'] as String? ?? '',
+      requestedCapabilities: _stringList(json['requested_capabilities']),
+      grantedCapabilities: _stringList(json['granted_capabilities']),
+      deniedCapabilities: _stringList(json['denied_capabilities']),
+      trustStatus: json['trust_status'] as String? ?? 'unknown',
+      lastVerified: json['last_verified'] as String? ?? '',
+      updateAvailable: json['update_available'] as bool? ?? false,
+      knownRisks: _stringList(json['known_risks']),
+    );
+  }
+}
+
+class PermissionDiffRecord {
+  const PermissionDiffRecord({
+    required this.subject,
+    required this.added,
+    required this.removed,
+    required this.changed,
+    required this.dangerous,
+  });
+
+  final String subject;
+  final List<String> added;
+  final List<String> removed;
+  final List<String> changed;
+  final List<String> dangerous;
+
+  factory PermissionDiffRecord.fromJson(Map<String, Object?> json) {
+    return PermissionDiffRecord(
+      subject: json['subject'] as String? ?? '',
+      added: _stringList(json['added']),
+      removed: _stringList(json['removed']),
+      changed: _stringList(json['changed']),
+      dangerous: _stringList(json['dangerous']),
+    );
+  }
+}
+
+class ProblemRecord {
+  const ProblemRecord({
+    required this.problemId,
+    required this.severity,
+    required this.category,
+    required this.message,
+    required this.target,
+    required this.recoveryId,
+  });
+
+  final String problemId;
+  final String severity;
+  final String category;
+  final String message;
+  final String target;
+  final String recoveryId;
+
+  factory ProblemRecord.fromJson(Map<String, Object?> json) {
+    return ProblemRecord(
+      problemId: json['problem_id'] as String? ?? '',
+      severity: json['severity'] as String? ?? 'warning',
+      category: json['category'] as String? ?? '',
+      message: json['message'] as String? ?? '',
+      target: json['target'] as String? ?? '',
+      recoveryId: json['recovery_id'] as String? ?? '',
+    );
+  }
+}
+
+class EvidenceRecord {
+  const EvidenceRecord({
+    required this.evidenceId,
+    required this.kind,
+    required this.status,
+    required this.path,
+    required this.hash,
+    required this.exportable,
+  });
+
+  final String evidenceId;
+  final String kind;
+  final String status;
+  final String path;
+  final String hash;
+  final bool exportable;
+
+  factory EvidenceRecord.fromJson(Map<String, Object?> json) {
+    return EvidenceRecord(
+      evidenceId: json['evidence_id'] as String? ?? '',
+      kind: json['kind'] as String? ?? '',
+      status: json['status'] as String? ?? 'missing',
+      path: json['path'] as String? ?? '',
+      hash: json['hash'] as String? ?? '',
+      exportable: json['exportable'] as bool? ?? false,
+    );
+  }
+}
+
+class SettingRecord {
+  const SettingRecord({
+    required this.key,
+    required this.group,
+    required this.defaultValue,
+    required this.currentValue,
+    required this.effectiveValue,
+    required this.source,
+    required this.modified,
+    required this.dangerous,
+    required this.authorityRelated,
+  });
+
+  final String key;
+  final String group;
+  final String defaultValue;
+  final String currentValue;
+  final String effectiveValue;
+  final String source;
+  final bool modified;
+  final bool dangerous;
+  final bool authorityRelated;
+
+  factory SettingRecord.fromJson(Map<String, Object?> json) {
+    return SettingRecord(
+      key: json['key'] as String? ?? '',
+      group: json['group'] as String? ?? '',
+      defaultValue: json['default']?.toString() ?? '',
+      currentValue: json['current']?.toString() ?? '',
+      effectiveValue: json['effective']?.toString() ?? '',
+      source: json['source'] as String? ?? '',
+      modified: json['modified'] as bool? ?? false,
+      dangerous: json['dangerous'] as bool? ?? false,
+      authorityRelated: json['authority_related'] as bool? ?? false,
+    );
+  }
+}
+
 class ShellSnapshot {
   const ShellSnapshot({
     required this.runtimes,
@@ -215,6 +448,16 @@ class ShellSnapshot {
     required this.setupDoctorStatus,
     required this.installerGrantsAuthority,
     required this.installerSilentlyApprovesPermissions,
+    required this.trustRecords,
+    required this.authorityMap,
+    required this.adapterCatalog,
+    required this.permissionDiffs,
+    required this.problems,
+    required this.evidence,
+    required this.settings,
+    required this.auditChainStatus,
+    required this.networkExposure,
+    required this.releaseBlockerCount,
   });
 
   final List<RuntimeRecord> runtimes;
@@ -228,6 +471,16 @@ class ShellSnapshot {
   final String setupDoctorStatus;
   final bool installerGrantsAuthority;
   final bool installerSilentlyApprovesPermissions;
+  final List<TrustRecord> trustRecords;
+  final List<AuthorityMapRecord> authorityMap;
+  final List<AdapterCatalogRecord> adapterCatalog;
+  final List<PermissionDiffRecord> permissionDiffs;
+  final List<ProblemRecord> problems;
+  final List<EvidenceRecord> evidence;
+  final List<SettingRecord> settings;
+  final String auditChainStatus;
+  final String networkExposure;
+  final int releaseBlockerCount;
 
   factory ShellSnapshot.fromJson(Map<String, Object?> json) {
     return ShellSnapshot(
@@ -249,6 +502,19 @@ class ShellSnapshot {
           json['installer_grants_authority'] as bool? ?? false,
       installerSilentlyApprovesPermissions:
           json['installer_silently_approves_permissions'] as bool? ?? false,
+      trustRecords: _records(json['trust_records'], TrustRecord.fromJson),
+      authorityMap:
+          _records(json['authority_map'], AuthorityMapRecord.fromJson),
+      adapterCatalog:
+          _records(json['adapter_catalog'], AdapterCatalogRecord.fromJson),
+      permissionDiffs:
+          _records(json['permission_diffs'], PermissionDiffRecord.fromJson),
+      problems: _records(json['problems'], ProblemRecord.fromJson),
+      evidence: _records(json['evidence'], EvidenceRecord.fromJson),
+      settings: _records(json['settings'], SettingRecord.fromJson),
+      auditChainStatus: json['audit_chain_status'] as String? ?? 'unknown',
+      networkExposure: json['network_exposure'] as String? ?? 'unknown',
+      releaseBlockerCount: json['release_blocker_count'] as int? ?? 0,
     );
   }
 }

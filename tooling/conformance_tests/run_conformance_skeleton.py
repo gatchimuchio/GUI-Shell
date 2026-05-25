@@ -78,6 +78,8 @@ RUST_HELPER_REQUIRED_SOURCES = {
 DESKTOP_FLUTTER_REQUIRED_FILES = {
     "lib/main.dart",
     "lib/screens/dashboard.dart",
+    "lib/screens/trust_center.dart",
+    "lib/screens/authority_map.dart",
     "lib/screens/setup_doctor.dart",
     "lib/screens/runtime_center.dart",
     "lib/screens/agent_center.dart",
@@ -1151,6 +1153,29 @@ def test_desktop_flutter_keeps_authority_in_shell_core_client() -> list[str]:
     return errors
 
 
+def test_desktop_flutter_exposes_operation_surfaces() -> list[str]:
+    main = (DESKTOP_FLUTTER / "lib" / "main.dart").read_text(encoding="utf-8")
+    dashboard = (DESKTOP_FLUTTER / "lib" / "screens" / "dashboard.dart").read_text(encoding="utf-8")
+    runtime = (DESKTOP_FLUTTER / "lib" / "screens" / "runtime_center.dart").read_text(encoding="utf-8")
+    settings = (DESKTOP_FLUTTER / "lib" / "screens" / "settings.dart").read_text(encoding="utf-8")
+    audit = (DESKTOP_FLUTTER / "lib" / "screens" / "audit_viewer.dart").read_text(encoding="utf-8")
+    recovery = (DESKTOP_FLUTTER / "lib" / "screens" / "recovery_center.dart").read_text(encoding="utf-8")
+    combined = "\n".join([main, dashboard, runtime, settings, audit, recovery])
+    required = [
+        "TrustCenter",
+        "AuthorityMap",
+        "Adapter Catalog",
+        "Permission Diff",
+        "Problems Panel",
+        "Evidence Center",
+        "Command Palette",
+        "copy event / export JSONL / verify chain",
+        "pre_check",
+        "ShellStatusBar",
+    ]
+    return [f"desktop Flutter operation surface missing: {token}" for token in required if token not in combined]
+
+
 def test_installer_setup_doctor_reports_structured_status_without_authority() -> list[str]:
     from installer.setup_doctor import setup_doctor_report
 
@@ -1444,6 +1469,7 @@ def main() -> int:
         test_blue_tanuki_adapter_failures_map_to_recovery_actions,
         test_desktop_flutter_required_files_exist,
         test_desktop_flutter_keeps_authority_in_shell_core_client,
+        test_desktop_flutter_exposes_operation_surfaces,
         test_installer_setup_doctor_reports_structured_status_without_authority,
         test_installer_boundary_docs_exist,
         test_mobile_flutter_required_files_exist,

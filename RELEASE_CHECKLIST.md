@@ -74,6 +74,12 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Keep local snapshot loading covered by Flutter tests and replace fallback diagnostics with installed app data on release candidates.
   blocks_release: no
 
+- item: GUI operation surfaces
+  classification: required_for_v1
+  reason: desktop Flutter now exposes Trust Center, Authority Map, Audit Timeline, Recovery Playbook, Adapter Catalog, Permission Diff, Problems Panel, Evidence Center, Settings UX, Command Palette, and Status Bar operation vocabulary without moving authority into Flutter.
+  required_action: Keep GUI surfaces read-only or Shell Core-authorized and expand them only with corresponding conformance/evidence coverage.
+  blocks_release: no
+
 - item: duplicate authority key definitions
   classification: required_for_v1
   reason: `packages/shell_core/authority_keys.py` is the single production source of `AUTHORITY_KEYS`; any remaining duplicate authority key definition is a `release_blocker`.

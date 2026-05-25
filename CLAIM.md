@@ -20,6 +20,10 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   classification: required_for_v1
   status: `ShellCoreClient.local()` reads structured local snapshot JSON and is no longer a direct mock alias; mock mode remains available for tests/demo.
 
+- item: GUI operation surfaces
+  classification: required_for_v1
+  status: Trust Center, Authority Map, Audit Timeline, Recovery Playbook, Adapter Catalog, Permission Diff, Problems Panel, Evidence Center, Settings UX, Command Palette, and Status Bar vocabulary are present as Shell Core-bound operator surfaces.
+
 - item: Shell Core hardening skeleton
   classification: required_for_v1
   status: contract-level implementation present

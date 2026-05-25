@@ -31,6 +31,32 @@ class RuntimeCenter extends StatelessWidget {
               ]),
           ],
         ),
+        for (final adapter in snapshot.adapterCatalog)
+          SectionList(
+            title: 'Adapter Catalog: ${adapter.adapterId}',
+            rows: [
+              'runtime: ${adapter.runtimeId}',
+              'publisher: ${adapter.publisher}',
+              'version: ${adapter.version}',
+              'signature: ${adapter.signature}',
+              'hash: ${adapter.hash}',
+              'trust: ${adapter.trustStatus}',
+              'requested: ${adapter.requestedCapabilities.join(', ')}',
+              'granted: ${adapter.grantedCapabilities.join(', ')}',
+              'denied: ${adapter.deniedCapabilities.join(', ')}',
+              'risks: ${adapter.knownRisks.join(', ')}',
+            ],
+          ),
+        for (final diff in snapshot.permissionDiffs)
+          SectionList(
+            title: 'Permission Diff: ${diff.subject}',
+            rows: [
+              for (final item in diff.added) '+ $item',
+              for (final item in diff.removed) '- $item',
+              for (final item in diff.changed) '~ $item',
+              for (final item in diff.dangerous) '! $item',
+            ],
+          ),
       ],
     );
   }
