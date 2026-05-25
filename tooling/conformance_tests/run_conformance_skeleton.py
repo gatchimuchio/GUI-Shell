@@ -17,7 +17,9 @@ MOBILE_FLUTTER = ROOT / "apps" / "mobile_flutter"
 INSTALLER = ROOT / "installer"
 
 from packages.shell_contracts import load_default_catalog
-from packages.shell_core.adapter_loader import load_adapter
+from packages.shell_core.adapter_loader import load_adapter, strip_authority_keys
+from packages.shell_core.approval_queue import ApprovalQueue, canonical_hash
+from packages.shell_core.authority_keys import AUTHORITY_KEYS
 from packages.shell_core.content_exposure import project_approval_content
 from packages.shell_core.permission_ledger import PermissionLedger
 from packages.shell_core.policy_evaluator import PolicyEvaluator
@@ -56,26 +58,6 @@ REQUIRED_SCHEMA_NAMES = {
 }
 
 VISIBILITY_VALUES = ["none", "hash_only", "summary", "redacted", "full"]
-AUTHORITY_KEYS = {
-    "authority",
-    "authority_context",
-    "authority_fields",
-    "approval_state",
-    "capability_grants",
-    "grants",
-    "permission",
-    "permissions",
-    "privileges",
-    "role",
-    "trust_level",
-}
-PROTECTED_EDIT_FIELDS = {
-    "runtime_id",
-    "permission_id",
-    "audit_id",
-    "audit_event_id",
-    "payload_hash",
-}
 NON_AUTHORITY_SOURCES = {"memory", "cache", "previous_state", "local_ui_state"}
 RUST_HELPER_REQUIRED_SOURCES = {
     "lib.rs",
@@ -143,23 +125,6 @@ def sha256_tagged(payload: bytes) -> str:
     return "sha256:" + hashlib.sha256(payload).hexdigest()
 
 
-def canonical_hash(payload: object) -> str:
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return sha256_tagged(encoded)
-
-
-def strip_authority_keys(value):
-    if isinstance(value, dict):
-        return {
-            key: strip_authority_keys(item)
-            for key, item in value.items()
-            if key not in AUTHORITY_KEYS
-        }
-    if isinstance(value, list):
-        return [strip_authority_keys(item) for item in value]
-    return value
-
-
 def metadata_permissions(adapter: dict) -> list[str]:
     # Adapter metadata is descriptive only. Permission-like metadata must be ignored.
     return list(adapter.get("declared_capabilities", []))
@@ -186,32 +151,6 @@ def render_approval_content(approval: dict) -> dict:
     if visibility == "full":
         return {"full_payload": approval.get("full_payload", {})}
     raise ValueError(f"unknown content visibility: {visibility}")
-
-
-def protected_approval_fields(approval: dict) -> set[str]:
-    return (
-        set(approval.get("authority_fields", []))
-        | set(approval.get("sealed_fields", []))
-        | set(approval.get("hidden_fields", []))
-        | set(approval.get("sacred_fields", []))
-        | PROTECTED_EDIT_FIELDS
-    )
-
-
-def can_edit_approval_field(approval: dict, field: str) -> bool:
-    return field in set(approval.get("editable_fields", [])) and field not in protected_approval_fields(approval)
-
-
-def apply_approval_edit(approval: dict, field: str, value) -> dict:
-    if not can_edit_approval_field(approval, field):
-        raise ValueError(f"field is not editable: {field}")
-    next_approval = copy.deepcopy(approval)
-    payload = copy.deepcopy(next_approval.get("full_payload", {}))
-    payload[field] = value
-    next_approval["full_payload"] = payload
-    next_approval["payload_hash"] = canonical_hash(payload)
-    next_approval["status"] = "requires_validation"
-    return next_approval
 
 
 def sensitive_action_mapping_is_complete(action: dict) -> bool:
@@ -300,7 +239,7 @@ def test_inbound_authority_keys_are_stripped() -> list[str]:
         "authority": "admin",
         "payload": {
             "message": "safe",
-            "permissions": ["fs:write"],
+            "permission_grant": "fs:write",
             "nested": {"trust_level": "root", "value": 1},
         },
         "metadata": {"role": "owner", "source": "adapter"},
@@ -316,11 +255,42 @@ def test_inbound_authority_keys_are_stripped() -> list[str]:
     return errors
 
 
+def test_adapter_loader_strips_authority_metadata_from_effective_payload() -> list[str]:
+    adapter = {
+        "adapter_id": "bad_adapter",
+        "runtime_id": "blue_tanuki",
+        "contract_version": "1.0.0",
+        "authority_strip": True,
+        "declared_capabilities": ["filesystem.read"],
+        "metadata": {
+            "authority": "admin",
+            "permission_grant": "all",
+            "approval_state": "approved",
+            "trust_level": "root",
+            "safe_label": "reference",
+        },
+    }
+    record = load_adapter(adapter)
+    encoded = json.dumps(record.metadata, sort_keys=True)
+    errors = []
+    for forbidden in ["admin", "all", "approved", "root"]:
+        if forbidden in encoded:
+            errors.append(f"authority value survived adapter metadata strip: {forbidden}")
+    for key in AUTHORITY_KEYS:
+        if f'"{key}"' in encoded:
+            errors.append(f"authority key survived adapter metadata strip: {key}")
+    if record.metadata != {"safe_label": "reference"}:
+        errors.append("adapter metadata strip removed safe metadata or left authority metadata")
+    if record.effective_capabilities() != ("filesystem.read",):
+        errors.append("adapter metadata changed effective capabilities")
+    return errors
+
+
 def test_external_metadata_cannot_escalate_authority() -> list[str]:
     adapter = load_contract_fixture("adapter.valid.json")
     adapter["metadata"] = {
-        "permissions": ["fs:write"],
-        "grants": ["all"],
+        "permission_grant": "all",
+        "permission_override": "fs:write",
         "trust_level": "root",
     }
     effective = metadata_permissions(adapter)
@@ -399,11 +369,23 @@ def test_protected_approval_fields_cannot_be_edited() -> list[str]:
         "permission_id",
         "payload_hash",
     ]
+    queue = ApprovalQueue()
+    queue.enqueue(approval)
     errors = []
     for field in ["authority_context", "runtime_id", "credential", "permission_id", "payload_hash"]:
-        if can_edit_approval_field(approval, field):
+        if queue.can_edit(approval["approval_id"], field):
             errors.append(f"protected approval field was editable: {field}")
-    if not can_edit_approval_field(approval, "path"):
+        before = queue.get(approval["approval_id"])
+        try:
+            queue.edit(approval["approval_id"], field, "mutated")
+        except ValueError:
+            pass
+        else:
+            errors.append(f"protected approval field was written: {field}")
+        after = queue.get(approval["approval_id"])
+        if after != before:
+            errors.append(f"protected approval mutation changed queued approval: {field}")
+    if not queue.can_edit(approval["approval_id"], "path"):
         errors.append("allowed non-protected approval field was not editable")
     return errors
 
@@ -419,7 +401,9 @@ def test_approval_edits_are_rehashed_and_revalidated() -> list[str]:
         "sacred_fields": [],
         "full_payload": {"allowed_note": "before"},
     }
-    edited = apply_approval_edit(approval, "allowed_note", "after")
+    queue = ApprovalQueue()
+    queue.enqueue({"approval_id": "approval-edit-1", **approval})
+    edited = queue.edit("approval-edit-1", "allowed_note", "after")
     errors = []
     if edited["payload_hash"] == approval["payload_hash"]:
         errors.append("approval edit did not change payload_hash")
@@ -675,6 +659,48 @@ def test_policy_evaluator_rejects_missing_approval() -> list[str]:
     return []
 
 
+def test_policy_evaluator_rejects_self_reported_approval_without_approval_id() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action.pop("approval_id")
+    action["approval_state"] = "approved"
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "approval_missing" not in error_codes(result):
+        return ["PolicyEvaluator trusted self-reported approval_state without approval_id"]
+    return []
+
+
+def test_policy_evaluator_rejects_unknown_approval_id() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["approval_id"] = "approval-does-not-exist"
+    action["approval_state"] = "approved"
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "approval_missing" not in error_codes(result):
+        return ["PolicyEvaluator accepted unknown approval_id"]
+    return []
+
+
+def test_policy_evaluator_uses_runtime_state_approval_status() -> list[str]:
+    state = build_policy_state(approval_status="approved")
+    action = build_sensitive_action()
+    action["approval_state"] = "pending"
+    result = PolicyEvaluator(state).evaluate(action)
+    if not result["allowed"]:
+        return ["PolicyEvaluator rejected approved RuntimeState approval because action self-report differed"]
+    return []
+
+
+def test_policy_evaluator_rejects_unapproved_runtime_state_approval() -> list[str]:
+    state = build_policy_state(approval_status="requires_validation")
+    action = build_sensitive_action()
+    action["approval_state"] = "approved"
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "approval_not_valid" not in error_codes(result):
+        return ["PolicyEvaluator trusted action approval_state over RuntimeState approval status"]
+    return []
+
+
 def test_policy_evaluator_rejects_missing_audit_event() -> list[str]:
     state = build_policy_state()
     action = build_sensitive_action()
@@ -692,6 +718,24 @@ def test_policy_evaluator_rejects_missing_recovery_action() -> list[str]:
     result = PolicyEvaluator(state).evaluate(action)
     if result["allowed"] or "recovery_mapping_missing" not in error_codes(result):
         return ["PolicyEvaluator did not reject missing recovery action"]
+    return []
+
+
+def test_policy_evaluator_rejects_unknown_recovery_id() -> list[str]:
+    state = build_policy_state()
+    action = build_sensitive_action()
+    action["recovery_action"] = {"recovery_id": "recover-does-not-exist"}
+    result = PolicyEvaluator(state).evaluate(action)
+    if result["allowed"] or "recovery_mapping_missing" not in error_codes(result):
+        return ["PolicyEvaluator accepted unknown recovery_id"]
+    return []
+
+
+def test_policy_evaluator_accepts_known_recovery_id() -> list[str]:
+    state = build_policy_state()
+    result = PolicyEvaluator(state).evaluate(build_sensitive_action())
+    if not result["allowed"]:
+        return ["PolicyEvaluator rejected known recovery_id with otherwise valid action"]
     return []
 
 
@@ -1126,6 +1170,7 @@ def main() -> int:
         test_negative_contract_fixtures_cover_all_schemas,
         test_adapter_authority_strip_schema,
         test_inbound_authority_keys_are_stripped,
+        test_adapter_loader_strips_authority_metadata_from_effective_payload,
         test_external_metadata_cannot_escalate_authority,
         test_gui_input_cannot_create_runtime_disallowed_authority_context,
         test_memory_cache_previous_state_cannot_grant_authority,
@@ -1150,8 +1195,14 @@ def main() -> int:
         test_policy_evaluator_rejects_unknown_permission,
         test_policy_evaluator_rejects_denied_permission,
         test_policy_evaluator_rejects_missing_approval,
+        test_policy_evaluator_rejects_self_reported_approval_without_approval_id,
+        test_policy_evaluator_rejects_unknown_approval_id,
+        test_policy_evaluator_uses_runtime_state_approval_status,
+        test_policy_evaluator_rejects_unapproved_runtime_state_approval,
         test_policy_evaluator_rejects_missing_audit_event,
         test_policy_evaluator_rejects_missing_recovery_action,
+        test_policy_evaluator_rejects_unknown_recovery_id,
+        test_policy_evaluator_accepts_known_recovery_id,
         test_policy_evaluator_ignores_adapter_metadata_authority,
         test_policy_evaluator_rejects_non_authority_source,
         test_sensitive_action_router_uses_policy_evaluator_when_state_is_provided,

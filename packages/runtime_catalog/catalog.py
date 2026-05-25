@@ -1,18 +1,6 @@
 import copy
 
-
-AUTHORITY_KEYS = {
-    "authority",
-    "authority_context",
-    "approval_state",
-    "grants",
-    "permission",
-    "permissions",
-    "permissions_granted",
-    "privileges",
-    "role",
-    "trust_level",
-}
+from packages.shell_core.authority_keys import AUTHORITY_KEYS
 
 
 class RuntimeCatalog:

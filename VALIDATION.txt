@@ -18,10 +18,10 @@ toolchain_detection:
       - git=C:\Program Files\Git\cmd\git.exe
       - rustc=NOT_FOUND
       - cargo=NOT_FOUND
-    classification: release_blocker
-    reason: Windows-side PATH has Git but does not expose Flutter, rustc, or cargo, so native Windows validation cannot run from this host session.
-    required_action: Install or expose Windows Flutter and Rust toolchains on a native Windows host, then rerun Windows validation.
-    blocks_release: yes
+    classification: known_limitation
+    reason: This WSL host session does not expose Windows Flutter or Rust tools through PowerShell PATH, but native Windows Flutter analyze, test, build, and launch smoke were run separately and passed.
+    required_action: Keep native Windows validation evidence current; do not rely on WSL PATH probing as the Windows release proof.
+    blocks_release: no
   - command: cargo --version
     exit: 0
     stdout: cargo 1.95.0 (f2d3ce0bd 2026-03-21)
@@ -76,7 +76,12 @@ checks:
     blocks_release: no
     reason:
     exit: 0
-    stdout: conformance skeleton passed: 67 checks
+    stdout: conformance skeleton passed: 74 checks
+    stdout_summary:
+      - authority stripping conformance imports production strip_authority_keys
+      - approval edit guard conformance imports production ApprovalQueue
+      - approval_state self-reporting checks use RuntimeState approval status
+      - recovery_id checks require RuntimeState recovery catalog entry
 
   - name: rust_helper_cargo_test
     command: cd native/rust_helper && cargo test
@@ -135,13 +140,29 @@ checks:
 
   - name: desktop_flutter_build_windows
     command: cd apps/desktop_flutter && flutter build windows
-    status: failed
-    classification: release_blocker
-    blocks_release: yes
-    reason: Windows build was attempted from WSL/Linux, and Flutter reported `"build windows" only supported on Windows hosts.`
-    required_action: Run `flutter build windows` on a native Windows host with Windows Flutter desktop toolchain installed.
-    exit: 1
-    stdout: '"build windows" only supported on Windows hosts.'
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    required_action: Keep Windows desktop build smoke passing on release candidates.
+    exit: 0
+    stdout: Built build\windows\x64\runner\Release\gui_shell_desktop.exe on native Windows.
+
+  - name: desktop_flutter_launch_smoke_windows
+    command: cd apps/desktop_flutter && .\build\windows\x64\runner\Release\gui_shell_desktop.exe
+    status: passed
+    classification: none
+    blocks_release: no
+    reason:
+    required_action: Keep Windows desktop launch smoke passing on release candidates.
+    exit: 0
+    stdout_summary:
+      - gui_shell_desktop.exe launched successfully on native Windows
+      - Dashboard visible
+      - NavigationRail visible
+      - Runtime Status visible
+      - Invariant Status visible
+    evidence: Dashboard visible, NavigationRail visible, Runtime Status visible, Invariant Status visible
 
   - name: desktop_flutter_launch_smoke
     command: cd apps/desktop_flutter && ./build/linux/x64/release/bundle/gui_shell_desktop
@@ -177,28 +198,52 @@ checks:
       - release_gate status: pass
 
   - name: validate_all_strict_release
-    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --strict-release
+    command: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --strict-release --desktop-platform=windows
     status: failed
     classification: release_blocker
     blocks_release: yes
-    reason: Strict release mode fails while release blockers remain documented.
-    required_action: Resolve all `release_blocker` items, then rerun strict release validation.
+    reason: Strict Windows release mode fails while Windows installer/first-run and Setup Doctor release blockers remain.
+    required_action: Resolve remaining Windows-first `release_blocker` items, then rerun strict release validation.
     exit: 1
     stdout_summary:
       - schema_check passed
       - conformance_skeleton passed
-      - release_gate_check --strict-release failed
+      - release_gate_check passed
       - rust_helper_cargo_test passed
       - desktop_flutter_analyze passed
+      - desktop_flutter_test passed
       - mobile_flutter_analyze passed with classification post_v1_scope and blocks_release no
+      - windows_desktop_project_support_exists passed
+      - windows_flutter_toolchain passed
+      - windows_flutter_analyze passed
+      - windows_flutter_test passed
+      - windows_desktop_build_smoke passed
+      - windows_desktop_launch_smoke passed
+      - windows_installer_first_run_smoke failed as release_blocker
+      - windows_setup_doctor_smoke failed as release_blocker
 
 release_gate:
   status: fail_for_completed_product_release
   blockers:
-    - item: desktop Flutter launch smoke
+    - item: Windows desktop build smoke
       classification: none
-      reason: Linux desktop launch smoke passed under WSLg with first-window evidence recorded.
-      required_action: Keep launch smoke passing on release candidates.
+      reason: `flutter build windows` passed on native Windows and produced `build\windows\x64\runner\Release\gui_shell_desktop.exe`.
+      required_action: Keep Windows build smoke passing on release candidates.
+      blocks_release: no
+    - item: conformance tautology fix
+      classification: none
+      reason: Production-code conformance tests now cover Shell Core authority stripping, ApprovalQueue protected edit guards, PolicyEvaluator trusted approval lookup, and RuntimeState recovery lookup.
+      required_action: Keep conformance tests importing production implementations.
+      blocks_release: no
+    - item: duplicate authority key definitions
+      classification: none
+      reason: `packages/shell_core/authority_keys.py` is the single source for authority keys; any reintroduced duplicate authority key definition is a release_blocker.
+      required_action: Keep production modules importing the shared authority key set.
+      blocks_release: no
+    - item: Windows desktop launch smoke
+      classification: none
+      reason: `.\build\windows\x64\runner\Release\gui_shell_desktop.exe` launched successfully on native Windows; Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible in the first window.
+      required_action: Keep Windows launch smoke passing on release candidates.
       blocks_release: no
     - item: WSLg libEGL/MESA graphics warnings
       classification: known_limitation

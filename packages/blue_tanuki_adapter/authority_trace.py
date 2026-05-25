@@ -1,16 +1,4 @@
-AUTHORITY_KEYS = {
-    "authority",
-    "authority_context",
-    "authority_fields",
-    "approval_state",
-    "capability_grants",
-    "grants",
-    "permission",
-    "permissions",
-    "privileges",
-    "role",
-    "trust_level",
-}
+from packages.shell_core.authority_keys import AUTHORITY_KEYS
 
 
 def metadata_attempts_authority(metadata: dict) -> bool:

@@ -25,14 +25,13 @@ The conformance baseline treats these inbound keys as authority-like and strips 
 ```text
 authority
 authority_context
-authority_fields
+authority_trace
 approval_state
-capability_grants
-grants
-permission
-permissions
-privileges
+approved_by
+permission_grant
+permission_override
 role
+scope_escalation
 trust_level
 ```
 

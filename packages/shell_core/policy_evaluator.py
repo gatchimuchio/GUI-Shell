@@ -13,22 +13,10 @@ from .error_taxonomy import (
 )
 from .permission_ledger import NON_AUTHORITY_SOURCES
 from .runtime_state import RuntimeState
+from .authority_keys import AUTHORITY_KEYS
 
 
 ALLOWED_PERMISSION_DECISIONS = {"allow", "approved"}
-AUTHORITY_KEYS = {
-    "authority",
-    "authority_context",
-    "authority_fields",
-    "approval_state",
-    "capability_grants",
-    "grants",
-    "permission",
-    "permissions",
-    "privileges",
-    "role",
-    "trust_level",
-}
 
 
 class PolicyEvaluator:
@@ -70,13 +58,10 @@ class PolicyEvaluator:
                 )
             )
 
-        approval_state = action.get("approval_state")
         approval_id = action.get("approval_id")
-        if approval_state is None and approval_id is None:
-            errors.append(shell_error(APPROVAL_MISSING, "approval state is required", operation))
-        elif approval_state != "approved":
-            errors.append(shell_error(APPROVAL_NOT_VALID, f"approval state is not valid: {approval_state}", operation))
-        if approval_id is not None:
+        if approval_id is None:
+            errors.append(shell_error(APPROVAL_MISSING, "approval_id is required", operation))
+        else:
             approval = self.state.approvals.get(approval_id)
             if approval is None:
                 errors.append(shell_error(APPROVAL_MISSING, f"unknown approval: {approval_id}", operation))
@@ -95,6 +80,14 @@ class PolicyEvaluator:
         recovery_action = action.get("recovery_action")
         if not isinstance(recovery_action, dict) or not recovery_action.get("recovery_id"):
             errors.append(shell_error(RECOVERY_MAPPING_MISSING, "recovery_action.recovery_id is required", operation))
+        elif recovery_action["recovery_id"] not in self.state.recovery_actions:
+            errors.append(
+                shell_error(
+                    RECOVERY_MAPPING_MISSING,
+                    f"unknown recovery action: {recovery_action['recovery_id']}",
+                    operation,
+                )
+            )
 
         if self._metadata_claims_authority(action.get("adapter_metadata", {})):
             errors.append(

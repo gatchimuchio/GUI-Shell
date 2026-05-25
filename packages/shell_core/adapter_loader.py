@@ -1,19 +1,6 @@
 import copy
 
-
-AUTHORITY_KEYS = {
-    "authority",
-    "authority_context",
-    "authority_fields",
-    "approval_state",
-    "capability_grants",
-    "grants",
-    "permission",
-    "permissions",
-    "privileges",
-    "role",
-    "trust_level",
-}
+from .authority_keys import AUTHORITY_KEYS
 
 
 class AdapterRecord:
@@ -25,7 +12,7 @@ class AdapterRecord:
         self.contract_version = adapter["contract_version"]
         self.transport = adapter.get("transport", "mock")
         self.declared_capabilities = tuple(adapter.get("declared_capabilities", []))
-        self.metadata = copy.deepcopy(adapter.get("metadata", {}))
+        self.metadata = strip_authority_keys(adapter.get("metadata", {}))
 
     def effective_capabilities(self) -> tuple[str, ...]:
         return self.declared_capabilities

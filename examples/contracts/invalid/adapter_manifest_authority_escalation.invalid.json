@@ -7,7 +7,7 @@
   "content_exposure_policy_id": "default_safe",
   "declared_capabilities": ["runtime.read"],
   "metadata": {
-    "permissions": ["all"]
+    "permission_grant": "all"
   },
   "signed_manifest": true
 }

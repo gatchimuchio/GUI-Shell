@@ -50,35 +50,47 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Keep Windows Flutter desktop project files under version control.
   blocks_release: no
 
-- item: Windows Flutter analyze not passed
-  classification: release_blocker
-  reason: Windows Flutter analyze has not passed on a Windows host.
-  required_action: Pass `cd apps/desktop_flutter && flutter analyze` on Windows.
-  blocks_release: yes
+- item: conformance tautology fix
+  classification: required_for_v1
+  reason: authority stripping, approval edit guard, approval status, and recovery ID conformance checks now call production Shell Core code and pass.
+  required_action: Keep conformance tests importing production implementations; do not reintroduce test-local authority stripping or approval edit guard copies.
+  blocks_release: no
 
-- item: Windows Flutter test not passed
-  classification: release_blocker
-  reason: Windows Flutter test has not passed on a Windows host.
-  required_action: Pass `cd apps/desktop_flutter && flutter test` on Windows.
-  blocks_release: yes
+- item: duplicate authority key definitions
+  classification: required_for_v1
+  reason: `packages/shell_core/authority_keys.py` is the single production source of `AUTHORITY_KEYS`; any remaining duplicate authority key definition is a `release_blocker`.
+  required_action: Keep production modules importing `packages.shell_core.authority_keys.AUTHORITY_KEYS`.
+  blocks_release: no
 
-- item: Windows Flutter toolchain not verified
-  classification: release_blocker
-  reason: Windows-side PATH probe found Git but did not find Flutter, rustc, or cargo.
-  required_action: Install/verify Windows Flutter and Rust toolchains, then run Windows Flutter doctor/analyze/build validation on Windows.
-  blocks_release: yes
+- item: Windows Flutter analyze gate
+  classification: required_for_v1
+  reason: Windows Flutter analyze passed on a native Windows host.
+  required_action: Keep `cd apps/desktop_flutter && flutter analyze` passing on Windows release candidates.
+  blocks_release: no
 
-- item: Windows desktop build smoke not passed
-  classification: release_blocker
-  reason: `flutter build windows` was attempted from WSL/Linux and failed with `"build windows" only supported on Windows hosts.`
-  required_action: Pass `flutter build windows` on a native Windows release-candidate host.
-  blocks_release: yes
+- item: Windows Flutter test gate
+  classification: required_for_v1
+  reason: Windows Flutter test passed on a native Windows host.
+  required_action: Keep `cd apps/desktop_flutter && flutter test` passing on Windows release candidates.
+  blocks_release: no
 
-- item: Windows desktop launch smoke not passed
-  classification: release_blocker
-  reason: Windows launch smoke evidence has not been recorded.
-  required_action: Launch the Windows desktop artifact and record first-window evidence.
-  blocks_release: yes
+- item: Windows Flutter toolchain verified
+  classification: required_for_v1
+  reason: Native Windows Flutter analyze, test, build, and launch smoke passed.
+  required_action: Keep Windows Flutter toolchain validation current on release candidates.
+  blocks_release: no
+
+- item: Windows desktop build smoke
+  classification: required_for_v1
+  reason: `flutter build windows` passed on a native Windows host and produced `build\windows\x64\runner\Release\gui_shell_desktop.exe`.
+  required_action: Keep Windows desktop build smoke passing on release candidates.
+  blocks_release: no
+
+- item: Windows desktop launch smoke
+  classification: required_for_v1
+  reason: `.\build\windows\x64\runner\Release\gui_shell_desktop.exe` launched successfully on native Windows; Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible in the first window.
+  required_action: Keep Windows desktop launch smoke passing on release candidates.
+  blocks_release: no
 
 - item: Windows installer first-run smoke not passed
   classification: release_blocker

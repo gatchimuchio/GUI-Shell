@@ -14,7 +14,7 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: schema and conformance skeleton
   classification: required_for_v1
-  status: passed in development validation
+  status: passed in development validation; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior
 
 - item: Shell Core hardening skeleton
   classification: required_for_v1
@@ -52,10 +52,10 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
   required_action: Keep Linux build and launch smoke passing, but do not treat them as Windows-first product proof.
   blocks_release: no
 
-- item: Windows desktop release validation not passed
+- item: Windows installer, first-run, and Setup Doctor release validation not passed
   classification: release_blocker
-  reason: Windows is the primary product target; Windows project support, Flutter toolchain verification, analyze, test, build, launch, Setup Doctor, installer, and first-run smoke have not passed.
-  required_action: Pass Windows project support, toolchain, `flutter analyze`, `flutter test`, `flutter build windows`, launch smoke, Setup Doctor smoke, and installer/first-run smoke.
+  reason: Windows project support, Flutter toolchain verification, analyze, test, build, and native launch smoke have passed, but Windows Setup Doctor, installer, and first-run smoke have not passed.
+  required_action: Pass Windows Setup Doctor smoke and installer/first-run smoke.
   blocks_release: yes
 
 - item: macOS planned portability target unverified

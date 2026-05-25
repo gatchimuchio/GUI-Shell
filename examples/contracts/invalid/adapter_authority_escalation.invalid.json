@@ -8,12 +8,8 @@
     "runtime.read"
   ],
   "metadata": {
-    "permissions": [
-      "filesystem.write"
-    ],
-    "grants": [
-      "all"
-    ],
+    "permission_grant": "filesystem.write",
+    "permission_override": "all",
     "trust_level": "root"
   }
 }
