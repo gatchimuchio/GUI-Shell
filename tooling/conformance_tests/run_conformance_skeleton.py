@@ -970,8 +970,8 @@ def test_shell_snapshot_generator_writes_phase_b_local_snapshot() -> list[str]:
     errors = []
     if snapshot.get("phase_status", {}).get("phase_a_status") != "complete":
         errors.append("generated snapshot does not mark Phase A complete")
-    if snapshot.get("phase_status", {}).get("phase_b_status") != "active":
-        errors.append("generated snapshot does not mark Phase B active")
+    if snapshot.get("phase_status", {}).get("phase_b_status") != "complete":
+        errors.append("generated snapshot does not mark Phase B complete")
     if snapshot.get("operation_status", {}).get("release_state") != "not claimed":
         errors.append("generated snapshot claimed release readiness")
     if not any(problem.get("classification") == "release_blocker" for problem in snapshot.get("problems", [])):

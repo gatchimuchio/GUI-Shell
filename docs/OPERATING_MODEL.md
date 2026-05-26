@@ -1,6 +1,6 @@
 # GUI Shell Operating Model
 
-Status: v1.0 desktop product-completion skeleton operating model  
+Status: Phase B owner-use complete operating model; completed product release not claimed  
 Reference style: BLUE-TANUKI direct-main owner workflow  
 Scope: repository flow, safety posture, validation, backup, and reporting
 

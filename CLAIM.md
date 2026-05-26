@@ -4,9 +4,9 @@
 
 GUI-Shell is not yet a completed product release.
 
-Current claim: PC-first AI Runtime / Agent Operation Shell in Phase B owner-use operational hardening.
+Current claim: PC-first AI Runtime / Agent Operation Shell with Phase B owner-use completion.
 
-Phase A, personal Windows trial operation, is complete: the Windows desktop build and native launch smoke passed, and Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible. Phase B focuses on making GUI-Shell useful for the owner as a daily local control plane. External release evidence, OSS release candidate claims, and paid/product QC remain later phases.
+Phase A, personal Windows trial operation, is complete: the Windows desktop build and native launch smoke passed, and Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible. Phase B owner-use completion is complete: the owner can use the desktop shell for daily local operation with visible status, problems, evidence, recovery, trust, runtime, and authority surfaces. External claim hygiene, measured Windows release evidence, OSS release candidate claims, and paid/product QC remain later phases.
 
 GUI-Shell v1.0 is Windows-first. Current-host Linux validation can pass as a development/verification slice, but it is not final product proof by itself. macOS is an unverified planned portability target, and BLUE-TANUKI remains a consumer/reference runtime rather than a GUI-Shell release dependency.
 
@@ -16,7 +16,7 @@ GUI-Shell v1.0 does not claim verified macOS support. macOS support must not be 
 
 - item: schema and conformance skeleton
   classification: required_for_v1
-  status: passed in development validation with 88 conformance checks; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior; ghost invariants are measured by production InvariantEvaluator; normalization firewall conformance now covers PolicyEvaluator and adapter metadata ingress.
+  status: passed in development validation with 89 conformance checks; conformance tautology fix resolved by testing production authority stripping and ApprovalQueue behavior; ghost invariants are measured by production InvariantEvaluator; normalization firewall conformance now covers PolicyEvaluator and adapter metadata ingress.
 
 - item: personal Windows trial operation
   classification: required_for_v1

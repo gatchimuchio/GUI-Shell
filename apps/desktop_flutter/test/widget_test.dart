@@ -26,7 +26,7 @@ void main() {
     expect(find.text('Authority'), findsOneWidget);
   });
 
-  testWidgets('Dashboard shows Phase A complete and Phase B active',
+  testWidgets('Dashboard shows Phase A complete and Phase B complete',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -35,7 +35,7 @@ void main() {
     );
 
     expect(find.textContaining('Phase A: complete'), findsOneWidget);
-    expect(find.textContaining('Phase B: active'), findsOneWidget);
+    expect(find.textContaining('Phase B: complete'), findsOneWidget);
     expect(find.textContaining('Completed product release: not claimed'),
         findsOneWidget);
   });

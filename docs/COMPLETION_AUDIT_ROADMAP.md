@@ -145,11 +145,10 @@ GUI-Shell uses three separate completion definitions:
 
 ## Next Execution Order
 
-1. Phase B-4: connect Problems rows to Recovery Playbook guidance for owner-use operation.
-2. Phase B-5: restore Trust Center / Authority Map / Runtime Map as display-only local control-plane surfaces.
-3. Phase B-6: document Phase B owner-use complete after owner confirms usability.
-4. Phase C: align README, CLAIM, release checklist, audit, installer, security, and strategy docs for OSS claim hygiene.
-5. Phase D: collect measured Windows installed-path evidence and pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.
+1. Phase C: keep README, CLAIM, release checklist, audit, installer, security, and strategy docs aligned for OSS claim hygiene.
+2. Phase D: collect measured Windows installed-path evidence and pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.
+3. Phase E: prepare OSS v1.0 RC only after Phase C/D pass and owner GO is explicit.
+4. Phase F: defer paid/product QC until money or third-party support enters scope.
 
 ## Release Rule
 

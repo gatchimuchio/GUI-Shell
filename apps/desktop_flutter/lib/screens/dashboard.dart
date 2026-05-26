@@ -47,7 +47,7 @@ class Dashboard extends StatelessWidget {
         const SectionList(
           title: 'Owner Operation Boundary',
           rows: [
-            'Phase B owner-use operation is active.',
+            'Phase B owner-use operation is complete.',
             'Completed product release is not claimed.',
             'Missing release evidence blocks completed product release, not Phase B owner-use operation.',
           ],

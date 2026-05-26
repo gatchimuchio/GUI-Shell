@@ -482,7 +482,7 @@ class PhaseStatusRecord {
   factory PhaseStatusRecord.fromJson(Map<String, Object?> json) {
     return PhaseStatusRecord(
       phaseAStatus: json['phase_a_status'] as String? ?? 'complete',
-      phaseBStatus: json['phase_b_status'] as String? ?? 'active',
+      phaseBStatus: json['phase_b_status'] as String? ?? 'complete',
       phaseCStatus: json['phase_c_status'] as String? ?? 'next',
       phaseDStatus: json['phase_d_status'] as String? ?? 'later',
       phaseEStatus: json['phase_e_status'] as String? ?? 'later',

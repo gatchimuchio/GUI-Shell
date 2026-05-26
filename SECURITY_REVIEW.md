@@ -1,6 +1,6 @@
 # Security Review
 
-Current phase: Phase B owner-use operational hardening. This file records security posture for internal operation and claim hygiene; it is not a paid/product QC sign-off.
+Current phase: Phase B owner-use complete. This file records security posture for internal operation and claim hygiene; it is not a paid/product QC sign-off.
 
 ## Established Boundaries
 

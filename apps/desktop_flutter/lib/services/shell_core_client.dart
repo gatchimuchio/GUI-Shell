@@ -130,7 +130,7 @@ ShellSnapshot _snapshotWithLocalIssue({
 const _mockSnapshot = ShellSnapshot(
   phaseStatus: PhaseStatusRecord(
     phaseAStatus: 'complete',
-    phaseBStatus: 'active',
+    phaseBStatus: 'complete',
     phaseCStatus: 'next',
     phaseDStatus: 'later',
     phaseEStatus: 'later',
@@ -516,7 +516,7 @@ const _mockSnapshot = ShellSnapshot(
 const _localFallbackSnapshot = ShellSnapshot(
   phaseStatus: PhaseStatusRecord(
     phaseAStatus: 'complete',
-    phaseBStatus: 'active',
+    phaseBStatus: 'complete',
     phaseCStatus: 'next',
     phaseDStatus: 'later',
     phaseEStatus: 'later',

@@ -147,11 +147,18 @@ tooling/
 
 ## Current status
 
-GUI-Shell has completed Phase A: personal Windows trial operation. The Windows desktop build and native launch smoke passed, and the first window showed Dashboard, NavigationRail, Runtime Status, and Invariant Status.
+GUI-Shell has completed Phase A: personal Windows trial operation and Phase B: owner-use operational hardening.
 
-The active phase is Phase B: owner-use operational hardening. The goal is to make the shell useful for daily personal operation while preserving authority, audit, approval, recovery, and evidence boundaries.
+Phase B owner-use complete means the owner can launch and use the desktop shell for daily local operation with visible status, problems, evidence, recovery, trust, runtime, and authority surfaces. It does not mean OSS v1.0 RC or paid/product completion.
 
-B-1 owner operation console, B-2 local snapshot wiring, and B-3 owner launch helpers are implemented. The next Phase B work is B-4 Problems to Recovery loop, B-5 Trust / Authority / Runtime Map, then B-6 owner-use completion gate.
+The canonical phase source is [docs/PHASE_STRATEGY.md](./docs/PHASE_STRATEGY.md):
+
+- Phase A: complete
+- Phase B: owner-use complete
+- Phase C: OSS claim hygiene next
+- Phase D: measured Windows installed-path release evidence later
+- Phase E: OSS v1.0 RC later
+- Phase F: paid/product QC later
 
 This repository does not claim completed product release readiness. Strict Windows installed-path evidence, measured Setup Doctor evidence, and explicit owner GO are classified as `release_blocker` before any release-ready claim.
 
@@ -160,7 +167,7 @@ This repository does not claim completed product release readiness. Strict Windo
 - item: personal Windows trial operation
   classification: required_for_v1
   reason: Windows build and native launch smoke passed for owner trial use.
-  required_action: Keep the personal operation path usable while Phase B hardening continues.
+  required_action: Keep the owner-use operation path usable while Phase C/D/E remain separate.
   blocks_release: no
 
 - item: completed product release

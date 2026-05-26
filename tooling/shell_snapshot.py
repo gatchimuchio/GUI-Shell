@@ -127,7 +127,7 @@ def build_shell_snapshot() -> dict:
 def _phase_status() -> dict:
     return {
         "phase_a_status": "complete",
-        "phase_b_status": "active",
+        "phase_b_status": "complete",
         "phase_c_status": "next",
         "phase_d_status": "later",
         "phase_e_status": "later",

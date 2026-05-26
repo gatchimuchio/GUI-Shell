@@ -1,6 +1,6 @@
 # Installer Status
 
-Current phase: Phase B owner-use operational hardening. Installer work is not being treated as paid/product QC yet, but completed product release still requires measured Windows installed-path evidence.
+Current phase: Phase B owner-use complete. Installer work is not being treated as paid/product QC yet, and completed product release still requires measured Windows installed-path evidence.
 
 ## Implemented Areas
 

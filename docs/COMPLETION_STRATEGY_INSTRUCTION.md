@@ -1,6 +1,6 @@
 # GUI-Shell Completion Strategy Instruction
 
-Status: v1.0 product-completion skeleton, not production runtime  
+Status: Phase B owner-use complete; not OSS v1.0 RC or paid/product release  
 Repository: `gatchimuchio/GUI-Shell`  
 Primary goal: complete GUI-Shell as a desktop-first AI Runtime / Agent Operation Shell.  
 Reference consumer/runtime: BLUE-TANUKI through adapter contract only.  
@@ -27,12 +27,12 @@ GUI-Shell currently has:
 Current claim boundary:
 
 ```text
-v1.0 product-completion skeleton exists.
-Not yet a production Shell Core runtime.
-Not yet a complete Rust helper.
-Not yet a live BLUE-TANUKI adapter.
-Not yet a complete product GUI.
-Not yet installer/mobile/release ready.
+Phase B owner-use completion exists.
+Not yet OSS v1.0 RC.
+Not yet paid/product QC.
+Not yet live BLUE-TANUKI adapter completion.
+Not yet measured Windows installed-path release evidence.
+Not yet mobile release ready.
 ```
 
 ## 1. Non-Negotiable Rules
