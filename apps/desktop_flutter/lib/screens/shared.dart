@@ -104,6 +104,8 @@ class ShellStatusBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final operation = snapshot.operationStatus;
+    final ageLabel = snapshotAgeLabel(snapshot);
+    final staleLabel = snapshotIsStale(snapshot) ? 'stale' : 'fresh';
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: SizedBox(
@@ -134,9 +136,99 @@ class ShellStatusBar extends StatelessWidget {
               StatusPill(label: 'Release', value: operation.releaseState),
               const SizedBox(width: 8),
               StatusPill(label: 'Snapshot', value: snapshot.snapshotSource),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Age', value: ageLabel),
+              const SizedBox(width: 8),
+              StatusPill(label: 'Freshness', value: staleLabel),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class EmptyStatePanel extends StatelessWidget {
+  const EmptyStatePanel({
+    super.key,
+    required this.title,
+    required this.meaning,
+    required this.phaseBBlocked,
+    required this.nextAction,
+  });
+
+  final String title;
+  final String meaning;
+  final bool phaseBBlocked;
+  final String nextAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return BorderedPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                phaseBBlocked
+                    ? Icons.report_problem_outlined
+                    : Icons.check_circle_outline,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text('Meaning: $meaning'),
+          Text('Phase B owner-use blocked: ${phaseBBlocked ? 'yes' : 'no'}'),
+          Text('Next: $nextAction'),
+        ],
+      ),
+    );
+  }
+}
+
+class SnapshotInfoPanel extends StatelessWidget {
+  const SnapshotInfoPanel({super.key, required this.snapshot});
+
+  final ShellSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final stale = snapshotIsStale(snapshot);
+    return BorderedPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Snapshot Freshness',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              StatusPill(label: 'Source', value: snapshot.snapshotSource),
+              StatusPill(
+                  label: 'Generated', value: _shortSnapshotTime(snapshot)),
+              StatusPill(label: 'Age', value: snapshotAgeLabel(snapshot)),
+              StatusPill(
+                  label: 'Warning', value: stale ? 'stale/fallback' : 'none'),
+              StatusPill(
+                  label: 'Release',
+                  value: snapshot.operationStatus.releaseState),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+              'Path: ${snapshot.snapshotPath.isEmpty ? '(not recorded)' : snapshot.snapshotPath}'),
+          Text(
+            stale
+                ? 'Owner-use can continue, but regenerate the local snapshot when current local state matters.'
+                : 'Snapshot is current enough for Phase B owner-use display.',
+          ),
+        ],
       ),
     );
   }
@@ -164,4 +256,67 @@ class SectionList extends StatelessWidget {
       ),
     );
   }
+}
+
+String snapshotAgeLabel(ShellSnapshot snapshot) {
+  final generatedAt = _snapshotDate(snapshot);
+  if (generatedAt == null) {
+    return snapshot.snapshotFreshness.isEmpty
+        ? 'unknown'
+        : snapshot.snapshotFreshness;
+  }
+  final age = DateTime.now().toUtc().difference(generatedAt.toUtc());
+  if (age.inMinutes < 1) {
+    return 'just now';
+  }
+  if (age.inHours < 1) {
+    return '${age.inMinutes}m';
+  }
+  if (age.inDays < 1) {
+    return '${age.inHours}h';
+  }
+  return '${age.inDays}d';
+}
+
+bool snapshotIsStale(ShellSnapshot snapshot) {
+  final source = snapshot.snapshotSource.toLowerCase();
+  final freshness = snapshot.snapshotFreshness.toLowerCase();
+  if (source == 'fallback' ||
+      freshness == 'missing' ||
+      freshness == 'parse failed' ||
+      freshness == 'static') {
+    return true;
+  }
+  final generatedAt = _snapshotDate(snapshot);
+  if (generatedAt == null) {
+    return true;
+  }
+  return DateTime.now().toUtc().difference(generatedAt.toUtc()).inHours >= 24;
+}
+
+DateTime? _snapshotDate(ShellSnapshot snapshot) {
+  for (final value in [
+    snapshot.snapshotGeneratedAt,
+    snapshot.snapshotFreshness,
+  ]) {
+    final parsed = DateTime.tryParse(value);
+    if (parsed != null) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
+String _shortSnapshotTime(ShellSnapshot snapshot) {
+  final value = snapshot.snapshotGeneratedAt.isNotEmpty
+      ? snapshot.snapshotGeneratedAt
+      : snapshot.snapshotFreshness;
+  if (value.isEmpty) {
+    return 'unknown';
+  }
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) {
+    return value;
+  }
+  return parsed.toLocal().toIso8601String();
 }

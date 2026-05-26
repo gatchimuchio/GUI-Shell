@@ -22,6 +22,7 @@ def build_shell_snapshot() -> dict:
     state = build_reference_state()
     setup = setup_doctor_report()
     invariant_flags = InvariantEvaluator().evaluate()
+    generated_at = datetime.now(timezone.utc).isoformat()
     runtimes = [
         {
             "runtime_id": runtime_id,
@@ -81,7 +82,8 @@ def build_shell_snapshot() -> dict:
     return {
         "snapshot_source": "generated",
         "snapshot_path": str(DEFAULT_SNAPSHOT_PATH.relative_to(ROOT)),
-        "snapshot_freshness": datetime.now(timezone.utc).isoformat(),
+        "snapshot_generated_at": generated_at,
+        "snapshot_freshness": generated_at,
         "phase_status": _phase_status(),
         "operation_status": _operation_status(runtimes, approvals, invariant_flags),
         "runtimes": runtimes,
@@ -395,6 +397,28 @@ def _settings_records() -> list[dict]:
             "current": "blocked",
             "effective": "blocked",
             "source": "permission ledger",
+            "modified": False,
+            "dangerous": True,
+            "authority_related": True,
+        },
+        {
+            "key": "phase.owner_use",
+            "group": "phase",
+            "default": "complete",
+            "current": "complete",
+            "effective": "complete",
+            "source": "docs/PHASE_STRATEGY.md",
+            "modified": False,
+            "dangerous": False,
+            "authority_related": False,
+        },
+        {
+            "key": "release.state",
+            "group": "release",
+            "default": "not claimed",
+            "current": "not claimed",
+            "effective": "not claimed",
+            "source": "strict release gate",
             "modified": False,
             "dangerous": True,
             "authority_related": True,

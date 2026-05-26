@@ -10,6 +10,7 @@ import 'package:gui_shell_desktop/screens/dashboard.dart';
 import 'package:gui_shell_desktop/screens/evidence_center.dart';
 import 'package:gui_shell_desktop/screens/problems_panel.dart';
 import 'package:gui_shell_desktop/screens/recovery_center.dart';
+import 'package:gui_shell_desktop/screens/settings.dart';
 import 'package:gui_shell_desktop/screens/setup_doctor.dart';
 import 'package:gui_shell_desktop/screens/shared.dart';
 import 'package:gui_shell_desktop/screens/trust_center.dart';
@@ -54,6 +55,22 @@ void main() {
     expect(find.textContaining('Release: not claimed'), findsOneWidget);
   });
 
+  testWidgets('Command palette searches and navigates',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const GuiShellDesktopApp());
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Command Palette'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'problems');
+    await tester.pumpAndSettle();
+    expect(find.text('Open Problems Panel'), findsOneWidget);
+    await tester.tap(find.text('Open Problems Panel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Problems Panel'), findsWidgets);
+  });
+
   testWidgets('Problems panel shows release blockers without Phase B failure',
       (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -69,7 +86,7 @@ void main() {
     expect(find.text('Recovery'), findsOneWidget);
     expect(find.text('Blocks Owner Use'), findsOneWidget);
     expect(find.text('Blocks Product Release'), findsOneWidget);
-    expect(find.textContaining('recover-windows-evidence'), findsOneWidget);
+    expect(find.textContaining('recover-windows-evidence'), findsWidgets);
     expect(find.textContaining('release_evidence/windows_installed_smoke.json'),
         findsWidgets);
     expect(find.textContaining('without making Phase B owner-use fail'),
@@ -112,6 +129,22 @@ void main() {
     expect(find.textContaining('true'), findsWidgets);
     expect(find.text('Command'), findsOneWidget);
     expect(find.text('Path'), findsOneWidget);
+  });
+
+  testWidgets('Settings screen searches and filters phase release settings',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: SettingsScreen(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Settings'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'release');
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('release.state'), findsOneWidget);
+    expect(find.textContaining('not claimed'), findsWidgets);
   });
 
   testWidgets('Trust and Authority surfaces are restored',

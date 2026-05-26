@@ -20,6 +20,7 @@ class EvidenceCenter extends StatelessWidget {
           'Missing release evidence blocks completed product release, not Phase B owner-use operation.',
           'This screen does not generate release evidence.',
         ]),
+        SnapshotInfoPanel(snapshot: snapshot),
         SectionList(
           title: 'Validation Summary',
           rows: [
@@ -35,28 +36,37 @@ class EvidenceCenter extends StatelessWidget {
             'owner GO: ${summary.ownerGo}',
           ],
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Evidence')),
-              DataColumn(label: Text('Kind')),
-              DataColumn(label: Text('Status')),
-              DataColumn(label: Text('Path')),
-              DataColumn(label: Text('Exportable')),
-            ],
-            rows: [
-              for (final evidence in snapshot.evidence)
-                DataRow(cells: [
-                  DataCell(Text(evidence.evidenceId)),
-                  DataCell(Text(evidence.kind)),
-                  DataCell(Text(evidence.status)),
-                  DataCell(Text(evidence.path)),
-                  DataCell(Text(evidence.exportable ? 'yes' : 'no')),
-                ]),
-            ],
+        if (snapshot.evidence.isEmpty)
+          const EmptyStatePanel(
+            title: 'No evidence yet',
+            meaning: 'The current snapshot has no evidence records to display.',
+            phaseBBlocked: false,
+            nextAction:
+                'Run the standard validation commands when evidence state matters.',
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('Evidence')),
+                DataColumn(label: Text('Kind')),
+                DataColumn(label: Text('Status')),
+                DataColumn(label: Text('Path')),
+                DataColumn(label: Text('Exportable')),
+              ],
+              rows: [
+                for (final evidence in snapshot.evidence)
+                  DataRow(cells: [
+                    DataCell(Text(evidence.evidenceId)),
+                    DataCell(Text(evidence.kind)),
+                    DataCell(Text(evidence.status)),
+                    DataCell(Text(evidence.path)),
+                    DataCell(Text(evidence.exportable ? 'yes' : 'no')),
+                  ]),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

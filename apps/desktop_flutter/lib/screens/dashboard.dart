@@ -52,15 +52,16 @@ class Dashboard extends StatelessWidget {
             'Missing release evidence blocks completed product release, not Phase B owner-use operation.',
           ],
         ),
-        SectionList(
-          title: 'Snapshot Source',
-          rows: [
-            'snapshot source: ${snapshot.snapshotSource}',
-            'snapshot path: ${snapshot.snapshotPath}',
-            'snapshot freshness: ${snapshot.snapshotFreshness}',
-            'release: ${operation.releaseState}',
-          ],
-        ),
+        SnapshotInfoPanel(snapshot: snapshot),
+        if (snapshot.snapshotSource == 'fallback')
+          const EmptyStatePanel(
+            title: 'No local snapshot',
+            meaning:
+                'GUI-Shell is using the safe fallback projection instead of a local owner snapshot.',
+            phaseBBlocked: false,
+            nextAction:
+                'Run tooling/shell_snapshot.py --write .gui_shell/shell_snapshot.json before daily local inspection.',
+          ),
         SectionList(
           title: 'Trust Status',
           rows: [
@@ -70,10 +71,16 @@ class Dashboard extends StatelessWidget {
         ),
         SectionList(
           title: 'Problems / Blockers',
-          rows: [
-            for (final problem in snapshot.problems)
-              '${problem.item}: ${problem.classification}; blocks_release: ${problem.blocksRelease ? 'yes' : 'no'}'
-          ],
+          rows: snapshot.problems.isEmpty
+              ? [
+                  'No problems are present in the current snapshot.',
+                  'Phase B owner-use is not blocked.',
+                  'Open Evidence Center or generate a fresh snapshot if local state changed.',
+                ]
+              : [
+                  for (final problem in snapshot.problems)
+                    '${problem.item}: ${problem.classification}; blocks_release: ${problem.blocksRelease ? 'yes' : 'no'}'
+                ],
         ),
         SectionList(
           title: 'Evidence Summary',

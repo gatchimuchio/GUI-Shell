@@ -14,23 +14,32 @@ class RuntimeCenter extends StatelessWidget {
     return ShellPage(
       title: 'Runtime Center',
       children: [
-        DataTable(
-          columns: const [
-            DataColumn(label: Text('Runtime')),
-            DataColumn(label: Text('Status')),
-            DataColumn(label: Text('Adapter')),
-            DataColumn(label: Text('Diagnostics')),
-          ],
-          rows: [
-            for (final runtime in snapshot.runtimes)
-              DataRow(cells: [
-                DataCell(Text(runtime.name)),
-                DataCell(Text(runtime.status)),
-                DataCell(Text(runtime.adapterId)),
-                DataCell(Text(runtime.diagnosticSummary)),
-              ]),
-          ],
-        ),
+        if (snapshot.runtimes.isEmpty)
+          const EmptyStatePanel(
+            title: 'No runtime connected',
+            meaning: 'The current snapshot has no runtime records.',
+            phaseBBlocked: false,
+            nextAction:
+                'Generate a local snapshot after Shell Core runtime discovery completes.',
+          )
+        else
+          DataTable(
+            columns: const [
+              DataColumn(label: Text('Runtime')),
+              DataColumn(label: Text('Status')),
+              DataColumn(label: Text('Adapter')),
+              DataColumn(label: Text('Diagnostics')),
+            ],
+            rows: [
+              for (final runtime in snapshot.runtimes)
+                DataRow(cells: [
+                  DataCell(Text(runtime.name)),
+                  DataCell(Text(runtime.status)),
+                  DataCell(Text(runtime.adapterId)),
+                  DataCell(Text(runtime.diagnosticSummary)),
+                ]),
+            ],
+          ),
         for (final adapter in snapshot.adapterCatalog)
           SectionList(
             title: 'Adapter Catalog: ${adapter.adapterId}',

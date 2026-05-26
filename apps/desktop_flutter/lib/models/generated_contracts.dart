@@ -662,6 +662,7 @@ class ShellSnapshot {
     required this.recoveryPlaybook,
     this.snapshotSource = 'fallback',
     this.snapshotPath = '',
+    this.snapshotGeneratedAt = '',
     this.snapshotFreshness = 'unknown',
   });
 
@@ -692,6 +693,7 @@ class ShellSnapshot {
   final List<RecoveryPlaybookRecord> recoveryPlaybook;
   final String snapshotSource;
   final String snapshotPath;
+  final String snapshotGeneratedAt;
   final String snapshotFreshness;
 
   factory ShellSnapshot.fromJson(Map<String, Object?> json) {
@@ -756,6 +758,10 @@ class ShellSnapshot {
           _records(json['recovery_playbook'], RecoveryPlaybookRecord.fromJson),
       snapshotSource: json['snapshot_source'] as String? ?? 'local',
       snapshotPath: json['snapshot_path'] as String? ?? '',
+      snapshotGeneratedAt: json['snapshot_generated_at'] as String? ??
+          json['generated_at'] as String? ??
+          json['snapshot_freshness'] as String? ??
+          '',
       snapshotFreshness: json['snapshot_freshness'] as String? ?? 'generated',
     );
   }
@@ -766,6 +772,7 @@ class ShellSnapshot {
     List<EvidenceRecord>? evidence,
     String? snapshotSource,
     String? snapshotPath,
+    String? snapshotGeneratedAt,
     String? snapshotFreshness,
   }) {
     return ShellSnapshot(
@@ -797,6 +804,7 @@ class ShellSnapshot {
       recoveryPlaybook: recoveryPlaybook,
       snapshotSource: snapshotSource ?? this.snapshotSource,
       snapshotPath: snapshotPath ?? this.snapshotPath,
+      snapshotGeneratedAt: snapshotGeneratedAt ?? this.snapshotGeneratedAt,
       snapshotFreshness: snapshotFreshness ?? this.snapshotFreshness,
     );
   }

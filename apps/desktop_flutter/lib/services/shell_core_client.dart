@@ -24,6 +24,10 @@ class ShellCoreClient {
         final snapshot = ShellSnapshot.fromJson(json).copyWith(
           snapshotSource: json['snapshot_source'] as String? ?? 'local',
           snapshotPath: resolvedPath,
+          snapshotGeneratedAt: json['snapshot_generated_at'] as String? ??
+              json['generated_at'] as String? ??
+              json['snapshot_freshness'] as String? ??
+              file.lastModifiedSync().toIso8601String(),
           snapshotFreshness: json['snapshot_freshness'] as String? ??
               file.lastModifiedSync().toIso8601String(),
         );
@@ -123,6 +127,7 @@ ShellSnapshot _snapshotWithLocalIssue({
     ),
     snapshotSource: source,
     snapshotPath: target,
+    snapshotGeneratedAt: freshness,
     snapshotFreshness: freshness,
   );
 }
@@ -440,6 +445,28 @@ const _mockSnapshot = ShellSnapshot(
       dangerous: true,
       authorityRelated: true,
     ),
+    SettingRecord(
+      key: 'phase.owner_use',
+      group: 'phase',
+      defaultValue: 'complete',
+      currentValue: 'complete',
+      effectiveValue: 'complete',
+      source: 'docs/PHASE_STRATEGY.md',
+      modified: false,
+      dangerous: false,
+      authorityRelated: false,
+    ),
+    SettingRecord(
+      key: 'release.state',
+      group: 'release',
+      defaultValue: 'not claimed',
+      currentValue: 'not claimed',
+      effectiveValue: 'not claimed',
+      source: 'strict release gate',
+      modified: false,
+      dangerous: true,
+      authorityRelated: true,
+    ),
   ],
   auditChainStatus: 'verified',
   networkExposure: 'localhost only',
@@ -510,6 +537,7 @@ const _mockSnapshot = ShellSnapshot(
   ],
   snapshotSource: 'mock',
   snapshotPath: 'embedded mock',
+  snapshotGeneratedAt: 'static',
   snapshotFreshness: 'static',
 );
 
@@ -635,6 +663,17 @@ const _localFallbackSnapshot = ShellSnapshot(
       dangerous: false,
       authorityRelated: false,
     ),
+    SettingRecord(
+      key: 'release.state',
+      group: 'release',
+      defaultValue: 'not claimed',
+      currentValue: 'not claimed',
+      effectiveValue: 'not claimed',
+      source: 'fallback invariant',
+      modified: false,
+      dangerous: true,
+      authorityRelated: true,
+    ),
   ],
   auditChainStatus: 'unknown',
   networkExposure: 'unknown',
@@ -672,5 +711,6 @@ const _localFallbackSnapshot = ShellSnapshot(
   ],
   snapshotSource: 'fallback',
   snapshotPath: '.gui_shell/shell_snapshot.json',
+  snapshotGeneratedAt: 'missing',
   snapshotFreshness: 'missing',
 );
