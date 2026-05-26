@@ -51,6 +51,7 @@ class ShellHomePage extends StatefulWidget {
 
 class _ShellHomePageState extends State<ShellHomePage> {
   int selectedIndex = 0;
+  _ShellViewMode viewMode = _ShellViewMode.ownerUse;
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +95,12 @@ class _ShellHomePageState extends State<ShellHomePage> {
               children: [
                 _TopCommandBar(
                   selectedLabel: pageEntries[selectedIndex].label,
+                  viewMode: viewMode,
+                  onViewModeChanged: (mode) => setState(() => viewMode = mode),
                   onOpenCommandPalette: () =>
                       _openCommandPalette(context, snapshot, pageEntries),
                 ),
+                PhaseBanner(snapshot: snapshot),
                 Expanded(
                   child: Row(
                     children: [
@@ -205,7 +209,12 @@ class _ShellHomePageState extends State<ShellHomePage> {
     if (selected.copyText != null) {
       await Clipboard.setData(ClipboardData(text: selected.copyText!));
     }
-    setState(() => selectedIndex = selected.pageIndex);
+    setState(() {
+      selectedIndex = selected.pageIndex;
+      if (selected.viewMode != null) {
+        viewMode = selected.viewMode!;
+      }
+    });
   }
 
   List<_CommandEntry> _commandEntries(
@@ -220,6 +229,15 @@ class _ShellHomePageState extends State<ShellHomePage> {
           pageIndex: page.index,
           icon: page.icon,
           keywords: page.label,
+        ),
+      for (final mode in _ShellViewMode.values)
+        _CommandEntry(
+          title: 'Switch view mode: ${mode.label}',
+          subtitle: mode.description,
+          pageIndex: selectedIndex,
+          icon: mode.icon,
+          keywords: 'mode profile ${mode.label} ${mode.description}',
+          viewMode: mode,
         ),
       for (final problem in snapshot.problems)
         _CommandEntry(
@@ -297,6 +315,7 @@ class _CommandEntry {
     required this.icon,
     required this.keywords,
     this.copyText,
+    this.viewMode,
   });
 
   final String title;
@@ -305,6 +324,7 @@ class _CommandEntry {
   final IconData icon;
   final String keywords;
   final String? copyText;
+  final _ShellViewMode? viewMode;
 
   bool matches(String query) {
     final normalized = query.trim().toLowerCase();
@@ -318,10 +338,14 @@ class _CommandEntry {
 class _TopCommandBar extends StatelessWidget {
   const _TopCommandBar({
     required this.selectedLabel,
+    required this.viewMode,
+    required this.onViewModeChanged,
     required this.onOpenCommandPalette,
   });
 
   final String selectedLabel;
+  final _ShellViewMode viewMode;
+  final ValueChanged<_ShellViewMode> onViewModeChanged;
   final VoidCallback onOpenCommandPalette;
 
   @override
@@ -332,21 +356,112 @@ class _TopCommandBar extends StatelessWidget {
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Row(
-            children: [
-              Text(selectedLabel,
-                  style: Theme.of(context).textTheme.titleMedium),
-              const Spacer(),
-              FilledButton.icon(
-                onPressed: onOpenCommandPalette,
-                icon: const Icon(Icons.search),
-                label: const Text('Command Palette'),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 920;
+              return Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedLabel,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Tooltip(
+                    message: 'Open command palette (Ctrl+K or Ctrl+P)',
+                    child: compact
+                        ? IconButton.filled(
+                            onPressed: onOpenCommandPalette,
+                            icon: const Icon(Icons.search),
+                          )
+                        : FilledButton.icon(
+                            onPressed: onOpenCommandPalette,
+                            icon: const Icon(Icons.search),
+                            label: const Text('Command Palette'),
+                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (compact)
+                    PopupMenuButton<_ShellViewMode>(
+                      tooltip: 'View mode',
+                      icon: Icon(viewMode.icon),
+                      onSelected: onViewModeChanged,
+                      itemBuilder: (context) => [
+                        for (final mode in _ShellViewMode.values)
+                          PopupMenuItem<_ShellViewMode>(
+                            value: mode,
+                            child: Text(mode.label),
+                          ),
+                      ],
+                    )
+                  else
+                    SegmentedButton<_ShellViewMode>(
+                      segments: [
+                        for (final mode in _ShellViewMode.values)
+                          ButtonSegment<_ShellViewMode>(
+                            value: mode,
+                            icon: Icon(mode.icon, size: 18),
+                            tooltip: mode.description,
+                            label: Text(mode.shortLabel),
+                          ),
+                      ],
+                      selected: {viewMode},
+                      onSelectionChanged: (selection) =>
+                          onViewModeChanged(selection.single),
+                    ),
+                ],
+              );
+            },
           ),
         ),
       ),
     );
+  }
+}
+
+enum _ShellViewMode {
+  ownerUse,
+  audit,
+  releaseCandidate,
+  demo;
+
+  String get label {
+    return switch (this) {
+      _ShellViewMode.ownerUse => 'Owner-use mode',
+      _ShellViewMode.audit => 'Audit mode',
+      _ShellViewMode.releaseCandidate => 'Release candidate mode',
+      _ShellViewMode.demo => 'Demo mode',
+    };
+  }
+
+  String get shortLabel {
+    return switch (this) {
+      _ShellViewMode.ownerUse => 'Owner',
+      _ShellViewMode.audit => 'Audit',
+      _ShellViewMode.releaseCandidate => 'RC',
+      _ShellViewMode.demo => 'Demo',
+    };
+  }
+
+  String get description {
+    return switch (this) {
+      _ShellViewMode.ownerUse => 'Daily local owner operation view.',
+      _ShellViewMode.audit => 'Evidence, audit, and blocker review view.',
+      _ShellViewMode.releaseCandidate =>
+        'RC review view; completed product release remains not claimed.',
+      _ShellViewMode.demo => 'Read-only demonstration view.',
+    };
+  }
+
+  IconData get icon {
+    return switch (this) {
+      _ShellViewMode.ownerUse => Icons.person_outline,
+      _ShellViewMode.audit => Icons.fact_check_outlined,
+      _ShellViewMode.releaseCandidate => Icons.flag_outlined,
+      _ShellViewMode.demo => Icons.visibility_outlined,
+    };
   }
 }
 

@@ -148,6 +148,48 @@ class ShellStatusBar extends StatelessWidget {
   }
 }
 
+class PhaseBanner extends StatelessWidget {
+  const PhaseBanner({super.key, required this.snapshot});
+
+  final ShellSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final stale = snapshotIsStale(snapshot);
+    final strictBlocked =
+        snapshot.evidenceSummary.missingMeasuredWindowsEvidence ||
+            snapshot.evidenceSummary.missingSetupDoctorEvidence ||
+            snapshot.evidenceSummary.ownerGo != 'recorded';
+    final colorScheme = Theme.of(context).colorScheme;
+    final background = strictBlocked || stale
+        ? colorScheme.tertiaryContainer
+        : colorScheme.secondaryContainer;
+    final foreground = strictBlocked || stale
+        ? colorScheme.onTertiaryContainer
+        : colorScheme.onSecondaryContainer;
+    final text = stale
+        ? 'Fallback or stale snapshot is active. Phase B owner-use can continue; refresh local snapshot when current state matters.'
+        : strictBlocked
+            ? 'Owner-use is OK. Strict release remains blocked by Phase D evidence / owner GO.'
+            : 'Owner-use state is current. Completed product release is still not claimed.';
+    return Material(
+      color: background,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Icon(Icons.info_outline, color: foreground, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(text, style: TextStyle(color: foreground)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class EmptyStatePanel extends StatelessWidget {
   const EmptyStatePanel({
     super.key,

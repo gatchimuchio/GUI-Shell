@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../services/shell_core_client.dart';
@@ -19,6 +21,20 @@ class SetupDoctor extends StatelessWidget {
           rows: [
             'installer_grants_authority=false',
             'installer_silently_approves_permissions=false'
+          ],
+        ),
+        SectionList(
+          title: 'Environment Snapshot',
+          rows: [
+            'os: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+            'dart: ${Platform.version.split('\n').first}',
+            'wsl/native hint: ${Platform.environment.containsKey('WSL_DISTRO_NAME') ? 'wsl' : 'native-or-container'}',
+            'flutter toolchain: PATH-provided',
+            'python: required for tooling/*.py validation',
+            'rust helper: cargo test covered by validate_all',
+            'network_exposure: ${snapshot.networkExposure}',
+            'audit_chain_status: ${snapshot.auditChainStatus}',
+            'config/snapshot path: ${snapshot.snapshotPath}',
           ],
         ),
         SectionList(

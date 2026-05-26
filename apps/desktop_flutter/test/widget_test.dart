@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gui_shell_desktop/main.dart';
 import 'package:gui_shell_desktop/screens/approval_center.dart';
 import 'package:gui_shell_desktop/screens/authority_map.dart';
+import 'package:gui_shell_desktop/screens/audit_viewer.dart';
 import 'package:gui_shell_desktop/screens/dashboard.dart';
 import 'package:gui_shell_desktop/screens/evidence_center.dart';
 import 'package:gui_shell_desktop/screens/problems_panel.dart';
 import 'package:gui_shell_desktop/screens/recovery_center.dart';
+import 'package:gui_shell_desktop/screens/runtime_center.dart';
 import 'package:gui_shell_desktop/screens/settings.dart';
 import 'package:gui_shell_desktop/screens/setup_doctor.dart';
 import 'package:gui_shell_desktop/screens/shared.dart';
@@ -59,7 +62,9 @@ void main() {
       (WidgetTester tester) async {
     await tester.pumpWidget(const GuiShellDesktopApp());
 
-    await tester.tap(find.widgetWithText(FilledButton, 'Command Palette'));
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyK);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'problems');
@@ -112,6 +117,21 @@ void main() {
             'missing measured Windows evidence: release_blocker'),
         findsOneWidget);
     expect(releaseEvidence.existsSync(), existedBefore);
+  });
+
+  testWidgets(
+      'Evidence center exposes display-only export and snapshot compare',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: EvidenceCenter(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Evidence Bundle Export'), findsOneWidget);
+    expect(find.text('Snapshot Import / Export'), findsOneWidget);
+    expect(find.text('Copy Validation Summary'), findsOneWidget);
+    expect(find.text('Preview Import / Compare'), findsOneWidget);
   });
 
   testWidgets('Recovery playbook marks Windows evidence safe for Phase B',
@@ -171,6 +191,29 @@ void main() {
         findsOneWidget);
   });
 
+  testWidgets('Runtime detail pane and audit filters are visible',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: RuntimeCenter(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Runtime Detail'), findsOneWidget);
+    expect(find.textContaining('runtime_id: blue_tanuki'), findsOneWidget);
+    expect(find.textContaining('capabilities:'), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: AuditViewer(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Audit Timeline Filters'), findsOneWidget);
+    expect(find.textContaining('hash_chain_status'), findsOneWidget);
+    expect(find.text('Copy'), findsOneWidget);
+  });
+
   test('Setup Doctor client surface is structured and non-authoritative', () {
     final snapshot = ShellCoreClient.local().getSnapshot();
 
@@ -183,6 +226,19 @@ void main() {
       snapshot.setupDoctorChecks.where((check) => check.grantsAuthority),
       isEmpty,
     );
+  });
+
+  testWidgets('Setup Doctor shows lightweight environment snapshot',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: SetupDoctor(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Environment Snapshot'), findsOneWidget);
+    expect(find.textContaining('network_exposure:'), findsOneWidget);
+    expect(find.textContaining('config/snapshot path:'), findsOneWidget);
   });
 
   test('local client reads structured snapshot data', () {
