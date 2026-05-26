@@ -5,12 +5,14 @@ import 'screens/audit_viewer.dart';
 import 'screens/dashboard.dart';
 import 'screens/evidence_center.dart';
 import 'screens/agent_center.dart';
+import 'screens/authority_map.dart';
 import 'screens/problems_panel.dart';
 import 'screens/recovery_center.dart';
 import 'screens/runtime_center.dart';
 import 'screens/settings.dart';
 import 'screens/shared.dart';
 import 'screens/setup_doctor.dart';
+import 'screens/trust_center.dart';
 import 'services/shell_core_client.dart';
 
 void main() {
@@ -53,7 +55,9 @@ class _ShellHomePageState extends State<ShellHomePage> {
     final pages = [
       Dashboard(client: widget.client),
       SetupDoctor(client: widget.client),
+      TrustCenter(client: widget.client),
       RuntimeCenter(client: widget.client),
+      AuthorityMap(client: widget.client),
       AgentCenter(client: widget.client),
       ApprovalCenter(client: widget.client),
       AuditViewer(client: widget.client),
@@ -84,9 +88,17 @@ class _ShellHomePageState extends State<ShellHomePage> {
                         selectedIcon: Icon(Icons.build_circle),
                         label: Text('Doctor')),
                     NavigationRailDestination(
+                        icon: Icon(Icons.verified_user_outlined),
+                        selectedIcon: Icon(Icons.verified_user),
+                        label: Text('Trust')),
+                    NavigationRailDestination(
                         icon: Icon(Icons.hub_outlined),
                         selectedIcon: Icon(Icons.hub),
                         label: Text('Runtime')),
+                    NavigationRailDestination(
+                        icon: Icon(Icons.account_tree_outlined),
+                        selectedIcon: Icon(Icons.account_tree),
+                        label: Text('Authority')),
                     NavigationRailDestination(
                         icon: Icon(Icons.smart_toy_outlined),
                         selectedIcon: Icon(Icons.smart_toy),

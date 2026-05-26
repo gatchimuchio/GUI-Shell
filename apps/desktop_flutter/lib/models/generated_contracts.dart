@@ -352,6 +352,9 @@ class ProblemRecord {
     this.reason = '',
     this.requiredAction = '',
     this.blocksRelease = false,
+    this.safeToIgnoreForPhaseB = false,
+    this.blocksOwnerUse = false,
+    this.blocksCompletedProductRelease = false,
   });
 
   final String problemId;
@@ -365,6 +368,9 @@ class ProblemRecord {
   final String reason;
   final String requiredAction;
   final bool blocksRelease;
+  final bool safeToIgnoreForPhaseB;
+  final bool blocksOwnerUse;
+  final bool blocksCompletedProductRelease;
 
   factory ProblemRecord.fromJson(Map<String, Object?> json) {
     return ProblemRecord(
@@ -379,6 +385,10 @@ class ProblemRecord {
       reason: json['reason'] as String? ?? '',
       requiredAction: json['required_action'] as String? ?? '',
       blocksRelease: _boolFromJson(json['blocks_release']),
+      safeToIgnoreForPhaseB: _boolFromJson(json['safe_to_ignore_for_phase_b']),
+      blocksOwnerUse: _boolFromJson(json['blocks_owner_use']),
+      blocksCompletedProductRelease:
+          _boolFromJson(json['blocks_completed_product_release']),
     );
   }
 }
@@ -588,17 +598,26 @@ class RecoveryPlaybookRecord {
     required this.safeToIgnoreForPhaseB,
     required this.requiredAction,
     required this.blocksCompletedProductRelease,
+    this.recoveryId = '',
+    this.blocksOwnerUse = false,
+    this.command = '',
+    this.path = '',
   });
 
+  final String recoveryId;
   final String item;
   final String severity;
   final String classification;
   final bool safeToIgnoreForPhaseB;
   final String requiredAction;
   final bool blocksCompletedProductRelease;
+  final bool blocksOwnerUse;
+  final String command;
+  final String path;
 
   factory RecoveryPlaybookRecord.fromJson(Map<String, Object?> json) {
     return RecoveryPlaybookRecord(
+      recoveryId: json['recovery_id'] as String? ?? '',
       item: json['item'] as String? ?? '',
       severity: json['severity'] as String? ?? 'warning',
       classification: json['classification'] as String? ?? 'required_for_v1',
@@ -607,6 +626,9 @@ class RecoveryPlaybookRecord {
       requiredAction: json['required_action'] as String? ?? '',
       blocksCompletedProductRelease:
           _boolFromJson(json['blocks_completed_product_release']),
+      blocksOwnerUse: _boolFromJson(json['blocks_owner_use']),
+      command: json['command'] as String? ?? '',
+      path: json['path'] as String? ?? '',
     );
   }
 }

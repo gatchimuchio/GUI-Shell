@@ -6,6 +6,8 @@ Status date: 2026-05-26
 
 GUI-Shell is a strong Windows-first v1.0 skeleton for a control-plane Runtime Operation Shell. It is not a completed product release.
 
+Phase B owner-use completion is now complete. This means the owner can use the desktop shell for daily local operation with visible status, problems, evidence, recovery, trust, runtime, and authority surfaces. It does not mean OSS v1.0 RC or paid/product completion.
+
 The architecture remains valid:
 
 - Shell Core owns authority.
@@ -22,9 +24,9 @@ GUI-Shell uses three separate completion definitions:
 
 - item: owner-use completion
   classification: required_for_v1
-  status: current target
+  status: complete
   reason: Phase B completion means the owner can use GUI-Shell for daily local operation with visible status, problems, evidence, and recovery guidance.
-  required_action: complete Phase B-4, B-5, and B-6 without weakening release gates.
+  required_action: keep Phase B owner-use complete while preserving release-not-claimed language until Phases C, D, and E are complete.
   blocks_release: no
 
 - item: OSS v1.0 RC completion

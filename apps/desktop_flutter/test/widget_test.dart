@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gui_shell_desktop/main.dart';
 import 'package:gui_shell_desktop/screens/approval_center.dart';
+import 'package:gui_shell_desktop/screens/authority_map.dart';
 import 'package:gui_shell_desktop/screens/dashboard.dart';
 import 'package:gui_shell_desktop/screens/evidence_center.dart';
 import 'package:gui_shell_desktop/screens/problems_panel.dart';
 import 'package:gui_shell_desktop/screens/recovery_center.dart';
 import 'package:gui_shell_desktop/screens/setup_doctor.dart';
 import 'package:gui_shell_desktop/screens/shared.dart';
+import 'package:gui_shell_desktop/screens/trust_center.dart';
 import 'package:gui_shell_desktop/services/shell_core_client.dart';
 
 void main() {
@@ -20,6 +22,8 @@ void main() {
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.text('Dashboard'), findsWidgets);
+    expect(find.text('Trust'), findsOneWidget);
+    expect(find.text('Authority'), findsOneWidget);
   });
 
   testWidgets('Dashboard shows Phase A complete and Phase B active',
@@ -62,6 +66,12 @@ void main() {
     expect(find.textContaining('measured Windows installed-path first-run'),
         findsOneWidget);
     expect(find.textContaining('release_blocker'), findsWidgets);
+    expect(find.text('Recovery'), findsOneWidget);
+    expect(find.text('Blocks Owner Use'), findsOneWidget);
+    expect(find.text('Blocks Product Release'), findsOneWidget);
+    expect(find.textContaining('recover-windows-evidence'), findsOneWidget);
+    expect(find.textContaining('release_evidence/windows_installed_smoke.json'),
+        findsWidgets);
     expect(find.textContaining('without making Phase B owner-use fail'),
         findsOneWidget);
   });
@@ -100,6 +110,32 @@ void main() {
         find.textContaining('measured Windows installed-path evidence missing'),
         findsOneWidget);
     expect(find.textContaining('true'), findsWidgets);
+    expect(find.text('Command'), findsOneWidget);
+    expect(find.text('Path'), findsOneWidget);
+  });
+
+  testWidgets('Trust and Authority surfaces are restored',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: TrustCenter(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Trust Center'), findsOneWidget);
+    expect(find.textContaining('workspace_trust'), findsOneWidget);
+    expect(find.textContaining('Shell Core capability'), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: AuthorityMap(client: ShellCoreClient.mock())),
+      ),
+    );
+
+    expect(find.text('Authority Map'), findsOneWidget);
+    expect(find.textContaining('filesystem.write'), findsWidgets);
+    expect(find.textContaining('Authority decisions remain in Shell Core'),
+        findsOneWidget);
   });
 
   test('Setup Doctor client surface is structured and non-authoritative', () {

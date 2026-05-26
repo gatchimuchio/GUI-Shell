@@ -57,6 +57,20 @@ class RuntimeCenter extends StatelessWidget {
               for (final item in diff.dangerous) '! $item',
             ],
           ),
+        SectionList(
+          title: 'Runtime Authority Flow',
+          rows: [
+            for (final item in snapshot.authorityMap)
+              '${item.runtimeId} -> ${item.capabilityId} -> ${item.permissionId} -> ${item.approvalId} -> ${item.auditEventId} -> ${item.recoveryId}',
+          ],
+        ),
+        const SectionList(
+          title: 'Authority Boundary',
+          rows: [
+            'Runtime capability, permission, approval, audit, and recovery decisions remain Shell Core owned.',
+            'Flutter displays the local snapshot and does not grant, approve, or mutate authority.',
+          ],
+        ),
       ],
     );
   }

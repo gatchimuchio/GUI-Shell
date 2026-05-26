@@ -19,23 +19,31 @@ class RecoveryCenter extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [
+              DataColumn(label: Text('Recovery')),
               DataColumn(label: Text('Item')),
               DataColumn(label: Text('Severity')),
               DataColumn(label: Text('Classification')),
               DataColumn(label: Text('Safe for Phase B')),
+              DataColumn(label: Text('Blocks Owner Use')),
               DataColumn(label: Text('Blocks Product Release')),
               DataColumn(label: Text('Required Action')),
+              DataColumn(label: Text('Command')),
+              DataColumn(label: Text('Path')),
             ],
             rows: [
               for (final item in snapshot.recoveryPlaybook)
                 DataRow(cells: [
+                  DataCell(Text(item.recoveryId)),
                   DataCell(Text(item.item)),
                   DataCell(Text(item.severity)),
                   DataCell(Text(item.classification)),
                   DataCell(Text(item.safeToIgnoreForPhaseB ? 'true' : 'false')),
+                  DataCell(Text(item.blocksOwnerUse ? 'yes' : 'no')),
                   DataCell(
                       Text(item.blocksCompletedProductRelease ? 'yes' : 'no')),
                   DataCell(Text(item.requiredAction)),
+                  DataCell(Text(item.command)),
+                  DataCell(Text(item.path)),
                 ]),
             ],
           ),
