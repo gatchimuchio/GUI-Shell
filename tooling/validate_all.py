@@ -46,7 +46,7 @@ def current_desktop_platform() -> str:
     return "unknown"
 
 
-def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[ValidationStep]:
+def build_steps(include_mobile_release: bool, desktop_platform: str, python_only: bool = False) -> list[ValidationStep]:
     steps = [
         ValidationStep("schema_check", ["python3", "tooling/schema_check/check_schemas.py"], ROOT, "python3"),
         ValidationStep(
@@ -58,10 +58,14 @@ def build_steps(include_mobile_release: bool, desktop_platform: str) -> list[Val
         ValidationStep("release_gate_check", ["python3", "tooling/release_gate_check.py"], ROOT, "python3"),
         ValidationStep("release_smoke", ["python3", "tooling/release_smoke.py"], ROOT, "python3"),
         ValidationStep("evidence_bundle", ["python3", "tooling/evidence_bundle.py", "--check"], ROOT, "python3"),
+    ]
+    if python_only:
+        return steps
+    steps.extend([
         ValidationStep("rust_helper_cargo_test", ["cargo", "test"], ROOT / "native" / "rust_helper", "cargo"),
         ValidationStep("desktop_flutter_analyze", ["flutter", "analyze"], ROOT / "apps" / "desktop_flutter", "flutter"),
         ValidationStep("desktop_flutter_test", ["flutter", "test"], ROOT / "apps" / "desktop_flutter", "flutter"),
-    ]
+    ])
     current = current_desktop_platform()
     target_linux = desktop_platform == "linux" or desktop_platform == "all" or (
         desktop_platform == "current" and current == "linux"
@@ -368,12 +372,17 @@ def main() -> int:
         default="current",
         help="Validate current host, a named desktop target, or the full Windows/macOS/Linux desktop scope.",
     )
+    parser.add_argument(
+        "--python-only",
+        action="store_true",
+        help="Run only Python/core validation steps for CI jobs that split Rust and Flutter into separate jobs.",
+    )
     args = parser.parse_args()
 
     mode = "strict_release" if args.strict_release else "development"
     results = [
         run_step(step, args.strict_release, args.desktop_platform)
-        for step in build_steps(args.include_mobile_release, args.desktop_platform)
+        for step in build_steps(args.include_mobile_release, args.desktop_platform, args.python_only)
     ]
     evidence = platform_evidence_checks(args.desktop_platform)
     blockers = [

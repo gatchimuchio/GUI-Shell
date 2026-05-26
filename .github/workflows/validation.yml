@@ -19,7 +19,7 @@ jobs:
       - name: Release smoke
         run: PYTHONDONTWRITEBYTECODE=1 python3 tooling/release_smoke.py
       - name: Development validation
-        run: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py
+        run: PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_all.py --python-only
 
   rust-helper:
     runs-on: ubuntu-latest
