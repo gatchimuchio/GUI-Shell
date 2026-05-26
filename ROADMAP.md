@@ -157,6 +157,93 @@ Runtime / Agent / Tool / Local Service
 
 ## 5. Phase Plan
 
+## Owner-Use Completion Roadmap
+
+The current target is Phase B owner-use completion, not completed product release.
+
+- phase: A
+  name: personal Windows trial operation
+  status: complete
+  evidence: Windows build and native launch smoke passed; Dashboard, NavigationRail, Runtime Status, and Invariant Status were visible.
+  blocks_release: no
+
+- phase: B-1
+  name: owner operation console
+  classification: required_for_v1
+  status: complete
+  evidence: Dashboard phase display, persistent status bar, Problems Panel, Evidence Center, and Recovery Playbook are implemented with release-not-claimed language.
+  blocks_release: no
+
+- phase: B-2
+  name: local snapshot / local runtime wiring
+  classification: required_for_v1
+  status: complete
+  evidence: local snapshot loading, safe fallback, snapshot source/freshness display, and generator support are implemented.
+  blocks_release: no
+
+- phase: B-3
+  name: owner launch flow
+  classification: required_for_v1
+  status: complete
+  evidence: shell and PowerShell owner launch helpers generate local snapshot and launch desktop without strict release validation.
+  blocks_release: no
+
+- phase: B-4
+  name: Problems to Recovery loop
+  classification: required_for_v1
+  status: next
+  reason: owner-use operation needs direct problem-to-recovery guidance, safe copyable commands/paths, and clearer owner-use versus release blocker separation.
+  required_action: add `safe_to_ignore_for_phase_b`, `blocks_owner_use`, and `blocks_completed_product_release` mapping from Problems to Recovery.
+  blocks_release: no
+
+- phase: B-5
+  name: Trust / Authority / Runtime Map
+  classification: required_for_v1
+  status: next
+  reason: GUI-Shell's control-plane value depends on visible trust and authority flow.
+  required_action: restore Trust Center and Authority Map into Phase B navigation or equivalent local owner-use surfaces.
+  blocks_release: no
+
+- phase: B-6
+  name: owner-use completion gate
+  classification: required_for_v1
+  status: later
+  reason: Phase B completion requires easy launch, visible status/problems/recovery, local snapshot/fallback behavior, no release-ready claim, and owner usability confirmation.
+  required_action: record Phase B owner-use complete after B-4 and B-5 pass validation.
+  blocks_release: no
+
+- phase: C
+  name: OSS claim hygiene
+  classification: required_for_v1
+  status: later
+  reason: public readers must not confuse owner-use completion with product release readiness.
+  required_action: align README, CLAIM, RELEASE_CHECKLIST, AUDIT_EVIDENCE, INSTALLER_STATUS, SECURITY_REVIEW, and PHASE_STRATEGY.
+  blocks_release: no
+
+- phase: D
+  name: measured Windows installed-path release evidence
+  classification: release_blocker
+  status: later
+  reason: completed product release requires measured native Windows installed-path evidence.
+  required_action: generate valid `release_evidence/windows_installed_smoke.json` and pass strict Windows release validation.
+  blocks_release: yes
+
+- phase: E
+  name: OSS v1.0 release candidate
+  classification: release_blocker
+  status: later
+  reason: OSS v1.0 RC requires Phase B/C/D completion and owner GO.
+  required_action: pass strict Windows release validation and record owner GO.
+  blocks_release: yes
+
+- phase: F
+  name: paid/product QC
+  classification: post_v1_scope
+  status: later
+  reason: paid/product QC requires support, rollback, long-run stability, dependency/license, legal, and third-party-user gates.
+  required_action: defer until money or third-party support enters scope.
+  blocks_release: no
+
 ### Phase 0: Standard / Selection Freeze
 
 Goal: Freeze the conceptual and technical selection boundary.

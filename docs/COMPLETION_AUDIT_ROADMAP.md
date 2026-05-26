@@ -16,6 +16,31 @@ The architecture remains valid:
 
 Release completion must not be claimed until strict Windows release validation passes and owner GO is explicit.
 
+## Phase Completion Levels
+
+GUI-Shell uses three separate completion definitions:
+
+- item: owner-use completion
+  classification: required_for_v1
+  status: current target
+  reason: Phase B completion means the owner can use GUI-Shell for daily local operation with visible status, problems, evidence, and recovery guidance.
+  required_action: complete Phase B-4, B-5, and B-6 without weakening release gates.
+  blocks_release: no
+
+- item: OSS v1.0 RC completion
+  classification: release_blocker
+  status: later
+  reason: OSS release candidate requires claim hygiene, measured Windows installed-path evidence, strict Windows release validation, and owner GO.
+  required_action: complete Phases C, D, and E before claiming OSS v1.0 RC.
+  blocks_release: yes
+
+- item: paid/product completion
+  classification: post_v1_scope
+  status: later
+  reason: paid/product QC requires support, rollback, long-run, legal, installer, and third-party-user quality gates beyond owner-use and OSS RC.
+  required_action: defer to Phase F.
+  blocks_release: no
+
 ## Implemented From Audit
 
 - item: measured invariant evaluator
@@ -118,11 +143,11 @@ Release completion must not be claimed until strict Windows release validation p
 
 ## Next Execution Order
 
-1. Connect native Windows installed app path to real Setup Doctor diagnostics evidence; synthetic Setup Doctor payloads must fail validation.
-2. Run native Windows installer/first-run smoke with measured window, visible-surface, config, and audit write/read/delete evidence.
-3. Add installed executable smoke evidence to the release bundle.
-4. Keep GitHub Actions CI covering schema, conformance, release smoke, release gate, Rust, Flutter, Windows build, and artifact validation.
-5. Run `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.
+1. Phase B-4: connect Problems rows to Recovery Playbook guidance for owner-use operation.
+2. Phase B-5: restore Trust Center / Authority Map / Runtime Map as display-only local control-plane surfaces.
+3. Phase B-6: document Phase B owner-use complete after owner confirms usability.
+4. Phase C: align README, CLAIM, release checklist, audit, installer, security, and strategy docs for OSS claim hygiene.
+5. Phase D: collect measured Windows installed-path evidence and pass `python3 tooling/validate_all.py --strict-release --desktop-platform=windows`.
 
 ## Release Rule
 

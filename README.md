@@ -151,6 +151,8 @@ GUI-Shell has completed Phase A: personal Windows trial operation. The Windows d
 
 The active phase is Phase B: owner-use operational hardening. The goal is to make the shell useful for daily personal operation while preserving authority, audit, approval, recovery, and evidence boundaries.
 
+B-1 owner operation console, B-2 local snapshot wiring, and B-3 owner launch helpers are implemented. The next Phase B work is B-4 Problems to Recovery loop, B-5 Trust / Authority / Runtime Map, then B-6 owner-use completion gate.
+
 This repository does not claim completed product release readiness. Strict Windows installed-path evidence, measured Setup Doctor evidence, and explicit owner GO are classified as `release_blocker` before any release-ready claim.
 
 ## Release-Gate Classification
