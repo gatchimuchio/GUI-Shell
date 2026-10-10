@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M69まで局所受入。B0 cause-mapは153行中140行を機構・試験・残余・明示UNKNOWNへ分類、13行が未分類。M68の外部runner開始前拒否は未実行として分類。M69ではFlutter投影widget testがglobal `debugDefaultTargetPlatformOverride`を直接変更してteardown invariantを壊した原因を、managed `TargetPlatformVariant`使用へ対応づけた。後続run全体の別XCUITest失敗は維持し、局所test PASSを全体PASSへ拡張しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M70まで局所受入。B0 cause-mapは153行中141行を機構・試験・残余・明示UNKNOWNへ分類、12行が未分類。M70はlegacy validation 11 runの包括validator scope不整合をsource-history強い推定として分類し、個々の内部check原因はUNKNOWNのまま保持した。過去のログ欠測を解消扱いせず、現行の手動／local validation規則も変更しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
