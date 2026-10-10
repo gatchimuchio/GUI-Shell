@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M51まで局所受入。B0 cause-mapは153行中122行を機構・試験・残余・明示UNKNOWNへ分類、31行が未分類。#37875821384のOwner確認button hit-test失敗はartifact画像がなく、frameだけでは原因を特定できないUNKNOWNとして保持。後続の同一frame観測は別cause行、製品状態への遡及なし。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M52まで局所受入。B0 cause-mapは153行中123行を機構・試験・残余・明示UNKNOWNへ分類、30行が未分類。#37876554147はscroll後もOwner確認buttonのhit-testが成立しない別runとして記録。artifact画像がなく、frame・scroll履歴から原因を特定できないUNKNOWNを維持し、#378758へ結合しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
