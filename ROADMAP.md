@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M66まで局所受入。B0 cause-mapは153行中137行を機構・試験・残余・明示UNKNOWNへ分類、16行が未分類。M65ではSetup Doctorのtest oracle表示名driftと修正commit帰属を是正。M66ではWindows analyzeが検出したAgent Task widget-test内の相対import／`const`不足を既存test-only修正へ対応づけた。後続runのpass範囲と元FAILは別々に保持し、通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M67まで局所受入。B0 cause-mapは153行中138行を機構・試験・残余・明示UNKNOWNへ分類、15行が未分類。M65はSetup Doctorのtest oracle drift、M66はAgent Task widget testのanalyzer findings、M67はmacOS Adapter管理が起動時snapshotに固定され新規catalog recordを拒否した失敗を、それぞれ既存の限定修正へ対応づけた。M67ではrecord ID／hashを選択対象へ束縛し、AuthorityはBrokerが再評価する。過去FAILとP13のCLOSED状態を保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
