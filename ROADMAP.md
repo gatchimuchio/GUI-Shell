@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M56まで局所受入。B0 cause-mapは153行中127行を機構・試験・残余・明示UNKNOWNへ分類、26行が未分類。#37880815733はBaseline受理・scope表示後、XCTestの別app container fixture書込がmacOS sandboxに拒否されFAIL。製品Permission拒否ではなくtest-host責任境界として分類し、固定public fixture更新をhost workflowへ限定した後続機構と、別runのMAC-INSPECT閉鎖を対応づけた。#378808のdiff／失効は未観測のまま保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M57まで局所受入。B0 cause-mapは153行中128行を機構・試験・残余・明示UNKNOWNへ分類、25行が未分類。#378808の別container書込と#378826の`/tmp` signal file書込はいずれもsandboxed XCTestからのfixture制御が拒否された別FAILとして分類。後続host workflowは一時handshakeを廃止し、当該runのbaseline受理Auditを順序signalに固定public fixtureだけを更新する。製品Permission・Authorityは変更せず、両runのdiff／失効は未観測のまま保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
