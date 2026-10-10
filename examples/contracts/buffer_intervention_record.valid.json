@@ -1,10 +1,12 @@
 {
-  "版": 1,
+  "版": 2,
   "記録ID": "00000000000000000000000000000001",
   "元要求": {
     "TaskID": "task_00000000000000000000000000000001",
-    "HostID": "host_windows_test",
+    "実行HostID": "broker-session-11111111111111111111111111111111",
+    "実行Host識別方式": "broker_session_id",
     "WorkspaceID": "workspace_00000000000000000000000000000001",
+    "作業sourceCommit取得状態": "取得済み",
     "作業sourceCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "入力hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     "Tool契約ID": "cargo.test.locked",
@@ -39,10 +41,13 @@
       "元要求の意味を変更しない"
     ],
     "再確認指紋": {
+      "実行HostID": "broker-session-11111111111111111111111111111111",
+      "実行Host識別方式": "broker_session_id",
+      "作業sourceCommit取得状態": "取得済み",
       "作業sourceCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "入力hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "Host指紋hash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-      "Workspace状態hash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "Workspace登録hash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "Toolchain指紋hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
     },
     "復旧方針": "作用前停止"

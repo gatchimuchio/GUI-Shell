@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/gui-shell/schemas/buffer_intervention_record.schema.json",
-  "$comment": "B1設計QC用の非権限記録契約。B2で実在するconsumerと作用経路へ接続するまでは、製品runtimeの機能・権限・完了証拠ではない。",
+  "$comment": "v2。Broker session IDで実行Hostを束縛し、source commit未取得を明示できる非権限記録。source commitが未取得なら吸収成立を認めない。Host Centerの表示選択metadataはHost IDの根拠にしない。",
   "title": "緩衝調停の記録",
   "type": "object",
   "additionalProperties": false,
@@ -17,7 +17,7 @@
   ],
   "properties": {
     "版": {
-      "const": 1
+      "const": 2
     },
     "記録ID": {
       "type": "string",
@@ -28,8 +28,10 @@
       "additionalProperties": false,
       "required": [
         "TaskID",
-        "HostID",
+        "実行HostID",
+        "実行Host識別方式",
         "WorkspaceID",
+        "作業sourceCommit取得状態",
         "作業sourceCommit",
         "入力hash",
         "Tool契約ID",
@@ -42,19 +44,28 @@
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
         },
-        "HostID": {
+        "実行HostID": {
           "type": "string",
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "実行Host識別方式": {
+          "const": "broker_session_id"
         },
         "WorkspaceID": {
           "type": "string",
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
         },
+        "作業sourceCommit取得状態": {
+          "enum": ["取得済み", "未取得"]
+        },
         "作業sourceCommit": {
-          "type": "string",
+          "type": ["string", "null"],
           "pattern": "^[a-f0-9]{40}$"
+        },
+        "作業sourceCommit未取得理由": {
+          "enum": ["非Git作業領域", "取得経路なし", "取得失敗"]
         },
         "入力hash": {
           "type": "string",
@@ -215,16 +226,33 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "実行HostID",
+            "実行Host識別方式",
+            "作業sourceCommit取得状態",
             "作業sourceCommit",
             "入力hash",
             "Host指紋hash",
-            "Workspace状態hash",
+            "Workspace登録hash",
             "Toolchain指紋hash"
           ],
           "properties": {
-            "作業sourceCommit": {
+            "実行HostID": {
               "type": "string",
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+            },
+            "実行Host識別方式": {
+              "const": "broker_session_id"
+            },
+            "作業sourceCommit取得状態": {
+              "enum": ["取得済み", "未取得"]
+            },
+            "作業sourceCommit": {
+              "type": ["string", "null"],
               "pattern": "^[a-f0-9]{40}$"
+            },
+            "作業sourceCommit未取得理由": {
+              "enum": ["非Git作業領域", "取得経路なし", "取得失敗"]
             },
             "入力hash": {
               "type": "string",
@@ -234,7 +262,7 @@
               "type": "string",
               "pattern": "^sha256:[a-f0-9]{64}$"
             },
-            "Workspace状態hash": {
+            "Workspace登録hash": {
               "type": "string",
               "pattern": "^sha256:[a-f0-9]{64}$"
             },
@@ -507,6 +535,106 @@
     {
       "if": {
         "properties": {
+          "元要求": {
+            "properties": {"作業sourceCommit取得状態": {"const": "未取得"}},
+            "required": ["作業sourceCommit取得状態"]
+          }
+        },
+        "required": ["元要求"]
+      },
+      "then": {
+        "properties": {
+          "元要求": {
+            "properties": {
+              "作業sourceCommit": {"type": "null"},
+              "作業sourceCommit未取得理由": {"enum": ["非Git作業領域", "取得経路なし", "取得失敗"]}
+            },
+            "required": ["作業sourceCommit", "作業sourceCommit未取得理由"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "元要求": {
+            "properties": {"作業sourceCommit取得状態": {"const": "取得済み"}},
+            "required": ["作業sourceCommit取得状態"]
+          }
+        },
+        "required": ["元要求"]
+      },
+      "then": {
+        "properties": {
+          "元要求": {
+            "properties": {"作業sourceCommit": {"type": "string"}},
+            "required": ["作業sourceCommit"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "調停案": {
+            "properties": {
+              "再確認指紋": {
+                "properties": {"作業sourceCommit取得状態": {"const": "未取得"}},
+                "required": ["作業sourceCommit取得状態"]
+              }
+            },
+            "required": ["再確認指紋"]
+          }
+        },
+        "required": ["調停案"]
+      },
+      "then": {
+        "properties": {
+          "調停案": {
+            "properties": {
+              "再確認指紋": {
+                "properties": {
+                  "作業sourceCommit": {"type": "null"},
+                  "作業sourceCommit未取得理由": {"enum": ["非Git作業領域", "取得経路なし", "取得失敗"]}
+                },
+                "required": ["作業sourceCommit", "作業sourceCommit未取得理由"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "調停案": {
+            "properties": {
+              "再確認指紋": {
+                "properties": {"作業sourceCommit取得状態": {"const": "取得済み"}},
+                "required": ["作業sourceCommit取得状態"]
+              }
+            },
+            "required": ["再確認指紋"]
+          }
+        },
+        "required": ["調停案"]
+      },
+      "then": {
+        "properties": {
+          "調停案": {
+            "properties": {
+              "再確認指紋": {
+                "properties": {"作業sourceCommit": {"type": "string"}},
+                "required": ["作業sourceCommit"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "判定": {
             "const": "吸収成立"
           }
@@ -523,6 +651,25 @@
           "比較証拠"
         ],
         "properties": {
+          "元要求": {
+            "properties": {
+              "作業sourceCommit取得状態": {"const": "取得済み"},
+              "作業sourceCommit": {"type": "string"}
+            },
+            "required": ["作業sourceCommit取得状態", "作業sourceCommit"]
+          },
+          "調停案": {
+            "properties": {
+              "再確認指紋": {
+                "properties": {
+                  "作業sourceCommit取得状態": {"const": "取得済み"},
+                  "作業sourceCommit": {"type": "string"}
+                },
+                "required": ["作業sourceCommit取得状態", "作業sourceCommit"]
+              }
+            },
+            "required": ["再確認指紋"]
+          },
           "理由コード": {
             "const": "独立照合済み"
           },

@@ -1,5 +1,7 @@
 # D4 Pocket / GUI-Shell rev5 Product-First 進捗
 
+最新状態（2026-10-11、B4-L1）: 調停記録契約を現行Broker境界に合わせてv2へ修正し、実Taskを受け付けたBroker session IDをHost識別に使う。Git非依存Workspaceのsource commit未取得は明示し、その状態では`吸収成立`へ昇格しない。Schema 167／正常例163／負例215、Conformance 245件がPASS。これは契約整備の局所受入であり、製品consumer・Agent Center接続は未成立。B4 OPEN、通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B4製品接続設計](緩衝基盤_rev5補遺_QC/B4_製品接続設計.md)。
+
 更新日: 2026-10-11
 工程正本: ユーザー提示「D4 Pocket / GUI-Shell 統合実装仕様書 rev5」「統合開発工程表 rev5」「Codex実装指示書 rev5」
 最新B3追記（2026-10-11）: M73まで局所受入、B0 cause-map 151/153行を分類、2行残。M70はlegacy validation 11 runのsetup-only jobと包括validatorのscope不整合を強いsource-history推定として分類し、個別inner check causeはUNKNOWNのまま保持した。M71は同一Rust crate treeを使う旧Ubuntu Actions 8 jobを証拠限界として`未成立／未知`へ分類した。failed job logはHTTP 410、artifactなしで、同一treeの保存済みlocal `cargo test` PASSや同一SHA後続成功はActions failureの根因を説明しない。別treeの#26840155393は対象外。M72はAndroid manual workflowの同一source SHA 3件について、API記録の`push` failureとjob/artifact/check-run 0件、source上の`workflow_dispatch`限定が食い違うrun-level UNKNOWNとして分類した。M73は#37636324822のmacOS job failureでstep 0、runner未割当、artifact 0、job log 404を確認できるが、失敗原因はUNKNOWN。M68の別runのrunner-admission警告と結合しない。現行作業では自動CIを再導入せず、過去欠測も成功へ昇格しない。

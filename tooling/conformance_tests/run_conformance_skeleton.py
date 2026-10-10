@@ -654,6 +654,43 @@ def test_buffer_intervention_record_is_non_authoritative_and_evidence_bound() ->
     failed_side_effect_check["比較証拠"]["副作用照合"] = "FAIL"
     if validate_instance(failed_side_effect_check, schema) == []:
         return ["副作用照合FAILの介入が吸収成立として通過する"]
+    unknown_source = copy.deepcopy(valid)
+    unknown_source["元要求"]["作業sourceCommit取得状態"] = "未取得"
+    unknown_source["元要求"]["作業sourceCommit"] = None
+    unknown_source["元要求"]["作業sourceCommit未取得理由"] = "取得経路なし"
+    fingerprint = unknown_source["調停案"]["再確認指紋"]
+    fingerprint["作業sourceCommit取得状態"] = "未取得"
+    fingerprint["作業sourceCommit"] = None
+    fingerprint["作業sourceCommit未取得理由"] = "取得経路なし"
+    if validate_instance(unknown_source, schema):
+        return ["source commit未取得を明示した記録が契約に適合しない"]
+    unknown_source_action = copy.deepcopy(unknown_source)
+    unknown_source_action["判定"] = "作用後未照合"
+    unknown_source_action["理由コード"] = "証拠不在"
+    unknown_source_action["未解決"] = ["証拠取得不能", "同等性未証明"]
+    unknown_source_action["実作用"] = candidate_with_action["実作用"]
+    unknown_source_action["元Tool結果"] = {
+        "状態": "成功",
+        "終了値": 0,
+        "結果hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "証拠参照": "evidence:tool-result-1",
+    }
+    if validate_instance(unknown_source_action, schema):
+        return ["source commit未取得の実作用を未照合として保持できない"]
+    selected_host = copy.deepcopy(valid)
+    selected_host["元要求"]["実行Host識別方式"] = "host_center_selection"
+    if validate_instance(selected_host, schema) == []:
+        return ["Host Centerの表示選択値を実行Hostの根拠として受理する"]
+    unknown_source_absorption = copy.deepcopy(evidenced_absorption)
+    unknown_source_absorption["元要求"]["作業sourceCommit取得状態"] = "未取得"
+    unknown_source_absorption["元要求"]["作業sourceCommit"] = None
+    unknown_source_absorption["元要求"]["作業sourceCommit未取得理由"] = "取得経路なし"
+    fingerprint = unknown_source_absorption["調停案"]["再確認指紋"]
+    fingerprint["作業sourceCommit取得状態"] = "未取得"
+    fingerprint["作業sourceCommit"] = None
+    fingerprint["作業sourceCommit未取得理由"] = "取得経路なし"
+    if validate_instance(unknown_source_absorption, schema) == []:
+        return ["source commit未取得の記録が吸収成立へ昇格する"]
     return []
 
 
