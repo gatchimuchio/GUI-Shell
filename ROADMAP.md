@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M70まで局所受入。B0 cause-mapは153行中141行を機構・試験・残余・明示UNKNOWNへ分類、12行が未分類。M70はlegacy validation 11 runの包括validator scope不整合をsource-history強い推定として分類し、個々の内部check原因はUNKNOWNのまま保持した。過去のログ欠測を解消扱いせず、現行の手動／local validation規則も変更しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M71まで局所受入。B0 cause-mapは153行中149行を機構・試験・残余・明示UNKNOWNへ分類、4行が未分類。M71では同一Rust crate treeを使う旧Ubuntu Actions 8 jobを証拠限界として明示分類した。失効logとartifact欠如、同一treeの保存済みlocal PASSは各Actions failureの根因を証明しないため、8件のRust causeはUNKNOWNのまま。別treeの#26840155393は群から除外した。過去のログ欠測を解消扱いせず、現行の手動／local validation規則も変更しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
