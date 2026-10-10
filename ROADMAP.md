@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M57まで局所受入。B0 cause-mapは153行中128行を機構・試験・残余・明示UNKNOWNへ分類、25行が未分類。#378808の別container書込と#378826の`/tmp` signal file書込はいずれもsandboxed XCTestからのfixture制御が拒否された別FAILとして分類。後続host workflowは一時handshakeを廃止し、当該runのbaseline受理Auditを順序signalに固定public fixtureだけを更新する。製品Permission・Authorityは変更せず、両runのdiff／失効は未観測のまま保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M58まで局所受入。B0 cause-mapは153行中129行を機構・試験・残余・明示UNKNOWNへ分類、24行が未分類。#378839は変更一覧button操作後の件数OCR待機でFAILし、該当Audit受理なし・画面画像なしのため製品表示欠落／OCR miss／fixture更新・要求到達を判別不能としてUNKNOWNに保持する。後続runは元runの成否へ遡及適用しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
