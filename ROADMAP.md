@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M61まで局所受入。B0 cause-mapは153行中132行を機構・試験・残余・明示UNKNOWNへ分類、21行が未分類。#378867はWorkspace失効のOCR座標click後にOwner確認UI取得が失敗。画像／raw Auditがなく元runの詳細原因はUNKNOWN。testをhittableなAccessibility button中央clickへ変えた後の#378881はPASSしたが、元runへ遡及しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M62まで局所受入。B0 cause-mapは153行中133行を機構・試験・残余・明示UNKNOWNへ分類、20行が未分類。7 runにわたるmacOS XCTest日本語key変換（U+FA42／U+FA5A）を一つのtest-input原因行として対応づけた。ASCII Unicode escape化は試験入力だけで、Rustの厳密key検査・製品Authorityを変えず、後続#376239でOwner拒否／承認経路が成立した。過去runのFAILは保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
