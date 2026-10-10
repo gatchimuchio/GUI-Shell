@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M58まで局所受入。B0 cause-mapは153行中129行を機構・試験・残余・明示UNKNOWNへ分類、24行が未分類。#378839は変更一覧button操作後の件数OCR待機でFAILし、該当Audit受理なし・画面画像なしのため製品表示欠落／OCR miss／fixture更新・要求到達を判別不能としてUNKNOWNに保持する。後続runは元runの成否へ遡及適用しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M59まで局所受入。B0 cause-mapは153行中130行を機構・試験・残余・明示UNKNOWNへ分類、23行が未分類。#378850は比較範囲buttonの即時`exists`検査に待機がなくFAIL。test側に10秒の出現待機を加えたcommit `9882db8`後、別runのXCTestはPASSしたがworkflowはAudit projection gateでFAILのまま。元runの失敗と後続Audit不足を保持し、通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
