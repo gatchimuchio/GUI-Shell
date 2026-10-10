@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M67まで局所受入。B0 cause-mapは153行中138行を機構・試験・残余・明示UNKNOWNへ分類、15行が未分類。M65はSetup Doctorのtest oracle drift、M66はAgent Task widget testのanalyzer findings、M67はmacOS Adapter管理が起動時snapshotに固定され新規catalog recordを拒否した失敗を、それぞれ既存の限定修正へ対応づけた。M67ではrecord ID／hashを選択対象へ束縛し、AuthorityはBrokerが再評価する。過去FAILとP13のCLOSED状態を保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M68まで局所受入。B0 cause-mapは153行中139行を機構・試験・残余・明示UNKNOWNへ分類、14行が未分類。M68はGitHub Actionsがrun #376350をstep開始前に拒否した外部runner-admission事象を、未実行・原因未確定として分類した。これは製品のPASS／FAILではなく、後続runも当該runを遡及修正しない。M67までの製品／test cause分類とCLOSED状態は保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
