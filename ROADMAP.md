@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M59まで局所受入。B0 cause-mapは153行中130行を機構・試験・残余・明示UNKNOWNへ分類、23行が未分類。#378850は比較範囲buttonの即時`exists`検査に待機がなくFAIL。test側に10秒の出現待機を加えたcommit `9882db8`後、別runのXCTestはPASSしたがworkflowはAudit projection gateでFAILのまま。元runの失敗と後続Audit不足を保持し、通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M60まで局所受入。B0 cause-mapは153行中131行を機構・試験・残余・明示UNKNOWNへ分類、22行が未分類。#378858では64件で制限した表示用Audit projectionを受理gateが読んでFAIL。raw Auditへの受理判定分離は `69b05e65` で導入され、#378881で後続の有限検収がPASSしたが、#378858自身の失効受理状態は不明のまま保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
