@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M63まで局所受入。B0 cause-mapは153行中134行を機構・試験・残余・明示UNKNOWNへ分類、19行が未分類。M62は7 runにわたるmacOS XCTest日本語key変換を試験入力だけの是正へ対応づけた。M63はWindows Export手動workflowの`git ls-remote`認証prompt失敗をcheckout済みrefによる固定commit／clean guardへ対応づけた。両件とも既存の責任面で閉じ、過去runのFAILは保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M64まで局所受入。B0 cause-mapは153行中135行を機構・試験・残余・明示UNKNOWNへ分類、18行が未分類。M62はmacOS XCTest日本語key変換を試験入力だけの是正へ、M63はWindows Export source guardの資格prompt失敗をcheckout済みref照合へ、M64はReceiptとManifest fixture名不一致をReceipt指定名へのstageへ対応づけた。過去FAILは保持し、後続runの到達範囲を越える成功主張はしない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
