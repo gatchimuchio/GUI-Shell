@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M55まで局所受入。B0 cause-mapは153行中126行を機構・試験・残余・明示UNKNOWNへ分類、27行が未分類。#37879704542はBaseline button操作後にnative確認と受信Auditが観測されず停止。現行testは可視文字・enabled状態を確認して通常mouse入力し、後続#378808でBaseline受理とscope表示まで成立した。元runのdialog不在／locator不一致は未知のまま保持し、#378808の別fixture failureは分離する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M56まで局所受入。B0 cause-mapは153行中127行を機構・試験・残余・明示UNKNOWNへ分類、26行が未分類。#37880815733はBaseline受理・scope表示後、XCTestの別app container fixture書込がmacOS sandboxに拒否されFAIL。製品Permission拒否ではなくtest-host責任境界として分類し、固定public fixture更新をhost workflowへ限定した後続機構と、別runのMAC-INSPECT閉鎖を対応づけた。#378808のdiff／失効は未観測のまま保持する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
