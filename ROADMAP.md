@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M54まで局所受入。B0 cause-mapは153行中125行を機構・試験・残余・明示UNKNOWNへ分類、28行が未分類。#37878209622はnative確認後のlifecycle復帰で一時成功文言が安定状態でないことを診断`registration_refreshed`で確認。現行testは成功文言待ちを除き現在登録を再取得してreadへ進む。#378797の後続はread後に別のbaseline確認箇所で停止し、元runへ遡及しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M55まで局所受入。B0 cause-mapは153行中126行を機構・試験・残余・明示UNKNOWNへ分類、27行が未分類。#37879704542はBaseline button操作後にnative確認と受信Auditが観測されず停止。現行testは可視文字・enabled状態を確認して通常mouse入力し、後続#378808でBaseline受理とscope表示まで成立した。元runのdialog不在／locator不一致は未知のまま保持し、#378808の別fixture failureは分離する。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
