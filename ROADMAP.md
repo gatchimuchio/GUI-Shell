@@ -1,6 +1,6 @@
 # GUI Shell ロードマップ
 
-現行追記（2026-10-11）: B3-M52まで局所受入。B0 cause-mapは153行中123行を機構・試験・残余・明示UNKNOWNへ分類、30行が未分類。#37876554147はscroll後もOwner確認buttonのhit-testが成立しない別runとして記録。artifact画像がなく、frame・scroll履歴から原因を特定できないUNKNOWNを維持し、#378758へ結合しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
+現行追記（2026-10-11）: B3-M53まで局所受入。B0 cause-mapは153行中124行を機構・試験・残余・明示UNKNOWNへ分類、29行が未分類。#37877200890はOwner確認後の承認Audit acceptedまで成立し、その後の成功文言OCR停止をUNKNOWNとして保持。画像がなくOCR missとlifecycle上の一時表示消失を区別できず、短文でも失敗した後続runを元runの根因へ転用しない。通常Release `task_execution=unsupported`、`release_ready=false`を維持する。詳細は[B3全原因・共通機構対応](docs/緩衝基盤_rev5補遺_QC/B3_全原因機構対応.md)。
 
 M33時点の集計詳細（M34追記前）:
 
